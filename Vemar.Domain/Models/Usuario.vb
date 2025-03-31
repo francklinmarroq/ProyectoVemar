@@ -1,4 +1,4 @@
-﻿Public Class Usuario
+﻿Public Class Usuario : Inherits DomainObject
     Public Property _usuario As String
     Private _contrasena As String
     Private _tipoUsuario As TipoUsuario

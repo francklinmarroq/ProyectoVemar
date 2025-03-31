@@ -1,4 +1,4 @@
-﻿Public Class Remedida
+﻿Public Class Remedida : Inherits DomainObject
     Private _representante As String
     Private _ubicacion As String
     Private _claveSure As String

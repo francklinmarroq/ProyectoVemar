@@ -1,4 +1,4 @@
-﻿Public Class TipoMovimiento
+﻿Public Class TipoMovimiento : Inherits DomainObject
     Private _tipo As String
 
     Public Property Tipo As String

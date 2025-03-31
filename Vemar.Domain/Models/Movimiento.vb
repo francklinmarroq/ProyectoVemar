@@ -1,4 +1,4 @@
-﻿Public Class Movimiento
+﻿Public Class Movimiento : Inherits DomainObject
     Private _remedida As Remedida
     Private _tipoMovimiento As TipoMovimiento
     Private _fecha As Date

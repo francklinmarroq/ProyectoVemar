@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35828.75 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Vemar.Domain", "Vemar.Domain\Vemar.Domain.vbproj", "{647CAE1F-760D-496C-8B7E-163E8901AA49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vemar.EF", "Vemar.EF\Vemar.EF.csproj", "{E41DDA7B-35CD-47B1-91A3-70CC940ED800}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{647CAE1F-760D-496C-8B7E-163E8901AA49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{647CAE1F-760D-496C-8B7E-163E8901AA49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{647CAE1F-760D-496C-8B7E-163E8901AA49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E41DDA7B-35CD-47B1-91A3-70CC940ED800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E41DDA7B-35CD-47B1-91A3-70CC940ED800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E41DDA7B-35CD-47B1-91A3-70CC940ED800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E41DDA7B-35CD-47B1-91A3-70CC940ED800}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

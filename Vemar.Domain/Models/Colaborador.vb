@@ -1,4 +1,4 @@
-﻿Public Class Colaborador
+﻿Public Class Colaborador : Inherits DomainObject
     Private _dni As String
     Private _nombre As String
 
