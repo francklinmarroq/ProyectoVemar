@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vemar.EF", "Vemar.EF\Vemar.
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.vbproj", "{8D438EAA-2D8A-4060-8C70-20B0C06B9D3B}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Vemar.WPF", "Vemar.WPF\Vemar.WPF.vbproj", "{466888D4-563D-4C18-95D0-CC00CC65777B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8D438EAA-2D8A-4060-8C70-20B0C06B9D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D438EAA-2D8A-4060-8C70-20B0C06B9D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D438EAA-2D8A-4060-8C70-20B0C06B9D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{466888D4-563D-4C18-95D0-CC00CC65777B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{466888D4-563D-4C18-95D0-CC00CC65777B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{466888D4-563D-4C18-95D0-CC00CC65777B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{466888D4-563D-4C18-95D0-CC00CC65777B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

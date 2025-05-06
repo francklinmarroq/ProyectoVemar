@@ -1,12 +1,14 @@
 ﻿Public Class Remedida : Inherits DomainObject
+    Private _cliente As Cliente
     Private _representante As String
     Private _ubicacion As String
     Private _claveSure As String
+    Private _matricula As String
     Private _cam As String
     Private _objeto As String
     Private _fecha As Date
-    Private _costo As Decimal
-    Private _colaborador As Colaborador
+    Private _precio As Decimal
+    Private _expedienteEntregado As Boolean
 
     Public Property Representante As String
         Get
@@ -14,6 +16,15 @@
         End Get
         Set(value As String)
             _representante = value
+        End Set
+    End Property
+
+    Public Property Cliente As Cliente
+        Get
+            Return _cliente
+        End Get
+        Set(value As Cliente)
+            _cliente = value
         End Set
     End Property
 
@@ -32,6 +43,15 @@
         End Get
         Set(value As String)
             _claveSure = value
+        End Set
+    End Property
+
+    Public Property Matricula As String
+        Get
+            Return _matricula
+        End Get
+        Set(value As String)
+            _matricula = value
         End Set
     End Property
 
@@ -64,19 +84,19 @@
 
     Public Property Costo As Decimal
         Get
-            Return _costo
+            Return _precio
         End Get
         Set(value As Decimal)
-            _costo = value
+            _precio = value
         End Set
     End Property
 
-    Public Property Colaborador As Colaborador
+    Public Property ExpedienteEntregado As Boolean
         Get
-            Return _colaborador
+            Return _expedienteEntregado
         End Get
-        Set(value As Colaborador)
-            _colaborador = value
+        Set(value As Boolean)
+            _expedienteEntregado = value
         End Set
     End Property
 

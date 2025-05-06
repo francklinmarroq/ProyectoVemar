@@ -1,4 +1,4 @@
-﻿Public Class EstadoProceso : Inherits DomainObject
+﻿Public Class EstadoTramite : Inherits DomainObject
     Private _estado As String
 
     Public Property Estado As String
@@ -9,6 +9,5 @@
             _estado = value
         End Set
     End Property
-
 
 End Class

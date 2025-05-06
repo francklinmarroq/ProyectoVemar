@@ -1,4 +1,4 @@
-﻿Public Class PagoRemedida : Inherits DomainObject
+﻿Public Class CobroRemedida : Inherits DomainObject
     Private _remedida As Remedida
     Private _cantidad As Decimal
 
@@ -10,6 +10,7 @@
             _remedida = value
         End Set
     End Property
+
     Public Property Cantidad As Decimal
         Get
             Return _cantidad

@@ -1,10 +1,14 @@
-﻿Public Class Proyecto : Inherits DomainObject
+﻿Imports System.Runtime.InteropServices.Marshalling
+
+Public Class Proyecto : Inherits DomainObject
     Private _nombre As String
-    Private _direccion As String
+    Private _cliente As Cliente
+    Private _ubicacion As String
     Private _zonificacion As Zonificacion
     Private _area As Decimal
-    Private _tipóProyecto As TipoProyecto
-    Private _estadoProceso As EstadoProceso
+    Private _categoriaProyecto As CategoriaProyecto
+    Private _matricula As String
+    Private _claveSure As String
 
     Public Property Nombre As String
         Get
@@ -15,12 +19,22 @@
         End Set
     End Property
 
-    Public Property Direccion As String
+    Public Property Cliente As Cliente
         Get
-            Return _direccion
+            Return _cliente
+        End Get
+        Set(value As Cliente)
+            _cliente = value
+        End Set
+    End Property
+
+
+    Public Property Ubicacion As String
+        Get
+            Return _ubicacion
         End Get
         Set(value As String)
-            _direccion = value
+            _ubicacion = value
         End Set
     End Property
 
@@ -42,21 +56,30 @@
         End Set
     End Property
 
-    Public Property TipoProyecto As TipoProyecto
+    Public Property CategoriaProyecto As CategoriaProyecto
         Get
-            Return _tipóProyecto
+            Return _categoriaProyecto
         End Get
-        Set(value As TipoProyecto)
-            _tipóProyecto = value
+        Set(value As CategoriaProyecto)
+            _categoriaProyecto = value
         End Set
     End Property
 
-    Public Property EstadoProceso As EstadoProceso
+    Public Property Matricula As String
         Get
-            Return _estadoProceso
+            Return _matricula
         End Get
-        Set(value As EstadoProceso)
-            _estadoProceso = value
+        Set(value As String)
+            _matricula = value
+        End Set
+    End Property
+
+    Public Property ClaveSure As String
+        Get
+            Return _claveSure
+        End Get
+        Set(value As String)
+            _claveSure = value
         End Set
     End Property
 

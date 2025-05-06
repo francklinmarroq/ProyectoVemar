@@ -1,6 +1,11 @@
 ﻿Public Class Colaborador : Inherits DomainObject
     Private _dni As String
     Private _nombre As String
+    Private _telefono As String
+    Private _fechaNacimiento As Date
+    Private domicilio As String
+    Private email As String
+
 
     Public Property Dni As String
         Get
@@ -17,6 +22,42 @@
         End Get
         Set(value As String)
             _nombre = value
+        End Set
+    End Property
+
+    Public Property Telefono As String
+        Get
+            Return _telefono
+        End Get
+        Set(value As String)
+            _telefono = value
+        End Set
+    End Property
+
+    Public Property FechaNacimiento As Date
+        Get
+            Return _fechaNacimiento
+        End Get
+        Set(value As Date)
+            _fechaNacimiento = value
+        End Set
+    End Property
+
+    Public Property Domicilio As String
+        Get
+            Return Domicilio
+        End Get
+        Set(value As String)
+            domicilio = value
+        End Set
+    End Property
+
+    Public Property Email As String
+        Get
+            Return Email
+        End Get
+        Set(value As String)
+            email = value
         End Set
     End Property
 End Class

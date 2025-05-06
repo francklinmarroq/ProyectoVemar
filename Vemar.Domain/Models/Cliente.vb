@@ -1,10 +1,13 @@
 ﻿Public Class Cliente
     Private _rtn As String
+    Private _nombre As String
     Private _direccion As String
     Private _representante As String
     Private _dniRepresentante As String
     Private _rtnRepresentante As String
     Private _telefono As String
+    Private _emailRepresentante As String
+    Private _emailCorporativo As String
 
     Public Property Rtn As String
         Get
@@ -12,6 +15,15 @@
         End Get
         Set(value As String)
             _rtn = value
+        End Set
+    End Property
+
+    Public Property Nombre As String
+        Get
+            Return _nombre
+        End Get
+        Set(value As String)
+            _nombre = value
         End Set
     End Property
 

@@ -1,6 +1,6 @@
 ﻿Public Class Usuario : Inherits DomainObject
     Public Property _usuario As String
-    Private _contrasena As String
+    Private _hashContrasena As String
     Private _tipoUsuario As TipoUsuario
 
 
@@ -13,12 +13,12 @@
         End Set
     End Property
 
-    Public Property Contrasena As String
+    Public Property HashContrasena As String
         Get
-            Return _contrasena
+            Return _hashContrasena
         End Get
         Set(value As String)
-            _contrasena = value
+            _hashContrasena = value
         End Set
     End Property
 
