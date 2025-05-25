@@ -3,8 +3,8 @@
     Private _nombre As String
     Private _telefono As String
     Private _fechaNacimiento As Date
-    Private domicilio As String
-    Private email As String
+    Private _domicilio As String
+    Private _email As String
 
 
     Public Property Dni As String
@@ -45,19 +45,19 @@
 
     Public Property Domicilio As String
         Get
-            Return Domicilio
+            Return _domicilio
         End Get
         Set(value As String)
-            domicilio = value
+            _domicilio = value
         End Set
     End Property
 
     Public Property Email As String
         Get
-            Return Email
+            Return _email
         End Get
         Set(value As String)
-            email = value
+            _email = value
         End Set
     End Property
 End Class

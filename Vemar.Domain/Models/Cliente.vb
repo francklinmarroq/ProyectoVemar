@@ -1,4 +1,4 @@
-﻿Public Class Cliente
+﻿Public Class Cliente : Inherits DomainObject
     Private _rtn As String
     Private _nombre As String
     Private _direccion As String

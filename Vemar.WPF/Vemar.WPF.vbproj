@@ -24,9 +24,4 @@
     <ProjectReference Include="..\Vemar.EF\Vemar.EF.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controls\" />
-    <Folder Include="Views\" />
-  </ItemGroup>
-
 </Project>

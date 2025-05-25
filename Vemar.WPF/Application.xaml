@@ -3,6 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Vemar.WPF">
     <Application.Resources>
-         
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Common.xaml"/>
+                <ResourceDictionary Source="Styles/NavigationBar.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type local:HomeViewModel}">
+                <local:HomeView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type local:RemeasuresViewModel}">
+                <local:RemeasuresView/>
+            </DataTemplate>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
