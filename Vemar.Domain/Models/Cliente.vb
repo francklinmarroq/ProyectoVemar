@@ -72,4 +72,22 @@
         End Set
     End Property
 
+    Public Property EmailRepresentante As String
+        Get
+            Return _emailRepresentante
+        End Get
+        Set(value As String)
+            _emailRepresentante = value
+        End Set
+    End Property
+
+    Public Property EmailCorporativo As String
+        Get
+            Return _emailCorporativo
+        End Get
+        Set(value As String)
+            _emailCorporativo = value
+        End Set
+    End Property
+
 End Class

@@ -1,4 +1,4 @@
-﻿Public Class Asignacion
+﻿Public Class Asignacion : Inherits DomainObject
     Private _colaborador As Colaborador
     Private _proyecto As Proyecto
     Private _fechaAsignacion As New DateTime

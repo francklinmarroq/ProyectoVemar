@@ -7,6 +7,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock Foreground="{StaticResource AccentBrush}" Text="Remeasures" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="107*"/>
+        </Grid.RowDefinitions>
+        <local:RemeasuresList x:Name="remeasuresList" Grid.Row="0"/>
+        
     </Grid>
 </UserControl>
