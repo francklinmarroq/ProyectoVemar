@@ -23,7 +23,7 @@
                 <GridView>
                     <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}"/>
                     <GridViewColumn Header="FECHA" DisplayMemberBinding="{Binding Fecha}"/>
-                    <GridViewColumn Header="CLIENTE" DisplayMemberBinding="{Binding Cliente}"/>
+                    <GridViewColumn Header="CLIENTE" DisplayMemberBinding="{Binding ClienteId}"/>
                     <GridViewColumn Header="REPRESENTANTE" DisplayMemberBinding="{Binding Representante}"/>
                     <GridViewColumn Header="UBICACION" DisplayMemberBinding="{Binding Ubicacion}"/>
                     <GridViewColumn Header="CLAVE SURE" DisplayMemberBinding="{Binding ClaveSure}"/>

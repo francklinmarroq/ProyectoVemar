@@ -17,7 +17,7 @@ namespace Vemar.EF
         public VemarDbContext CreateDbContext(string[] args = null)
         {
             var options = new DbContextOptionsBuilder<VemarDbContext>()
-                .UseSqlServer("Server=FMarroquin\\SQLEXPRESS;Database=Vemar;Trusted_Connection=True;TrustServerCertificate=True;")
+                .UseSqlServer("Server=DESKTOPFRANCKLI\\SQLEXPRESS;Database=Vemar;Trusted_Connection=True;TrustServerCertificate=True;")
                 .Options;
 
             return new VemarDbContext(options);

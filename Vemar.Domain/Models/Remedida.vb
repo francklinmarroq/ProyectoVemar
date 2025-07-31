@@ -82,7 +82,7 @@
         End Set
     End Property
 
-    Public Property Costo As Decimal
+    Public Property Precio As Decimal
         Get
             Return _precio
         End Get

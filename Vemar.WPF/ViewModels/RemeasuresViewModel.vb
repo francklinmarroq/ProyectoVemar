@@ -29,7 +29,6 @@ Public Class RemeasuresViewModel : Inherits ViewModelBase : Implements INotifyPr
         Try
             Dim remeasuresList As IEnumerable(Of Remedida) = Await _dataService.GetAll()
             Remeasures = New ObservableCollection(Of Remedida)(remeasuresList)
-            Console.WriteLine("Remeasures loaded successfully.")
         Catch ex As Exception
             MsgBox("Error loading remeasures: " & ex.Message, MsgBoxStyle.Critical, "Error")
         End Try

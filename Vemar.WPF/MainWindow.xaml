@@ -4,21 +4,36 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Vemar.WPF"
-
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="900"
+        Title="MainWindow" Height="720" Width="1080"
+        
         WindowStyle="None"
         AllowsTransparency="True"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        >
 
-    <Grid Background="{StaticResource BackgroundBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <local:NavigationBar Grid.Row="0" DataContext="{Binding Navigator}"/>
-        <ContentControl Grid.Row="1" Content="{Binding Navigator.CurrentViewModel}" Margin="10"/>
-    </Grid>
-    
-    
+    <Border
+        Background="{StaticResource AccentBrush}"
+        CornerRadius="16" BorderThickness="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <local:AppBar Grid.Row="0"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".3*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <local:SideBar Grid.Column="0" DataContext="{Binding Navigator}"/>
+                <ContentControl Grid.Column="1" Content="{Binding Navigator.CurrentViewModel}" Margin="10"/>
+            </Grid>
+        </Grid>
+    </Border>
+
+
+
 </Window>

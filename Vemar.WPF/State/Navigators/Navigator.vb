@@ -1,7 +1,7 @@
 ﻿Imports System.ComponentModel
 
 Public Class Navigator : Inherits ObservableObject : Implements INavigator
-    Private _currentViewModel As ViewModelBase
+    Private _currentViewModel As ViewModelBase = New HomeViewModel()
 
     Public Property CurrentViewModel As ViewModelBase Implements INavigator.CurrentViewModel
         Get

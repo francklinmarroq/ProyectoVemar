@@ -11,21 +11,9 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" 
-                   Text="Constructora Vemar" 
-                   Background="{StaticResource PrimaryBrush}" 
-                   Foreground="{StaticResource AccentBrush}"
-                   FontFamily="Microsoft YaHei"
-                   FontWeight="Black"
-                   FontSize="20"
-                   Padding="10
-
-                   "/>
-
-        <Grid Grid.Row="1" RenderOptions.EdgeMode="Aliased">
+        <!--<Grid Grid.Row="1" RenderOptions.EdgeMode="Aliased">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
@@ -42,7 +30,7 @@
                          CommandParameter="{x:Static local:ViewType.Remeasures}"/>
             <RadioButton Grid.Column="2" Content="Proyectso"/>
             <RadioButton Grid.Column="3" Content="Petty Cash"/>
-        </Grid>
+        </Grid>-->
 
     </Grid>
 </UserControl>
