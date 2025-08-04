@@ -20,8 +20,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Vemar.Domain\Vemar.Domain.vbproj" />
     <ProjectReference Include="..\Vemar.EF\Vemar.EF.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
   </ItemGroup>
 
 </Project>

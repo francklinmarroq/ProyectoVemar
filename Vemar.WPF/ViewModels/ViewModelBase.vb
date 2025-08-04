@@ -1,3 +1,3 @@
-﻿Public Class ViewModelBase
+﻿Public Class ViewModelBase : Inherits ObservableObject
 
 End Class

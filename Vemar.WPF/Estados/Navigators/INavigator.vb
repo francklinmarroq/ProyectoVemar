@@ -1,6 +1,6 @@
 ﻿Public Enum ViewType
-    Home
-    Remeasures
+    Inicio
+    Remedidas
 End Enum
 
 Public Interface INavigator

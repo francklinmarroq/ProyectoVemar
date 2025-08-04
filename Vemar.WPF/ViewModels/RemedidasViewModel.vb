@@ -5,18 +5,18 @@ Imports Vemar.Domain
 Imports Vemar.EF
 Imports Vemar.EF.Services
 
-Public Class RemeasuresViewModel : Inherits ViewModelBase : Implements INotifyPropertyChanged
-    Private _remeasures As ObservableCollection(Of Remedida)
+Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPropertyChanged
+    Private _remedidas As ObservableCollection(Of Remedida)
     Private _dataService As GenericDataService(Of Remedida)
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
-    Public Property Remeasures As ObservableCollection(Of Remedida)
+    Public Property Remedidas As ObservableCollection(Of Remedida)
         Get
-            Return _remeasures
+            Return _remedidas
         End Get
         Set(value As ObservableCollection(Of Remedida))
-            _remeasures = value
-            OnPropertyChanged()
+            _remedidas = value
+            OnPropertyChanged(NameOf(Remedidas))
         End Set
     End Property
     Public Sub New()
@@ -27,8 +27,8 @@ Public Class RemeasuresViewModel : Inherits ViewModelBase : Implements INotifyPr
 
     Private Async Sub LoadDataAsync()
         Try
-            Dim remeasuresList As IEnumerable(Of Remedida) = Await _dataService.GetAll()
-            Remeasures = New ObservableCollection(Of Remedida)(remeasuresList)
+            Dim listaRemedidas As IEnumerable(Of Remedida) = Await _dataService.GetAll()
+            Remedidas = New ObservableCollection(Of Remedida)(listaRemedidas)
         Catch ex As Exception
             MsgBox("Error loading remeasures: " & ex.Message, MsgBoxStyle.Critical, "Error")
         End Try

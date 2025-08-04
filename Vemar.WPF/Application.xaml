@@ -1,22 +1,45 @@
-﻿<Application x:Class="Application"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Vemar.WPF">
+﻿<Application
+    x:Class="Application"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Vemar.WPF">
     <Application.Resources>
 
+
+
         <ResourceDictionary>
+            <FontFamily x:Key="PrimaryFontFamily">Calibri</FontFamily>
+            <Style TargetType="Window">
+                <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+                <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource PrimaryFontFamily}" />
+                <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+                <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="FontFamily" Value="{StaticResource PrimaryFontFamily}" />
+                <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+                <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            </Style>
+            <Style TargetType="Control">
+                <Setter Property="FontFamily" Value="{StaticResource PrimaryFontFamily}" />
+                <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+                <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            </Style>
+
+            <DataTemplate DataType="{x:Type local:InicioViewModel}">
+                <local:InicioView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type local:RemedidasViewModel}">
+                <local:RemedidasView />
+            </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/Common.xaml"/>
-                <ResourceDictionary Source="Styles/NavigationBar.xaml"/>
+                <ResourceDictionary Source="Estilos/Common.xaml" />
+                <ResourceDictionary Source="Estilos/SideBar.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DataTemplate DataType="{x:Type local:HomeViewModel}">
-                <local:HomeView/>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type local:RemeasuresViewModel}">
-                <local:RemeasuresView/>
-            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -14,10 +14,10 @@ Public Class UpdateCurrentViewModelCommand : Implements ICommand
         If TypeOf parameter Is ViewType Then
             Dim vt As ViewType = CType(parameter, ViewType)
             Select Case vt
-                Case vt.Home
-                    _navigator.CurrentViewModel = New HomeViewModel
-                Case vt.Remeasures
-                    _navigator.CurrentViewModel = New RemeasuresViewModel
+                Case vt.Inicio
+                    _navigator.CurrentViewModel = New InicioViewModel
+                Case vt.Remedidas
+                    _navigator.CurrentViewModel = New RemedidasViewModel
             End Select
         End If
     End Sub
