@@ -18,7 +18,7 @@
             </StackPanel.Resources>
             <RadioButton
                 Grid.Column="0"
-                Command="{Binding UpdateViewModel}"
+                Command="{Binding UpdateCurrentViewModelCommand}"
                 CommandParameter="{x:Static local:ViewType.Inicio}"
                 IsChecked="True">
                 <StackPanel Orientation="Horizontal">
@@ -32,7 +32,7 @@
 
             <RadioButton
                 Grid.Column="1"
-                Command="{Binding UpdateViewModel}"
+                Command="{Binding UpdateCurrentViewModelCommand}"
                 CommandParameter="{x:Static local:ViewType.Remedidas}"
                 Content="Remedidas" />
             <RadioButton Grid.Column="2" Content="Proyectos" />

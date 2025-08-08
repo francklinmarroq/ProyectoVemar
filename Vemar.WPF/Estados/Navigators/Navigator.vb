@@ -13,7 +13,7 @@ Public Class Navigator : Inherits ObservableObject : Implements INavigator
         End Set
     End Property
 
-    Public ReadOnly Property UpdateViewModel As ICommand Implements INavigator.UpdateViewModel
+    Public ReadOnly Property UpdateCurrentViewModelCommand As ICommand Implements INavigator.UpdateCurrentViewModelCommand
         Get
             Return New UpdateCurrentViewModelCommand(Me)
         End Get
