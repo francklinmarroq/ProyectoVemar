@@ -3,6 +3,10 @@
 Public Class Navigator : Inherits ObservableObject : Implements INavigator
     Private _currentViewModel As ViewModelBase = New InicioViewModel()
 
+    Public Sub New(viewModelFactory As IVemarViewModelAbstractFactory)
+        UpdateCurrentViewModelCommand = New UpdateCurrentViewModelCommand(Me, viewModelFactory)
+    End Sub
+
     Public Property CurrentViewModel As ViewModelBase Implements INavigator.CurrentViewModel
         Get
             Return _currentViewModel
@@ -13,10 +17,7 @@ Public Class Navigator : Inherits ObservableObject : Implements INavigator
         End Set
     End Property
 
-    Public ReadOnly Property UpdateCurrentViewModelCommand As ICommand Implements INavigator.UpdateCurrentViewModelCommand
-        Get
-            Return New UpdateCurrentViewModelCommand(Me)
-        End Get
-    End Property
+    Public Property UpdateCurrentViewModelCommand As ICommand Implements INavigator.UpdateCurrentViewModelCommand
+
 
 End Class

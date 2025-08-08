@@ -2,10 +2,12 @@
 Imports System.Linq.Expressions
 
 Public Class UpdateCurrentViewModelCommand : Implements ICommand
-    Private _navigator As INavigator
+    Private ReadOnly _navigator As INavigator
+    Private ReadOnly _viewModelFactory As IVemarViewModelAbstractFactory
 
-    Public Sub New(navigator As INavigator)
+    Public Sub New(navigator As INavigator, viewModelFactory As IVemarViewModelAbstractFactory)
         _navigator = navigator
+        _viewModelFactory = viewModelFactory
     End Sub
 
     Public Event CanExecuteChanged As EventHandler Implements ICommand.CanExecuteChanged
@@ -13,12 +15,7 @@ Public Class UpdateCurrentViewModelCommand : Implements ICommand
     Public Sub Execute(parameter As Object) Implements ICommand.Execute
         If TypeOf parameter Is ViewType Then
             Dim vt As ViewType = CType(parameter, ViewType)
-            Select Case vt
-                Case vt.Inicio
-                    _navigator.CurrentViewModel = New InicioViewModel
-                Case vt.Remedidas
-                    _navigator.CurrentViewModel = New RemedidasViewModel
-            End Select
+            _navigator.CurrentViewModel = _viewModelFactory.CreateViewModel(vt)
         End If
     End Sub
 
