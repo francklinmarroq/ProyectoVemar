@@ -1,6 +1,7 @@
 ﻿Public Enum ViewType
     Inicio
     Remedidas
+    AgregarCliente
 End Enum
 
 Public Interface INavigator
