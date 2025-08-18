@@ -20,15 +20,36 @@
             Margin="10,2"
             FlowDirection="RightToLeft"
             Orientation="Horizontal">
-            <Border
-                Width="15"
-                Height="15"
-                Margin="10,0,0,0"
-                Background="#E82D53"
-                CornerRadius="10"
-                Cursor="Hand">
-                <Label Padding="4" Content="" />
-            </Border>
+            <Button Command="{Binding CerrarAppCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        RecognizesAccessKey="True" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Style>
+                </Button.Style>
+
+                <Border
+                    Width="15"
+                    Height="15"
+                    Background="#E82D53"
+                    CornerRadius="10"
+                    Cursor="Hand" />
+            </Button>
             <Border
                 Width="15"
                 Height="15"
