@@ -1,0 +1,63 @@
+﻿<Window
+    x:Class="ListadoClientesWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Vemar.WPF"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="ListadoClientesWindow"
+    Height="400"
+    ResizeMode="NoResize"
+    SizeToContent="Width"
+    mc:Ignorable="d">
+    <StackPanel Margin="1">
+        <ListView ItemsSource="{Binding Clientes}">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding Id}"
+                            Header="ID" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding Nombre}"
+                            Header="Nombre Cliente" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding Rtn}"
+                            Header="RTN" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding Telefono}"
+                            Header="Teléfono" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding Direccion}"
+                            Header="Dirección" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding EmailCorporativo}"
+                            Header="Email" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding Representante}"
+                            Header="Representante" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding DniRepresentante}"
+                            Header="DNI Representante" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding RtnRepresentante}"
+                            Header="Email Representante" />
+                        <GridViewColumn
+                            Width="auto"
+                            DisplayMemberBinding="{Binding EmailRepresentante}"
+                            Header="RTN Representante" />
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </StackPanel>
+</Window>
