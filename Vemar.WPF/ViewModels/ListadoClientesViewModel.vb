@@ -4,6 +4,7 @@ Imports Vemar.Domain
 
 Public Class ListadoClientesViewModel : Inherits ViewModelBase : Implements INotifyPropertyChanged
     Private ReadOnly _dataService As IDataService(Of Cliente)
+    Public ReadOnly Property EliminarClienteCommand As ICommand
     Public Property Clientes As ObservableCollection(Of Cliente)
 
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
@@ -11,7 +12,13 @@ Public Class ListadoClientesViewModel : Inherits ViewModelBase : Implements INot
     Public Sub New(dataService As IDataService(Of Cliente))
         _dataService = dataService
         CargarClientes()
+        EliminarClienteCommand = New RelayCommand(AddressOf EliminarCliente)
     End Sub
+
+    Private Sub EliminarCliente()
+        'MsgBox(cliente.ToString() & " ha sido eliminado.")
+    End Sub
+
     Public Async Sub CargarClientes()
         Try
             Dim clientesList = Await _dataService.GetAll()

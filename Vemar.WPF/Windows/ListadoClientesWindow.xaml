@@ -9,6 +9,7 @@
     Height="400"
     ResizeMode="NoResize"
     SizeToContent="Width"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <StackPanel Margin="1">
         <ListView ItemsSource="{Binding Clientes}">
