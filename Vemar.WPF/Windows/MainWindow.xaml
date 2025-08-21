@@ -24,6 +24,9 @@
                 <MenuItem Command="{Binding AbrirListadoClientesCommand}" Header="Listado de Clientes" />
                 <MenuItem Command="{Binding AbrirAgregarClienteCommand}" Header="Nuevo Cliente" />
             </MenuItem>
+            <MenuItem Header="Remedidas">
+                <MenuItem Command="{Binding AbrirDetalleRemedidaCommand}" Header="Nueva Remedida" />
+            </MenuItem>
 
         </Menu>
         <Frame

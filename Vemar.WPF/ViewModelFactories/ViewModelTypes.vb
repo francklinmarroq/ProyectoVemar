@@ -2,4 +2,5 @@
     MainViewModel
     DetalleClienteViewModel
     ListadoClientesViewModel
+    DetalleRemedidaViewModel
 End Enum

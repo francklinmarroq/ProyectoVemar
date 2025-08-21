@@ -1,5 +1,5 @@
 ﻿Public Class Remedida : Inherits DomainObject
-    Private _cliente As Cliente
+    Private _clienteId As Integer
     Private _representante As String
     Private _ubicacion As String
     Private _claveSure As String
@@ -19,12 +19,12 @@
         End Set
     End Property
 
-    Public Property Cliente As Cliente
+    Public Property ClienteId As Integer
         Get
-            Return _cliente
+            Return _clienteId
         End Get
-        Set(value As Cliente)
-            _cliente = value
+        Set(value As Integer)
+            _clienteId = value
         End Set
     End Property
 

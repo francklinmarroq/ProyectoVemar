@@ -1,10 +1,12 @@
 ﻿Public Class ViewModelAbstractFactory : Implements IViewModelAbstractFactory
     Private ReadOnly _detalleClienteViewModelFactory As IViewModelFactory(Of DetalleClienteViewModel)
     Private ReadOnly _listadoClientesViewModelFactory As IViewModelFactory(Of ListadoClientesViewModel)
+    Private ReadOnly _detalleRemedidaViewModelFactory As IViewModelFactory(Of DetalleRemedidaViewModel)
 
-    Public Sub New(detalleClienteFactory As IViewModelFactory(Of DetalleClienteViewModel), listadoClientesViewModelFactory As IViewModelFactory(Of ListadoClientesViewModel))
+    Public Sub New(detalleClienteFactory As IViewModelFactory(Of DetalleClienteViewModel), listadoClientesViewModelFactory As IViewModelFactory(Of ListadoClientesViewModel), detalleRemedidaViewModelFactory As IViewModelFactory(Of DetalleRemedidaViewModel))
         _detalleClienteViewModelFactory = detalleClienteFactory
         _listadoClientesViewModelFactory = listadoClientesViewModelFactory
+        _detalleRemedidaViewModelFactory = detalleRemedidaViewModelFactory
     End Sub
 
     Public Function CreateViewModel(vmType As ViewModelType) As ViewModelBase Implements IViewModelAbstractFactory.CreateViewModel
@@ -13,6 +15,8 @@
                 Return _detalleClienteViewModelFactory.CreateViewModel()
             Case vmType.ListadoClientesViewModel
                 Return _listadoClientesViewModelFactory.CreateViewModel()
+            Case vmType.DetalleRemedidaViewModel
+                Return _detalleRemedidaViewModelFactory.CreateViewModel()
             Case Else
                 Throw New ArgumentException("ViewModel type not supported.")
         End Select

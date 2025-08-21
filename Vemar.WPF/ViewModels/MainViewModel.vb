@@ -3,6 +3,7 @@
     Public ReadOnly Property ExitApplicationCommand As ICommand
     Public ReadOnly Property AbrirAgregarClienteCommand As ICommand
     Public ReadOnly Property AbrirListadoClientesCommand As ICommand
+    Public ReadOnly Property AbrirDetalleRemedidaCommand As ICommand
     Private _windowService As IWindowService
 
 
@@ -13,6 +14,11 @@
         ExitApplicationCommand = New RelayCommand(AddressOf ExitApplication)
         AbrirAgregarClienteCommand = New RelayCommand(AddressOf AbrirAgregarCliente)
         AbrirListadoClientesCommand = New RelayCommand(AddressOf AbrirListadoClientes)
+        AbrirDetalleRemedidaCommand = New RelayCommand(AddressOf AbrirDetalleRemedida)
+    End Sub
+
+    Private Sub AbrirDetalleRemedida(obj As Object)
+        _windowService.Show(WindowType.DetalleRemedidaWindow)
     End Sub
 
     Private Sub AbrirListadoClientes()
@@ -21,7 +27,7 @@
 
     Private Sub ExitApplication()
         ' Lógica para salir de la aplicación
-        Application.Current.Shutdown()
+        Application.Current.Shutdown() 'implementar un servicio para esto
     End Sub
 
     Private Sub AbrirAgregarCliente()

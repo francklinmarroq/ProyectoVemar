@@ -162,9 +162,9 @@ Public Class DetalleClienteViewModel : Inherits ViewModelBase : Implements INoti
             .EmailRepresentante = EmailRepresentante
         }
             Await _dataService.Add(nuevoCliente)
-            MessageBox.Show("Cliente guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information)
+            MessageBox.Show("Cliente guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information) 'implementar un servicio para esto
         Catch ex As Exception
-            MessageBox.Show($"Error al guardar el cliente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            MessageBox.Show($"Error al guardar el cliente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error) 'implementar un servicio para esto
         End Try
 
 

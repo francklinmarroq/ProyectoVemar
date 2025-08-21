@@ -26,7 +26,7 @@ Public Class ListadoClientesViewModel : Inherits ViewModelBase : Implements INot
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Clientes)))
         Catch ex As Exception
             ' Manejo de errores, por ejemplo, mostrar un mensaje al usuario
-            MsgBox("Error al cargar los clientes: " & ex.Message & Clientes.ToString())
+            MsgBox("Error al cargar los clientes: " & ex.Message & Clientes.ToString()) 'implementar un servicio para esto
         End Try
     End Sub
 End Class

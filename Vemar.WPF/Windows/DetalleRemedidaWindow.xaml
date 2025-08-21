@@ -1,0 +1,244 @@
+﻿<Window
+    x:Class="DetalleRemedidaWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Vemar.WPF"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="500"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <StackPanel Margin="10">
+        <!--#region Datos del cliente-->
+        <GroupBox>
+            <GroupBox.Header>
+                <TextBlock Foreground="Gray" Text="Datos del Cliente" />
+            </GroupBox.Header>
+            <StackPanel>
+                <!--#region Campo RTN-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="0.75*" />
+                        <ColumnDefinition Width="0.25*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="RTN" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding RtnCliente, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="2"
+                        Width="20"
+                        Height="20"
+                        Command="{Binding BuscarClienteCommand}"
+                        ToolTip="Buscar cliente por RTN">
+                        <iconPacks:PackIconPhosphorIcons
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Cursor="Hand"
+                            Foreground="Gray"
+                            Kind="MagnifyingGlass" />
+                    </Button>
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo Nombre-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Nombre" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsEnabled="False"
+                        Text="{Binding NombreCliente, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+                <!--#region Campo Representante-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Representante" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding Representante, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+            </StackPanel>
+        </GroupBox>
+        <!--#endregion-->
+
+
+        <!--#region de la Remedida-->
+        <GroupBox>
+            <GroupBox.Header>
+                <TextBlock Foreground="Gray" Text="Datos de Remedida" />
+            </GroupBox.Header>
+            <StackPanel>
+                <!--#region Campo Ubicacion-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Ubicación" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding Ubicacion, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo ClaveSure-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Clave Sure" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding ClaveSure, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo Matricula-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Matricula" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo Cam-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Cam" />
+                    <TextBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding Cam, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo Objeto-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Objeto" />
+                    <TextBox
+                        Grid.Column="1"
+                        Height="60"
+                        VerticalAlignment="Center"
+                        AcceptsReturn="True"
+                        MaxLength="255"
+                        Text="{Binding Objeto, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Visible" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo Fecha-->
+                <Grid Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Fecha" />
+                    <DatePicker
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="{Binding Fecha, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Campo ExpedienteEntregado-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Content="Exp. Entregado" />
+                    <CheckBox
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding ExpedienteEntregado, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <!--#endregion-->
+
+            </StackPanel>
+        </GroupBox>
+        <!--#endregion-->
+
+        <!--#region Acciones-->
+        <Grid Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                Grid.Column="0"
+                Margin="0,0,5,0"
+                Command="{Binding GuardarRemedidaCommand}"
+                Content="Guardar" />
+            <Button
+                Grid.Column="1"
+                Margin="5,0,0,0"
+                Command="{Binding CancelarGuardarRemedidaCommand}"
+                Content="Cancelar" />
+        </Grid>
+        <!--#endregion-->
+
+    </StackPanel>
+</Window>
