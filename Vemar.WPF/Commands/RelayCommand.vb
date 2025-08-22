@@ -1,5 +1,4 @@
-﻿Public Class RelayCommand
-    Implements ICommand
+﻿Public Class RelayCommand : Implements ICommand
 
     Private ReadOnly _execute As Action(Of Object)
     Private ReadOnly _canExecute As Func(Of Object, Boolean)

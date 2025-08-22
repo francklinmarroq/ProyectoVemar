@@ -22,15 +22,16 @@ Module DIContenedor
         services.AddSingleton(Of IWindowFactory(Of DetalleClienteWindow), DetalleClienteWindowFactory)
         services.AddSingleton(Of IWindowFactory(Of ListadoClientesWindow), ListadoClientesWindowFactory)()
         services.AddSingleton(Of IWindowFactory(Of DetalleRemedidaWindow), DetalleRemedidaWindowFactory)()
+        services.AddSingleton(Of IWindowFactory(Of ListadoRemedidasWindow), ListadoRemedidasWindowFactory)()
 
         services.AddSingleton(Of IViewModelAbstractFactory, ViewModelAbstractFactory)()
         services.AddSingleton(Of IViewModelFactory(Of DetalleClienteViewModel), DetalleClienteViewModelFactory)()
         services.AddSingleton(Of IViewModelFactory(Of ListadoClientesViewModel), ListadoClientesViewModelFactory)()
         services.AddSingleton(Of IViewModelFactory(Of DetalleRemedidaViewModel), DetalleRemedidaViewModelFactory)()
+        services.AddSingleton(Of IViewModelFactory(Of ListadoRemedidasViewModel), ListadoRemedidasViewModelFactory)()
 
         services.AddSingleton(Of VemarDbContextFactory)()
 
-        'services.AddSingleton(Of ClienteDataService)()
         services.AddSingleton(Of IDataService(Of Cliente), ClienteDataService)()
         services.AddSingleton(Of IDataService(Of Remedida), GenericDataService(Of Remedida))()
 

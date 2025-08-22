@@ -4,6 +4,7 @@
     Public ReadOnly Property AbrirAgregarClienteCommand As ICommand
     Public ReadOnly Property AbrirListadoClientesCommand As ICommand
     Public ReadOnly Property AbrirDetalleRemedidaCommand As ICommand
+    Public ReadOnly Property AbrirListadoRemedidasCommand As ICommand
     Private _windowService As IWindowService
 
 
@@ -15,6 +16,11 @@
         AbrirAgregarClienteCommand = New RelayCommand(AddressOf AbrirAgregarCliente)
         AbrirListadoClientesCommand = New RelayCommand(AddressOf AbrirListadoClientes)
         AbrirDetalleRemedidaCommand = New RelayCommand(AddressOf AbrirDetalleRemedida)
+        AbrirListadoRemedidasCommand = New RelayCommand(AddressOf AbrirListadoRemedidas)
+    End Sub
+
+    Private Sub AbrirListadoRemedidas(obj As Object)
+        _windowService.Show(WindowType.ListadoRemedidasWindow)
     End Sub
 
     Private Sub AbrirDetalleRemedida(obj As Object)

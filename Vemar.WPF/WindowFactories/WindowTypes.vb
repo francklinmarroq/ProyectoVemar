@@ -2,4 +2,5 @@
     DetalleClienteWindow
     ListadoClientesWindow
     DetalleRemedidaWindow
+    ListadoRemedidasWindow
 End Enum
