@@ -4,4 +4,5 @@
     ListadoClientesViewModel
     DetalleRemedidaViewModel
     ListadoRemedidasViewModel
+    ConfigViewModel
 End Enum

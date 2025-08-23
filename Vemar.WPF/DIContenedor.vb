@@ -29,12 +29,15 @@ Module DIContenedor
         services.AddSingleton(Of IViewModelFactory(Of ListadoClientesViewModel), ListadoClientesViewModelFactory)()
         services.AddSingleton(Of IViewModelFactory(Of DetalleRemedidaViewModel), DetalleRemedidaViewModelFactory)()
         services.AddSingleton(Of IViewModelFactory(Of ListadoRemedidasViewModel), ListadoRemedidasViewModelFactory)()
+        services.AddSingleton(Of IViewModelFactory(Of ConfigViewModel), ConfigViewModelFactory)()
 
         services.AddSingleton(Of VemarDbContextFactory)()
 
         services.AddSingleton(Of IDataService(Of Cliente), ClienteDataService)()
         services.AddSingleton(Of IDataService(Of Remedida), GenericDataService(Of Remedida))()
 
+        services.AddSingleton(Of IDbDiscoveryService, DbDiscoveryService)()
+        services.AddSingleton(Of IConfigurationService, ConfigurationService)()
 
         services.AddSingleton(Of MainViewModel)()
         services.AddSingleton(Of MainWindow)(Function(s) New MainWindow(s.GetRequiredService(Of MainViewModel)()))

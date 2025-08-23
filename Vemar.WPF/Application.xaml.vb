@@ -7,7 +7,6 @@ Class Application
         DIContenedor.ConfigureServices()
 
 
-
         ' Crear y mostrar la ventana principal
         ' El main viewmodel se inyecta automáticamente en el constructor de MainWindow
         Dim mainWindow As MainWindow = DIContenedor.Services.GetRequiredService(Of MainWindow)()
