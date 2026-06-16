@@ -1,0 +1,177 @@
+﻿<Window x:Class="PagosContratoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="Pagos del Contrato" WindowStyle="ToolWindow" ResizeMode="CanResize"
+        Height="500" Width="700" WindowStartupLocation="CenterOwner"
+        Background="#F8FAFC">
+    <Window.Resources>
+        <Style x:Key="DgHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+            <Setter Property="BorderBrush" Value="#2563EB"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridColumnHeader">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DgCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#EFF6FF"/>
+                    <Setter Property="Foreground" Value="#1E40AF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="DgRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridRow">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="#F0F4F8" BorderThickness="0,0,0,1">
+                            <SelectiveScrollingGrid>
+                                <SelectiveScrollingGrid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </SelectiveScrollingGrid.ColumnDefinitions>
+                                <DataGridCellsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" Grid.Column="1"/>
+                            </SelectiveScrollingGrid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F9FF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Border Width="36" Height="36" CornerRadius="8" Background="#EFF6FF" VerticalAlignment="Center">
+                    <iconPacks:PackIconPhosphorIcons Kind="CurrencyDollar" Width="18" Height="18" Foreground="#3B82F6"/>
+                </Border>
+                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Pagos del Contrato" FontSize="16" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="{Binding TituloContrato}" FontSize="11" Foreground="#64748B"/>
+                </StackPanel>
+            </StackPanel>
+            <Button Grid.Column="1" Command="{Binding AgregarCommand}" Cursor="Hand">
+                <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="bg" Background="#3B82F6" CornerRadius="8" Padding="14,8"><StackPanel Orientation="Horizontal"><iconPacks:PackIconPhosphorIcons Kind="Plus" Width="14" Height="14" Foreground="White" VerticalAlignment="Center"/><TextBlock Text="Agregar Pago" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="6,0,0,0" VerticalAlignment="Center"/></StackPanel></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="bg" Property="Background" Value="#2563EB"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+            </Button>
+        </Grid>
+
+        <!-- Resumen financiero -->
+        <Border Grid.Row="2" CornerRadius="10" Background="White" Padding="16,12">
+            <Border.Effect><DropShadowEffect BlurRadius="12" ShadowDepth="0" Opacity="0.06" Color="#000"/></Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Valor del Contrato -->
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="VALOR DEL CONTRATO" FontSize="10" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ValorContrato, StringFormat='{}L {0:N2}'}"
+                               FontSize="17" FontWeight="Bold" Foreground="#1E40AF" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <Rectangle Grid.Column="1" Fill="#E2E8F0"/>
+
+                <!-- Total Pagado -->
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="TOTAL PAGADO" FontSize="10" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding TotalPagado, StringFormat='{}L {0:N2}'}"
+                               FontSize="17" FontWeight="Bold" Foreground="#16A34A" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    <Border Background="#DCFCE7" CornerRadius="10" Padding="8,2" HorizontalAlignment="Center" Margin="0,5,0,0">
+                        <TextBlock Text="{Binding PorcentajePagado, StringFormat='{}{0:N1}% pagado'}"
+                                   FontSize="10" Foreground="#16A34A" FontWeight="SemiBold"/>
+                    </Border>
+                </StackPanel>
+
+                <Rectangle Grid.Column="3" Fill="#E2E8F0"/>
+
+                <!-- Pendiente -->
+                <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                    <TextBlock Text="PENDIENTE" FontSize="10" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding Pendiente, StringFormat='{}L {0:N2}'}"
+                               Foreground="{Binding PendienteColor}"
+                               FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    <Border Background="{Binding PendienteBgColor}" CornerRadius="10" Padding="8,2" HorizontalAlignment="Center" Margin="0,5,0,0">
+                        <TextBlock Text="{Binding PendienteEtiqueta}"
+                                   Foreground="{Binding PendienteColor}"
+                                   FontSize="10" FontWeight="SemiBold"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Table -->
+        <Border Grid.Row="4" CornerRadius="12" Background="White" ClipToBounds="True">
+            <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.06" Color="#000"/></Border.Effect>
+            <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                      GridLinesVisibility="None" HeadersVisibility="Column" BorderThickness="0"
+                      SelectionMode="Single" RowStyle="{StaticResource DgRowStyle}" CellStyle="{StaticResource DgCellStyle}" ColumnHeaderStyle="{StaticResource DgHeaderStyle}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="55"/>
+                    <DataGridTextColumn Header="VALOR" Binding="{Binding Valor, StringFormat='{}L {0:N2}'}" Width="130"/>
+                    <DataGridTextColumn Header="DESCRIPCION" Binding="{Binding Descripcion}" Width="*"/>
+                    <DataGridTemplateColumn Header="ACCIONES" Width="180">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Recibo" Command="{Binding DataContext.ReciboPdfCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Margin="0,0,6,0" Padding="10,4" FontSize="12" Cursor="Hand" Background="#FEF3C7" Foreground="#B45309" BorderThickness="0">
+                                        <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FDE68A"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+                                    </Button>
+                                    <Button Content="Eliminar" Command="{Binding DataContext.EliminarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="10,4" FontSize="12" Cursor="Hand" Background="#FEF2F2" Foreground="#EF4444" BorderThickness="0">
+                                        <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FEE2E2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Window>

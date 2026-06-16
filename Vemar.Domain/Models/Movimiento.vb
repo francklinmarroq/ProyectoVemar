@@ -2,6 +2,7 @@
     Private _remedida As Remedida
     Private _tipoMovimiento As TipoMovimiento
     Private _fecha As Date
+    Private _descripcion As String
 
     Public Property Remedida As Remedida
         Get
@@ -27,6 +28,15 @@
         End Get
         Set(value As Date)
             _fecha = value
+        End Set
+    End Property
+
+    Public Property Descripcion As String
+        Get
+            Return _descripcion
+        End Get
+        Set(value As String)
+            _descripcion = value
         End Set
     End Property
 

@@ -184,3 +184,4 @@ Public Class DetalleClienteViewModel : Inherits ViewModelBase : Implements INoti
     End Function
 
 End Class
+

@@ -6,62 +6,339 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Vemar.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="800"
-    Height="450"
+    Width="1200"
+    Height="700"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
 
+    <Window.Resources>
+        <!-- ===== DataTemplates: combined ViewModels → Views ===== -->
+        <DataTemplate DataType="{x:Type local:DashboardViewModel}">
+            <local:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:ClientesViewModel}">
+            <local:ClientesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:RemedidasViewModel}">
+            <local:RemedidasView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:ProyectosViewModel}">
+            <local:ProyectosView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:ColaboradoresViewModel}">
+            <local:ColaboradoresView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:ContratistasViewModel}">
+            <local:ContratistasView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:TramitesViewModel}">
+            <local:TramitesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:AsignacionesViewModel}">
+            <local:AsignacionesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:AvancesViewModel}">
+            <local:AvancesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:ContratosViewModel}">
+            <local:ContratosView />
+        </DataTemplate>
 
+        <DataTemplate DataType="{x:Type local:MovimientosViewModel}">
+            <local:MovimientosView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:ZonificacionesViewModel}">
+            <local:ZonificacionesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:CategoriaProyectosViewModel}">
+            <local:CategoriaProyectosView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:TiposTramiteViewModel}">
+            <local:TiposTramiteView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:EstadosTramiteViewModel}">
+            <local:EstadosTramiteView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:TiposMovimientoViewModel}">
+            <local:TiposMovimientoView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:UsuariosViewModel}">
+            <local:UsuariosView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:CajaChicaViewModel}">
+            <local:CajaChicaView />
+        </DataTemplate>
+
+        <!-- ===== Sidebar button style ===== -->
+        <Style x:Key="SidebarBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="6" Margin="6,1" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#2D3748"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#1A202C"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SidebarGroup" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#4A5568"/>
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="16,12,12,2"/>
+        </Style>
+    </Window.Resources>
 
     <DockPanel>
+
+        <!-- ===== BARRA DE MENÚ SUPERIOR (ventanas flotantes) ===== -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Archivo">
                 <MenuItem Header="Reportes">
-                    <MenuItem Header="Nuevo Reporte" />
+                    <MenuItem Header="Nuevo Reporte"/>
                 </MenuItem>
-
-                <MenuItem Command="{Binding ExitApplicationCommand}" Header="Salir" />
+                <Separator/>
+                <MenuItem Command="{Binding ExitApplicationCommand}" Header="Salir">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconPhosphorIcons Foreground="#E53E3E" Kind="SignOut"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="Clientes">
                 <MenuItem Command="{Binding AbrirAgregarClienteCommand}" Header="Nuevo Cliente">
-                    <MenuItem.Icon>
-                        <iconPacks:PackIconPhosphorIcons
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="Green"
-                            Kind="UserPlus" />
-                    </MenuItem.Icon>
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="UserPlus"/></MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Command="{Binding AbrirListadoClientesCommand}" Header="Listado de Clientes">
-                    <MenuItem.Icon>
-                        <iconPacks:PackIconPhosphorIcons
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="CornflowerBlue"
-                            Kind="UserList" />
-                    </MenuItem.Icon>
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="UserList"/></MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
+
             <MenuItem Header="Remedidas">
                 <MenuItem Command="{Binding AbrirDetalleRemedidaCommand}" Header="Nueva Remedida">
-                    <MenuItem.Icon>
-                        <iconPacks:PackIconPhosphorIcons
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="Green"
-                            Kind="Ruler" />
-                    </MenuItem.Icon>
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="Ruler"/></MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoRemedidasCommand}" Header="Listado Remedidas" />
+                <MenuItem Command="{Binding AbrirListadoRemedidasCommand}" Header="Listado de Remedidas">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="ListBullets"/></MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
 
-        </Menu>
-        <Frame
-            x:Name="MainFrame"
-            d:IsHidden="True"
-            NavigationUIVisibility="Automatic" />
+            <MenuItem Header="Proyectos">
+                <MenuItem Command="{Binding AbrirDetalleProyectoCommand}" Header="Nuevo Proyecto">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="FolderPlus"/></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="{Binding AbrirListadoProyectosCommand}" Header="Listado de Proyectos">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="Buildings"/></MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
 
+            <MenuItem Header="Colaboradores">
+                <MenuItem Command="{Binding AbrirDetalleColaboradorCommand}" Header="Nuevo Colaborador">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="UserPlus"/></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="{Binding AbrirListadoColaboradoresCommand}" Header="Listado de Colaboradores">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="Users"/></MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+
+            <MenuItem Header="Contratistas">
+                <MenuItem Command="{Binding AbrirDetalleContratistaCommand}" Header="Nuevo Contratista">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="HardHat"/></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="{Binding AbrirListadoContratistasCommand}" Header="Listado de Contratistas">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="Wrench"/></MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+
+            <MenuItem Header="Trámites">
+                <MenuItem Command="{Binding AbrirDetalleTramiteCommand}" Header="Nuevo Trámite">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="FilePlus"/></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="{Binding AbrirListadoTramitesCommand}" Header="Listado de Trámites">
+                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="ClipboardText"/></MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <!-- ===== ÁREA PRINCIPAL ===== -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="190"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ===== SIDEBAR ===== -->
+            <Border Grid.Column="0" Background="#1A202C">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,4,0,12">
+
+                        <!-- Logo / Dashboard -->
+                        <Button Command="{Binding NavegarDashboardCommand}" Style="{StaticResource SidebarBtn}" Padding="14,12" Margin="6,4,6,8">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="HouseSimple" Foreground="#3B82F6" Width="18" Height="18" VerticalAlignment="Center"/>
+                                <TextBlock Text="Dashboard" Foreground="White" FontSize="14" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- OPERACIONES -->
+                        <TextBlock Style="{StaticResource SidebarGroup}" Text="OPERACIONES"/>
+
+                        <Button Command="{Binding NavegarClientesCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Users" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Clientes" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarRemedidasCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Ruler" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Remedidas" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarProyectosCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Buildings" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Proyectos" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarTramitesCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="ClipboardText" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Trámites" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarAsignacionesCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="LinkSimple" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Asignaciones" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarAvancesCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="TrendUp" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Avances" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- PERSONAL -->
+                        <TextBlock Style="{StaticResource SidebarGroup}" Text="PERSONAL"/>
+
+                        <Button Command="{Binding NavegarColaboradoresCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="IdentificationCard" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Colaboradores" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarContratistasCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="HardHat" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Contratistas" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarUsuariosCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="UserCircle" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Usuarios" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- FINANZAS -->
+                        <TextBlock Style="{StaticResource SidebarGroup}" Text="FINANZAS"/>
+
+                        <Button Command="{Binding NavegarContratosCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="FileText" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Contratos" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+
+                        <Button Command="{Binding NavegarMovimientosCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="ArrowsLeftRight" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Movimientos" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarCajaChicaCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Wallet" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Caja Chica" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+
+                        <!-- CATÁLOGOS -->
+                        <TextBlock Style="{StaticResource SidebarGroup}" Text="CATÁLOGOS"/>
+
+                        <Button Command="{Binding NavegarZonificacionesCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="MapPin" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Zonificaciones" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarCategoriaProyectosCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Tag" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Categorías Proyecto" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarTiposTramiteCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="ListBullets" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Tipos Trámite" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarEstadosTramiteCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Flag" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Estados Trámite" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarTiposMovimientoCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="Swap" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Tipos Movimiento" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- ===== PANEL DERECHO - CONTENIDO DINÁMICO ===== -->
+            <Border Grid.Column="1" Background="#F1F5F9">
+                <ContentControl Content="{Binding CurrentView}"/>
+            </Border>
+
+        </Grid>
     </DockPanel>
 </Window>
+

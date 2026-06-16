@@ -10,6 +10,7 @@ namespace Vemar.EF
 {
     public class VemarDbContext : DbContext
     {
+        DbSet<CajaChica> CajasChicas { get; set; }
         DbSet<Asignacion> Asignaciones { get; set; }
         DbSet<Avance> Avances { get; set; }
         DbSet<CategoriaProyecto> CategoriasProyectos { get; set; }
@@ -19,6 +20,7 @@ namespace Vemar.EF
         DbSet<Contratista> Contratistas { get; set; }
         DbSet<Contrato> Contratos { get; set; }
         DbSet<EstadoTramite> EstadosTramites { get; set; }
+        DbSet<GastoProyecto> GastosProyectos { get; set; }
         DbSet<GastoRemedida> GastosRemedidas { get; set; }
         DbSet<Movimiento> Movimientos { get; set; }
         DbSet<PagoContrato> PagosContratos { get; set; }

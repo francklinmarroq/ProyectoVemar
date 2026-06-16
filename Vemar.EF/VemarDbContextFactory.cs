@@ -17,10 +17,21 @@ namespace Vemar.EF
         public VemarDbContext CreateDbContext(string[] args = null)
         {
             var options = new DbContextOptionsBuilder<VemarDbContext>()
-                .UseSqlServer("Server=DESKTOPFRANCKLI\\SQLEXPRESS;Database=Vemar;Trusted_Connection=True;TrustServerCertificate=True;")
+                .UseSqlServer(ConnectionConfig.ConnectionString)
                 .Options;
 
             return new VemarDbContext(options);
+        }
+
+        /// <summary>
+        /// Aplica todas las migraciones pendientes. Si la BD no existe la crea.
+        /// Llamar al inicio de la aplicación para garantizar que el esquema esté actualizado.
+        /// </summary>
+        public static async Task ApplyMigrationsAsync()
+        {
+            var factory = new VemarDbContextFactory();
+            using var ctx = factory.CreateDbContext();
+            await ctx.Database.MigrateAsync();
         }
     }
 }

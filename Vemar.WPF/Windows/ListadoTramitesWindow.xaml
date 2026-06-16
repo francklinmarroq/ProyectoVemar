@@ -1,0 +1,21 @@
+<Window
+    x:Class="ListadoTramitesWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="700"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid Margin="10">
+        <ListView ItemsSource="{Binding Tramites}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="50" DisplayMemberBinding="{Binding Id}" Header="Id" />
+                    <GridViewColumn Width="400" DisplayMemberBinding="{Binding Descripcion}" Header="Descripción" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

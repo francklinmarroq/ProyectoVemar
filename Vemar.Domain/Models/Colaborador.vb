@@ -3,6 +3,7 @@
     Private _nombre As String
     Private _telefono As String
     Private _fechaNacimiento As Date
+    Private _cargo As String
     Private _domicilio As String
     Private _email As String
 
@@ -40,6 +41,15 @@
         End Get
         Set(value As Date)
             _fechaNacimiento = value
+        End Set
+    End Property
+
+    Public Property Cargo As String
+        Get
+            Return _cargo
+        End Get
+        Set(value As String)
+            _cargo = value
         End Set
     End Property
 

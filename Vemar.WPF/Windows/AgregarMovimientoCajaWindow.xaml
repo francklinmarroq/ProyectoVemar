@@ -1,0 +1,172 @@
+<Window x:Class="AgregarMovimientoCajaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="Nuevo Movimiento de Caja Chica"
+        Width="520" SizeToContent="Height"
+        WindowStyle="ToolWindow" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="#F8FAFC">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style x:Key="Fld" TargetType="TextBox">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+        <Style x:Key="Cmb" TargetType="ComboBox">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style x:Key="BtnPri" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2563EB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="BtnSec" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#F3F4F6"/></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Margin="20" Background="White" CornerRadius="12" Padding="24,20">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.06" Color="#000"/>
+        </Border.Effect>
+        <StackPanel>
+
+            <!-- Título -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                <Border Width="38" Height="38" CornerRadius="9" Background="#EFF6FF">
+                    <iconPacks:PackIconPhosphorIcons Kind="CurrencyDollar" Width="20" Height="20" Foreground="#3B82F6"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="Nuevo Movimiento" FontSize="16" FontWeight="Bold" Foreground="#0F172A"
+                           Margin="12,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Tipo de Operación -->
+            <TextBlock Text="TIPO DE OPERACIÓN" Style="{StaticResource Lbl}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <RadioButton x:Name="RbEntrada" Content="Entrada" GroupName="TipoOp"
+                             Margin="0,0,24,0" FontSize="13" Foreground="#16A34A"
+                             IsChecked="True"
+                             Checked="RadioEntrada_Checked"/>
+                <RadioButton x:Name="RbSalida" Content="Salida" GroupName="TipoOp"
+                             FontSize="13" Foreground="#DC2626"
+                             Checked="RadioSalida_Checked"/>
+            </StackPanel>
+
+            <!-- Fecha y Monto -->
+            <UniformGrid Columns="2" Margin="0,0,0,12">
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="FECHA" Style="{StaticResource Lbl}"/>
+                    <DatePicker SelectedDate="{Binding Fecha}" Height="36" FontSize="13"
+                                BorderBrush="#E2E8F0" BorderThickness="1"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="MONTO (L)" Style="{StaticResource Lbl}"/>
+                    <TextBox Text="{Binding Monto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Fld}"/>
+                </StackPanel>
+            </UniformGrid>
+
+            <!-- Concepto -->
+            <StackPanel Margin="0,0,0,12">
+                <TextBlock Text="CONCEPTO" Style="{StaticResource Lbl}"/>
+                <TextBox Text="{Binding Concepto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Fld}"/>
+            </StackPanel>
+
+            <!-- Vínculo -->
+            <TextBlock Text="VINCULAR A (OPCIONAL)" Style="{StaticResource Lbl}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <RadioButton x:Name="RbVinculoNinguno" Content="Ninguno" GroupName="VinculoGrp"
+                             Margin="0,0,16,0" FontSize="12" IsChecked="True"
+                             Checked="RadioVinculoNinguno_Checked"/>
+                <RadioButton x:Name="RbVinculoRemedida" Content="Remedida" GroupName="VinculoGrp"
+                             Margin="0,0,16,0" FontSize="12"
+                             Checked="RadioVinculoRemedida_Checked"/>
+                <RadioButton x:Name="RbVinculoProyecto" Content="Proyecto" GroupName="VinculoGrp"
+                             FontSize="12"
+                             Checked="RadioVinculoProyecto_Checked"/>
+            </StackPanel>
+
+            <!-- ComboBox Remedidas -->
+            <StackPanel Margin="0,0,0,12"
+                        Visibility="{Binding ShowRemedidas, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="REMEDIDA" Style="{StaticResource Lbl}"/>
+                <ComboBox ItemsSource="{Binding Remedidas}"
+                          SelectedItem="{Binding RemedidaSeleccionada}"
+                          Style="{StaticResource Cmb}"
+                          DisplayMemberPath="ClaveSure"/>
+            </StackPanel>
+
+            <!-- ComboBox Proyectos -->
+            <StackPanel Margin="0,0,0,16"
+                        Visibility="{Binding ShowProyectos, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="PROYECTO" Style="{StaticResource Lbl}"/>
+                <ComboBox ItemsSource="{Binding Proyectos}"
+                          SelectedItem="{Binding ProyectoSeleccionado}"
+                          Style="{StaticResource Cmb}"
+                          DisplayMemberPath="Nombre"/>
+            </StackPanel>
+
+            <!-- Botones -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                <Button Name="BtnCancelar" Content="Cancelar" Style="{StaticResource BtnSec}" Margin="0,0,8,0"/>
+                <Button Content="Guardar" Command="{Binding GuardarCommand}" Style="{StaticResource BtnPri}"/>
+            </StackPanel>
+
+        </StackPanel>
+    </Border>
+</Window>

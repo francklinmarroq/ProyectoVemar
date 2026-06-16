@@ -2,7 +2,7 @@
     Private _colaborador As Colaborador
     Private _proyecto As Proyecto
     Private _fechaAsignacion As New DateTime
-    Private _fechaFinalizacion As New DateTime
+    Private _fechaFinalizacion As DateTime? = Nothing
     Private _observaciones As String
     Private _cliente As Cliente
 
@@ -33,11 +33,11 @@
         End Set
     End Property
 
-    Public Property FechaFinalizacion As DateTime
+    Public Property FechaFinalizacion As DateTime?
         Get
             Return _fechaFinalizacion
         End Get
-        Set(value As DateTime)
+        Set(value As DateTime?)
             _fechaFinalizacion = value
         End Set
     End Property

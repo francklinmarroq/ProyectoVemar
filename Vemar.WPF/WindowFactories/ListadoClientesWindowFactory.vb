@@ -1,12 +1,10 @@
-﻿Public Class ListadoClientesWindowFactory : Implements IWindowFactory(Of ListadoClientesWindow)
-    Private ReadOnly _viewModelAbstractFactory As IViewModelAbstractFactory
-
-    Public Sub New(viewModelAbstractFactory As IViewModelAbstractFactory)
-        _viewModelAbstractFactory = viewModelAbstractFactory
+﻿Imports Microsoft.Extensions.DependencyInjection
+Public Class ListadoClientesWindowFactory : Implements IWindowFactory(Of ListadoClientesWindow)
+    Private ReadOnly _sp As IServiceProvider
+    Public Sub New(sp As IServiceProvider)
+        _sp = sp
     End Sub
-
     Public Function CreateWindow() As ListadoClientesWindow Implements IWindowFactory(Of ListadoClientesWindow).CreateWindow
-        Dim window As New ListadoClientesWindow With {.DataContext = _viewModelAbstractFactory.CreateViewModel(ViewModelType.ListadoClientesViewModel)}
-        Return window
+        Return New ListadoClientesWindow With {.DataContext = _sp.GetRequiredService(Of ListadoClientesViewModel)()}
     End Function
 End Class

@@ -2,6 +2,7 @@
     Private _contratista As Contratista
     Private _valor As Decimal
     Private _proyecto As Proyecto
+    Private _descripcion As String
 
     Public Property Contratista As Contratista
         Get
@@ -27,6 +28,15 @@
         End Get
         Set(value As Proyecto)
             _proyecto = value
+        End Set
+    End Property
+
+    Public Property Descripcion As String
+        Get
+            Return _descripcion
+        End Get
+        Set(value As String)
+            _descripcion = value
         End Set
     End Property
 

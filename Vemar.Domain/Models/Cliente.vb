@@ -6,6 +6,7 @@
     Private _dniRepresentante As String
     Private _rtnRepresentante As String
     Private _telefono As String
+    Private _telefonoRepresentante As String
     Private _emailRepresentante As String
     Private _emailCorporativo As String
 
@@ -69,6 +70,15 @@
         End Get
         Set(value As String)
             _telefono = value
+        End Set
+    End Property
+
+    Public Property TelefonoRepresentante As String
+        Get
+            Return _telefonoRepresentante
+        End Get
+        Set(value As String)
+            _telefonoRepresentante = value
         End Set
     End Property
 

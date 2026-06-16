@@ -248,3 +248,4 @@ Public Class DetalleRemedidaViewModel : Inherits ViewModelBase : Implements INot
         End Try
     End Sub
 End Class
+

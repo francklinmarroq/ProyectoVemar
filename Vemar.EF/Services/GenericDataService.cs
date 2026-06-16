@@ -17,7 +17,7 @@ namespace Vemar.EF.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task<T> Add(T entity)
+        public virtual async Task<T> Add(T entity)
         {
             using (VemarDbContext context = _contextFactory.CreateDbContext())
             {
@@ -48,7 +48,7 @@ namespace Vemar.EF.Services
             }
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public virtual async Task<IEnumerable<T>> GetAll()
         {
             using (VemarDbContext context = _contextFactory.CreateDbContext())
             {
@@ -59,7 +59,7 @@ namespace Vemar.EF.Services
         }
 
 
-        public async Task<T> Update(int id, T entity)
+        public virtual async Task<T> Update(int id, T entity)
         {
             using (VemarDbContext context = _contextFactory.CreateDbContext())
             {
