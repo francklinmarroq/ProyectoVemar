@@ -80,7 +80,12 @@
                 <Border Width="4" CornerRadius="2" Background="#3B82F6" Margin="0,0,10,0"/>
                 <TextBlock Text="{Binding TituloFormulario}" FontSize="16" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
             </StackPanel>
+            <!-- Fila 1: Propietario, Representante, Ubicación, Clave SURE -->
             <UniformGrid Columns="4" Margin="0,0,0,12">
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Propietario" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Propietario, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
+                </StackPanel>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Representante" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Representante, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
@@ -89,16 +94,17 @@
                     <TextBlock Text="Ubicación" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Ubicacion, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
-                <StackPanel Margin="0,0,8,0">
+                <StackPanel>
                     <TextBlock Text="Clave SURE" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding ClaveSure, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" b:DniTextBoxBehavior.IsEnabled="True"/>
                 </StackPanel>
-                <StackPanel>
+            </UniformGrid>
+            <!-- Fila 2: Matrícula, Precio, CAM, Objeto -->
+            <UniformGrid Columns="4" Margin="0,0,0,12">
+                <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Matrícula" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" MaxLength="6"/>
                 </StackPanel>
-            </UniformGrid>
-            <UniformGrid Columns="4" Margin="0,0,0,12">
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Precio" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Precio, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
@@ -107,10 +113,13 @@
                     <TextBlock Text="CAM" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Cam, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
-                <StackPanel Margin="0,0,8,0">
+                <StackPanel>
                     <TextBlock Text="Objeto" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Objeto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
+            </UniformGrid>
+            <!-- Fila 3: Expediente + Fecha -->
+            <UniformGrid Columns="4" Margin="0,0,0,12">
                 <StackPanel>
                     <TextBlock Text=" " Style="{StaticResource FieldLabel}"/>
                     <CheckBox Content="Expediente Entregado" IsChecked="{Binding ExpedienteEntregado}" VerticalAlignment="Center" Margin="0,8,0,0" FontSize="13"/>

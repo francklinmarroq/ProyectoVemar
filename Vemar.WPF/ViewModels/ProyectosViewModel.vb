@@ -497,7 +497,8 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     Public Async Sub Guardar(obj As Object)
         Try
             Dim areaDecimal As Decimal = 0
-            Decimal.TryParse(Area, areaDecimal)
+            Decimal.TryParse(Area?.Replace(",", "."), Globalization.NumberStyles.Any,
+                             Globalization.CultureInfo.InvariantCulture, areaDecimal)
             Dim item As New Proyecto With {
                 .Nombre = Nombre, .Ubicacion = Ubicacion, .Matricula = Matricula,
                 .ClaveSure = ClaveSure, .Area = areaDecimal,

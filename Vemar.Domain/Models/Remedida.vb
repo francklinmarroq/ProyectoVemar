@@ -1,5 +1,6 @@
 ﻿Public Class Remedida : Inherits DomainObject
     Private _clienteId As Integer
+    Private _propietario As String
     Private _representante As String
     Private _ubicacion As String
     Private _claveSure As String
@@ -9,6 +10,15 @@
     Private _fecha As Date
     Private _precio As Decimal
     Private _expedienteEntregado As Boolean
+
+    Public Property Propietario As String
+        Get
+            Return _propietario
+        End Get
+        Set(value As String)
+            _propietario = value
+        End Set
+    End Property
 
     Public Property Representante As String
         Get

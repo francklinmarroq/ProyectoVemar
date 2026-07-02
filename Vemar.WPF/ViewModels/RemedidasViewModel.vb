@@ -16,6 +16,7 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
     Private _guardarCommand As RelayCommand
     Private _remedidaEditando As Remedida = Nothing
 
+    Private _propietario As String = ""
     Private _representante As String = ""
     Private _rtn As String = ""
     Private _ubicacion As String = ""
@@ -58,6 +59,17 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
         End Set
     End Property
 
+    Public Property Propietario As String
+        Get
+            Return _propietario
+        End Get
+        Set(value As String)
+            _propietario = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Propietario)))
+            _guardarCommand?.RaiseCanExecuteChanged()
+        End Set
+    End Property
+
     Public Property Representante As String
         Get
             Return _representante
@@ -65,7 +77,6 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
         Set(value As String)
             _representante = value
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Representante)))
-            _guardarCommand?.RaiseCanExecuteChanged()
         End Set
     End Property
 
@@ -202,6 +213,7 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
                                                If r Is Nothing Then Return
                                                _remedidaEditando = r
                                                TituloFormulario = "Modificar Remedida"
+                                               Propietario = r.Propietario
                                                Representante = r.Representante
                                                Ubicacion = r.Ubicacion
                                                ClaveSure = r.ClaveSure
@@ -324,7 +336,7 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
                                                        End Try
                                                    End Sub)
 
-        _guardarCommand = New RelayCommand(AddressOf Guardar, Function(o) Not String.IsNullOrWhiteSpace(Representante))
+        _guardarCommand = New RelayCommand(AddressOf Guardar, Function(o) Not String.IsNullOrWhiteSpace(Propietario))
 
         _itemsView = CollectionViewSource.GetDefaultView(_itemsSource)
         _itemsView.Filter = Function(obj)
@@ -354,7 +366,7 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
     End Sub
 
     Private Sub LimpiarFormulario()
-        Representante = "" : Rtn = "" : Ubicacion = "" : ClaveSure = "" : Matricula = ""
+        Propietario = "" : Representante = "" : Rtn = "" : Ubicacion = "" : ClaveSure = "" : Matricula = ""
         Cam = "" : Objeto = "" : Precio = ""
         Fecha = DateTime.Today : ExpedienteEntregado = False
     End Sub
@@ -379,7 +391,7 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
             Dim precioDecimal As Decimal = 0
             Decimal.TryParse(Precio, precioDecimal)
             Dim item As New Remedida With {
-                .Representante = Representante, .Ubicacion = Ubicacion,
+                .Propietario = Propietario, .Representante = Representante, .Ubicacion = Ubicacion,
                 .ClaveSure = ClaveSure, .Matricula = Matricula,
                 .Cam = Cam, .Objeto = Objeto,
                 .Fecha = Fecha, .Precio = precioDecimal,

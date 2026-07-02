@@ -92,7 +92,6 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
         Set(value As String)
             _descripcion = value
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Descripcion)))
-            _guardarCommand?.RaiseCanExecuteChanged()
         End Set
     End Property
 
@@ -123,6 +122,7 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
         Set(value As Proyecto)
             _proyectoSeleccionado = value
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(ProyectoSeleccionado)))
+            _guardarCommand?.RaiseCanExecuteChanged()
         End Set
     End Property
 
@@ -186,7 +186,7 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
                                                   _reportTram.GeneratePdfAsync(_itemsSource.ToList(), "Tramites")
                                               End Sub)
 
-        _guardarCommand = New RelayCommand(AddressOf Guardar, Function(o) Not String.IsNullOrWhiteSpace(Descripcion))
+        _guardarCommand = New RelayCommand(AddressOf Guardar, Function(o) ProyectoSeleccionado IsNot Nothing)
 
         _itemsView = CollectionViewSource.GetDefaultView(_itemsSource)
         _itemsView.Filter = Function(obj)

@@ -89,7 +89,7 @@
                 <DatePicker SelectedDate="{Binding Fecha}" Height="36" FontSize="13"/>
             </StackPanel>
             <StackPanel Margin="0,0,0,0">
-                <TextBlock Text="DescripciÃ³n" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Text="Descripción" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Descripcion, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">

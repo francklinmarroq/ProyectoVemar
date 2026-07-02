@@ -41,6 +41,7 @@ Public Class CobrosRemedidaViewModel : Implements INotifyPropertyChanged
 
     Public ReadOnly Property AgregarCommand As ICommand
     Public ReadOnly Property EliminarCommand As ICommand
+    Public ReadOnly Property ReciboPdfCommand As ICommand
     Public ReadOnly Property GuardarCommand As ICommand
         Get
             Return _guardarCommand
@@ -61,6 +62,17 @@ Public Class CobrosRemedidaViewModel : Implements INotifyPropertyChanged
                                          End Sub)
 
         EliminarCommand = New RelayCommand(AddressOf Eliminar)
+
+        ReciboPdfCommand = New RelayCommand(Async Sub(o)
+                                                Dim c = TryCast(o, CobroRemedida)
+                                                If c Is Nothing Then Return
+                                                Try
+                                                    Dim rpt As New Vemar.WPF.Reports.ReciboCobroRemedidaReport()
+                                                    Await rpt.GeneratePdfAsync(c, _remedidaFija)
+                                                Catch ex As Exception
+                                                    MessageBox.Show("Error al generar recibo: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+                                                End Try
+                                            End Sub)
 
         _guardarCommand = New RelayCommand(AddressOf Guardar, Function(o) Not String.IsNullOrWhiteSpace(Cantidad))
 

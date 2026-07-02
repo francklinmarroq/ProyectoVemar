@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GastoRemedidasView"
+﻿﻿<UserControl x:Class="GastoRemedidasView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -101,7 +101,7 @@
                         SelectionMode="Single" RowStyle="{StaticResource DgRowStyle}" CellStyle="{StaticResource DgCellStyle}" ColumnHeaderStyle="{StaticResource DgHeaderStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
-                    <DataGridTextColumn Header="DESCRIPCIÃ“N" Binding="{Binding Descripcion}" Width="*"/>
+                    <DataGridTextColumn Header="DESCRIPCIÓN" Binding="{Binding DESCRIPCIÓN}" Width="*"/>
                     <DataGridTextColumn Header="MONTO" Binding="{Binding Monto}" Width="130"/>
                 </DataGrid.Columns>
             </DataGrid>

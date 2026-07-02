@@ -102,12 +102,17 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="55"/>
                     <DataGridTextColumn Header="CANTIDAD" Binding="{Binding Cantidad, StringFormat='{}L {0:N2}'}" Width="*"/>
-                    <DataGridTemplateColumn Header="ACCIONES" Width="100">
+                    <DataGridTemplateColumn Header="ACCIONES" Width="180">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Eliminar" Command="{Binding DataContext.EliminarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="10,4" FontSize="12" Cursor="Hand" Background="#FEF2F2" Foreground="#EF4444" BorderThickness="0">
-                                    <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FEE2E2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
-                                </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Recibo" Command="{Binding DataContext.ReciboPdfCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Margin="0,0,6,0" Padding="10,4" FontSize="12" Cursor="Hand" Background="#FEF3C7" Foreground="#B45309" BorderThickness="0">
+                                        <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FDE68A"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+                                    </Button>
+                                    <Button Content="Eliminar" Command="{Binding DataContext.EliminarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="10,4" FontSize="12" Cursor="Hand" Background="#FEF2F2" Foreground="#EF4444" BorderThickness="0">
+                                        <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FEE2E2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+                                    </Button>
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

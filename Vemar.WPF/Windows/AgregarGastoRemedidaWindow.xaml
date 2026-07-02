@@ -86,7 +86,7 @@
             </StackPanel>
             <UniformGrid Columns="2" Margin="0,0,0,0">
                 <StackPanel Margin="0,0,8,0">
-                    <TextBlock Text="DescripciÃ³n" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Text="Descripción" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Descripcion, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
                 <StackPanel Margin="0,0,0,0">

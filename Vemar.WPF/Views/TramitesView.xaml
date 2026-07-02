@@ -150,10 +150,10 @@
                         SelectionMode="Single" RowStyle="{StaticResource DgRowStyle}" CellStyle="{StaticResource DgCellStyle}" ColumnHeaderStyle="{StaticResource DgHeaderStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
-                    <DataGridTextColumn Header="DESCRIPCIÓN" Binding="{Binding Descripcion}" Width="*"/>
                     <DataGridTextColumn Header="TIPO" Binding="{Binding TipoTramite.Nombre}" Width="130"/>
                     <DataGridTextColumn Header="ESTADO" Binding="{Binding EstadoTramite.Estado}" Width="120"/>
                     <DataGridTextColumn Header="PROYECTO" Binding="{Binding Proyecto.Nombre}" Width="150"/>
+                    <DataGridTextColumn Header="DESCRIPCIÓN" Binding="{Binding Descripcion}" Width="*"/>
                     <DataGridTemplateColumn Header="ACCIONES" Width="200">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
