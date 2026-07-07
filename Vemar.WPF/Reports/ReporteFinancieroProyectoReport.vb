@@ -56,12 +56,8 @@ Namespace Vemar.WPF.Reports
 
                     Dim pdfBytes = report.Render("PDF")
                     Dim nombre = If(String.IsNullOrWhiteSpace(proyecto.Nombre), "proyecto", proyecto.Nombre)
-                    Dim filePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                        $"ReporteFinanciero_{nombre}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf")
-                    File.WriteAllBytes(filePath, pdfBytes)
-                    Process.Start(New ProcessStartInfo With {.FileName = filePath, .UseShellExecute = True})
-                    Return filePath
+                    PdfPreviewHelper.ShowPreview(pdfBytes, "Reporte Financiero Proyecto", $"ReporteFinanciero_{nombre}_{DateTime.Now:yyyyMMdd_HHmmss}")
+                    Return String.Empty
                 Catch ex As Exception
                     Dim msg = BuildErrorMsg(ex)
                     Application.Current.Dispatcher.Invoke(Sub()

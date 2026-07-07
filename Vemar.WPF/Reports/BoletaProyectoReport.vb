@@ -41,12 +41,8 @@ Namespace Vemar.WPF.Reports
 
                     Dim pdfBytes = report.Render("PDF")
                     Dim nombre = If(String.IsNullOrWhiteSpace(proyecto.Nombre), "proyecto", proyecto.Nombre)
-                    Dim filePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                        $"Boleta_Proyecto_{nombre}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf")
-                    File.WriteAllBytes(filePath, pdfBytes)
-                    Process.Start(New ProcessStartInfo With {.FileName = filePath, .UseShellExecute = True})
-                    Return filePath
+                    PdfPreviewHelper.ShowPreview(pdfBytes, "Acta de Compromiso del Urbanizador", $"Boleta_Proyecto_{nombre}_{DateTime.Now:yyyyMMdd_HHmmss}")
+                    Return String.Empty
                 Catch ex As Exception
                     Dim msg = ex.Message
                     Dim inner = ex.InnerException
@@ -117,7 +113,7 @@ Namespace Vemar.WPF.Reports
             ' ── Nombre del proyecto ──
             Dim nTop = 0.98
             BoxRect(sb, "BxNom", FmtIn(nTop), "0in", "0.72in", FmtIn(cW), "#1E40AF")
-            T(sb, "LbNom", "PROYECTO", FmtIn(nTop + 0.06), "0.12in", "0.2in", FmtIn(cW - 0.2), "8pt", "Bold", "#94A3B8", "Left")
+            T(sb, "LbNom", "NOMBRE DEL PROYECTO", FmtIn(nTop + 0.06), "0.12in", "0.2in", FmtIn(cW - 0.2), "8pt", "Bold", "#94A3B8", "Left")
             T(sb, "VlNom", proyNombre, FmtIn(nTop + 0.28), "0.1in", "0.35in", FmtIn(cW - 0.15), "14pt", "Bold", "#1E3A8A", "Left")
 
             ' ── Clave SURE | Matrícula ──
@@ -138,24 +134,29 @@ Namespace Vemar.WPF.Reports
             Dim col1W = (cW - 0.1) / 2
             Dim col2X = col1W + 0.1
 
+            ' Fila 1: Nombre del proyecto (ancho completo)
+            BoxRect(sb, "BxNP", FmtIn(gTop), "0in", FmtIn(gRowH), FmtIn(cW), "#FFFFFF")
+            T(sb, "LbNP", "Nombre del Proyecto", FmtIn(gTop + 0.05), "0.08in", "0.14in", FmtIn(cW - 0.16), "7pt", "Normal", "#64748B", "Left")
+            T(sb, "VlNP", proyNombre, FmtIn(gTop + 0.18), "0.08in", "0.18in", FmtIn(cW - 0.16), "11pt", "Bold", "#0F172A", "Left")
+
             FieldPair(sb, "Cl", "Cliente / Urbanizador", clienteNombre,
                           "Rtn", "R.T.N.", clienteRtn,
-                          FmtIn(gTop), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+                          FmtIn(gTop + gRowH + 0.06), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
 
             FieldPair(sb, "Rep", "Representante Legal", clienteRep,
                           "Tel", "Teléfono", XmlEsc(If(p.Cliente?.Telefono, "—")),
-                          FmtIn(gTop + gRowH + 0.06), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+                          FmtIn(gTop + (gRowH + 0.06) * 2), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
 
             FieldPair(sb, "Cat", "Categoría", categoria,
                           "Zon", "Zonificación", zonif,
-                          FmtIn(gTop + (gRowH + 0.06) * 2), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+                          FmtIn(gTop + (gRowH + 0.06) * 3), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
 
             FieldPair(sb, "Ar", "Área", area,
                           "Ub", "Ubicación", ubicacion,
-                          FmtIn(gTop + (gRowH + 0.06) * 3), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+                          FmtIn(gTop + (gRowH + 0.06) * 4), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
 
             ' ── Texto de compromiso ──
-            Dim cmpTop = gTop + (gRowH + 0.06) * 4 + 0.18
+            Dim cmpTop = gTop + (gRowH + 0.06) * 5 + 0.18
             Dim cmpText =
                 "Yo, el/la urbanizador(a) identificado(a) en este documento, declaro y acepto expresamente " &
                 "que los datos del proyecto indicados en la presente acta son correctos y corresponden al " &

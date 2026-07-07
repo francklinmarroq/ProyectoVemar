@@ -9,6 +9,8 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
     Private _guardarCommand As RelayCommand
     Private _valor As String = ""
     Private _descripcion As String = ""
+    Private _formaPago As String = ""
+    Private _fecha As DateTime = DateTime.Today
 
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
     Public Event GuardadoExitoso As EventHandler
@@ -106,9 +108,30 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
         End Set
     End Property
 
+    Public Property FormaPago As String
+        Get
+            Return _formaPago
+        End Get
+        Set(v As String)
+            _formaPago = v
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(FormaPago)))
+        End Set
+    End Property
+
+    Public Property Fecha As DateTime
+        Get
+            Return _fecha
+        End Get
+        Set(v As DateTime)
+            _fecha = v
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Fecha)))
+        End Set
+    End Property
+
     Public ReadOnly Property AgregarCommand As ICommand
     Public ReadOnly Property EliminarCommand As ICommand
     Public ReadOnly Property ReciboPdfCommand As ICommand
+    Public ReadOnly Property SolicitudPagoCommand As ICommand
     Public ReadOnly Property GuardarCommand As ICommand
         Get
             Return _guardarCommand
@@ -119,9 +142,20 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
         _service = service
         _contratoFijo = contratoFijo
 
+        SolicitudPagoCommand = New RelayCommand(Async Sub(o)
+                                                   Try
+                                                       Dim rpt As New Vemar.WPF.Reports.SolicitudPagoReport()
+                                                       Await rpt.GeneratePdfAsync(_contratoFijo, Items.OrderBy(Function(x) x.Id).ToList())
+                                                   Catch ex As Exception
+                                                       MessageBox.Show("Error al generar solicitud: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+                                                   End Try
+                                               End Sub)
+
         AgregarCommand = New RelayCommand(Sub(o)
                                              Valor = ""
                                              Descripcion = ""
+                                             FormaPago = ""
+                                             Fecha = DateTime.Today
                                              Dim win As New AgregarPagoContratoWindow()
                                              win.DataContext = Me
                                              win.Owner = Application.Current.MainWindow
@@ -186,6 +220,8 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
             Await _service.Add(New PagoContrato With {
                 .Valor = v,
                 .Descripcion = Descripcion,
+                .FormaPago = FormaPago,
+                .Fecha = Fecha,
                 .Contrato = _contratoFijo
             })
             RaiseEvent GuardadoExitoso(Me, EventArgs.Empty)

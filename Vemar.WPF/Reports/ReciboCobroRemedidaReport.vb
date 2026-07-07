@@ -39,12 +39,8 @@ Namespace Vemar.WPF.Reports
                         report.LoadReportDefinition(ms)
                     End Using
                     Dim pdfBytes = report.Render("PDF")
-                    Dim filePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                        $"Recibo_Cobro_{cobro.Id}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf")
-                    File.WriteAllBytes(filePath, pdfBytes)
-                    Process.Start(New ProcessStartInfo With {.FileName = filePath, .UseShellExecute = True})
-                    Return filePath
+                    PdfPreviewHelper.ShowPreview(pdfBytes, "Recibo de Cobro", $"Recibo_Cobro_{cobro.Id}_{DateTime.Now:yyyyMMdd_HHmmss}")
+                    Return String.Empty
                 Catch ex As Exception
                     Dim msg = ex.Message
                     Dim inner = ex.InnerException

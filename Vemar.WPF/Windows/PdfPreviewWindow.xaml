@@ -1,0 +1,72 @@
+<Window x:Class="PdfPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="Vista Previa" WindowStyle="SingleBorderWindow" ResizeMode="CanResize"
+        Height="780" Width="900" WindowStartupLocation="CenterOwner"
+        Background="#F1F5F9">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Barra superior -->
+        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
+            <Grid Margin="16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="32" Height="32" CornerRadius="6" Background="#EFF6FF">
+                        <iconPacks:PackIconPhosphorIcons Kind="FilePdf" Width="16" Height="16" Foreground="#2563EB"/>
+                    </Border>
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtTitulo" Text="Vista Previa del Documento" FontSize="14" FontWeight="SemiBold" Foreground="#0F172A"/>
+                        <TextBlock Text="Revisa el documento antes de descargarlo" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="BtnDescargar" Click="BtnDescargar_Click" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bg" Background="#1D4ED8" CornerRadius="8" Padding="16,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <iconPacks:PackIconPhosphorIcons Kind="DownloadSimple" Width="15" Height="15" Foreground="White" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Descargar PDF" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="7,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bg" Property="Background" Value="#1E40AF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="BtnCerrar" Click="BtnCerrar_Click" Cursor="Hand" Margin="8,0,0,0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bg" Background="#F1F5F9" CornerRadius="8" Padding="14,8">
+                                    <TextBlock Text="Cerrar" Foreground="#475569" FontSize="13" FontWeight="SemiBold"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bg" Property="Background" Value="#E2E8F0"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- WebView2 para mostrar el PDF -->
+        <wv2:WebView2 x:Name="WebView" Grid.Row="1"/>
+    </Grid>
+</Window>

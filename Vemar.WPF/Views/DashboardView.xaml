@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="DashboardView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,205 +7,345 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     Background="#F1F5F9"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <!-- DataGrid Styles -->
-        <Style x:Key="DgHeaderStyle" TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#3B82F6"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="12,10"/>
-            <Setter Property="BorderThickness" Value="0,0,1,0"/>
-            <Setter Property="BorderBrush" Value="#2563EB"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="DataGridColumnHeader">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="DgCellStyle" TargetType="DataGridCell">
-            <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="#1F2937"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="DataGridCell">
-                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#EFF6FF"/>
-                    <Setter Property="Foreground" Value="#1E40AF"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="DgRowStyle" TargetType="DataGridRow">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="DataGridRow">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="#F0F4F8" BorderThickness="0,0,0,1">
-                            <SelectiveScrollingGrid>
-                                <SelectiveScrollingGrid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </SelectiveScrollingGrid.ColumnDefinitions>
-                                <DataGridCellsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" Grid.Column="1"/>
-                            </SelectiveScrollingGrid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#F0F9FF"/>
-                </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#DBEAFE"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="36,32,36,36">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="36,28,36,40">
 
-            <!-- ── Header ── -->
-            <Grid Margin="0,0,0,32">
+            <!-- ── HEADER ──────────────────────────────────────────────── -->
+            <Grid Margin="0,0,0,28">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="Panel de Control" FontSize="28" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="{Binding FechaHoy}" FontSize="13" Foreground="#3B82F6" Margin="0,6,0,0"/>
+                <StackPanel>
+                    <TextBlock Text="Panel de Control" FontSize="26" FontWeight="Bold" Foreground="#0F172A"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Border Background="#EFF6FF" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding FechaHoy}" FontSize="12" FontWeight="SemiBold" Foreground="#2563EB"/>
+                        </Border>
+                    </StackPanel>
                 </StackPanel>
                 <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="14,10" VerticalAlignment="Center">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="12" ShadowDepth="0" Opacity="0.08" Color="#000"/>
                     </Border.Effect>
                     <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconPhosphorIcons Kind="Buildings" Width="18" Height="18" Foreground="#3B82F6" VerticalAlignment="Center"/>
-                        <TextBlock Text="Constructora Vemar" FontSize="13" FontWeight="SemiBold" Foreground="#1E293B" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <iconPacks:PackIconPhosphorIcons Kind="Buildings" Width="18" Height="18" Foreground="#1E40AF" VerticalAlignment="Center"/>
+                        <TextBlock Text="Constructora Vemar" FontSize="13" FontWeight="Bold" Foreground="#1E293B" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </Grid>
 
-            <!-- ── Tarjetas de estadísticas ── -->
-            <TextBlock Text="RESUMEN GENERAL" FontSize="11" FontWeight="Bold" Foreground="#2563EB" Margin="0,0,0,14"/>
+            <!-- ── SECCIÓN: KPI CARDS ──────────────────────────────────── -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Border Width="4" Height="16" CornerRadius="2" Background="#3B82F6" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="RESUMEN GENERAL" FontSize="11" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center"/>
+            </StackPanel>
 
-            <UniformGrid Rows="2" Columns="3" Margin="0,0,0,32">
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- Clientes -->
-                <Border Margin="0,0,10,10" CornerRadius="12" Background="White">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/>
-                    </Border.Effect>
-                    <Grid Margin="20,18">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Width="40" Height="40" CornerRadius="10" Background="#EFF6FF" HorizontalAlignment="Left">
-                            <iconPacks:PackIconPhosphorIcons Kind="Users" Width="20" Height="20" Foreground="#3B82F6"/>
-                        </Border>
-                        <TextBlock Grid.Row="1" Text="{Binding TotalClientes}" FontSize="34" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,4,0,0">
-                            <TextBlock Text="Clientes" FontSize="13" Foreground="#3B82F6"/>
+                <!-- Clientes ── azul -->
+                <Border Grid.Column="0" CornerRadius="12" Background="White" ClipToBounds="True">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <Grid>
+                        <Border Width="4" HorizontalAlignment="Left" Background="#3B82F6" CornerRadius="3,0,0,3"/>
+                        <StackPanel Margin="18,16,16,16">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#EFF6FF" HorizontalAlignment="Left">
+                                <iconPacks:PackIconPhosphorIcons Kind="Users" Width="18" Height="18" Foreground="#3B82F6"/>
+                            </Border>
+                            <TextBlock Text="{Binding TotalClientes}" FontSize="32" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
+                            <TextBlock Text="Clientes" FontSize="12" FontWeight="SemiBold" Foreground="#3B82F6" Margin="0,3,0,0"/>
+                            <TextBlock Text="registrados" FontSize="11" Foreground="#94A3B8" Margin="0,1,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Remedidas -->
-                <Border Margin="5,0,5,10" CornerRadius="12" Background="White">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/>
-                    </Border.Effect>
-                    <Grid Margin="20,18">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Width="40" Height="40" CornerRadius="10" Background="#EFF6FF" HorizontalAlignment="Left">
-                            <iconPacks:PackIconPhosphorIcons Kind="Ruler" Width="20" Height="20" Foreground="#3B82F6"/>
-                        </Border>
-                        <TextBlock Grid.Row="1" Text="{Binding TotalRemedidas}" FontSize="34" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
-                        <TextBlock Grid.Row="2" Text="Remedidas" FontSize="13" Foreground="#3B82F6" Margin="0,4,0,0"/>
+                <!-- Remedidas ── morado -->
+                <Border Grid.Column="2" CornerRadius="12" Background="White" ClipToBounds="True">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <Grid>
+                        <Border Width="4" HorizontalAlignment="Left" Background="#8B5CF6" CornerRadius="3,0,0,3"/>
+                        <StackPanel Margin="18,16,16,16">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#F5F3FF" HorizontalAlignment="Left">
+                                <iconPacks:PackIconPhosphorIcons Kind="Ruler" Width="18" Height="18" Foreground="#8B5CF6"/>
+                            </Border>
+                            <TextBlock Text="{Binding TotalRemedidas}" FontSize="32" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
+                            <TextBlock Text="Remedidas" FontSize="12" FontWeight="SemiBold" Foreground="#8B5CF6" Margin="0,3,0,0"/>
+                            <TextBlock FontSize="11" Foreground="#94A3B8" Margin="0,1,0,0">
+                                <Run Text="{Binding RemedidasEntregadas}"/>
+                                <Run Text=" expedientes entregados"/>
+                            </TextBlock>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Proyectos -->
-                <Border Margin="10,0,0,10" CornerRadius="12" Background="White">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/>
-                    </Border.Effect>
-                    <Grid Margin="20,18">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Width="40" Height="40" CornerRadius="10" Background="#EFF6FF" HorizontalAlignment="Left">
-                            <iconPacks:PackIconPhosphorIcons Kind="Buildings" Width="20" Height="20" Foreground="#3B82F6"/>
-                        </Border>
-                        <TextBlock Grid.Row="1" Text="{Binding TotalProyectos}" FontSize="34" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
-                        <TextBlock Grid.Row="2" Text="Proyectos" FontSize="13" Foreground="#3B82F6" Margin="0,4,0,0"/>
+                <!-- Proyectos ── verde -->
+                <Border Grid.Column="4" CornerRadius="12" Background="White" ClipToBounds="True">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <Grid>
+                        <Border Width="4" HorizontalAlignment="Left" Background="#10B981" CornerRadius="3,0,0,3"/>
+                        <StackPanel Margin="18,16,16,16">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#ECFDF5" HorizontalAlignment="Left">
+                                <iconPacks:PackIconPhosphorIcons Kind="Buildings" Width="18" Height="18" Foreground="#10B981"/>
+                            </Border>
+                            <TextBlock Text="{Binding TotalProyectos}" FontSize="32" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
+                            <TextBlock Text="Proyectos" FontSize="12" FontWeight="SemiBold" Foreground="#10B981" Margin="0,3,0,0"/>
+                            <TextBlock Text="activos" FontSize="11" Foreground="#94A3B8" Margin="0,1,0,0"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Colaboradores -->
-                <Border Margin="0,0,10,0" CornerRadius="12" Background="White">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/>
-                    </Border.Effect>
-                    <Grid Margin="20,18">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Width="40" Height="40" CornerRadius="10" Background="#EFF6FF" HorizontalAlignment="Left">
-                            <iconPacks:PackIconPhosphorIcons Kind="UserCircle" Width="20" Height="20" Foreground="#3B82F6"/>
-                        </Border>
-                        <TextBlock Grid.Row="1" Text="{Binding TotalColaboradores}" FontSize="34" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
-                        <TextBlock Grid.Row="2" Text="Colaboradores" FontSize="13" Foreground="#3B82F6" Margin="0,4,0,0"/>
+                <!-- Trámites ── ámbar -->
+                <Border Grid.Column="6" CornerRadius="12" Background="White" ClipToBounds="True">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <Grid>
+                        <Border Width="4" HorizontalAlignment="Left" Background="#F59E0B" CornerRadius="3,0,0,3"/>
+                        <StackPanel Margin="18,16,16,16">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#FFFBEB" HorizontalAlignment="Left">
+                                <iconPacks:PackIconPhosphorIcons Kind="FolderOpen" Width="18" Height="18" Foreground="#F59E0B"/>
+                            </Border>
+                            <TextBlock Text="{Binding TotalTramites}" FontSize="32" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
+                            <TextBlock Text="Trámites" FontSize="12" FontWeight="SemiBold" Foreground="#F59E0B" Margin="0,3,0,0"/>
+                            <TextBlock Text="en gestión" FontSize="11" Foreground="#94A3B8" Margin="0,1,0,0"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Contratistas -->
-                <Border Margin="5,0,5,0" CornerRadius="12" Background="White">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/>
-                    </Border.Effect>
-                    <Grid Margin="20,18">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Width="40" Height="40" CornerRadius="10" Background="#EFF6FF" HorizontalAlignment="Left">
-                            <iconPacks:PackIconPhosphorIcons Kind="HardHat" Width="20" Height="20" Foreground="#3B82F6"/>
-                        </Border>
-                        <TextBlock Grid.Row="1" Text="{Binding TotalContratistas}" FontSize="34" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
-                        <TextBlock Grid.Row="2" Text="Contratistas" FontSize="13" Foreground="#3B82F6" Margin="0,4,0,0"/>
+                <!-- Contratos ── rosa -->
+                <Border Grid.Column="8" CornerRadius="12" Background="White" ClipToBounds="True">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <Grid>
+                        <Border Width="4" HorizontalAlignment="Left" Background="#EF4444" CornerRadius="3,0,0,3"/>
+                        <StackPanel Margin="18,16,16,16">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#FEF2F2" HorizontalAlignment="Left">
+                                <iconPacks:PackIconPhosphorIcons Kind="FileText" Width="18" Height="18" Foreground="#EF4444"/>
+                            </Border>
+                            <TextBlock Text="{Binding TotalContratos}" FontSize="32" FontWeight="Bold" Foreground="#0F172A" Margin="0,10,0,0"/>
+                            <TextBlock Text="Contratos" FontSize="12" FontWeight="SemiBold" Foreground="#EF4444" Margin="0,3,0,0"/>
+                            <TextBlock Text="firmados" FontSize="11" Foreground="#94A3B8" Margin="0,1,0,0"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
-            </UniformGrid>
+            </Grid>
+
+            <!-- ── SECCIÓN CENTRAL: Expedientes + Trámites por estado ── -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Panel izquierdo: Expedientes de Remedidas -->
+                <Border Grid.Column="0" CornerRadius="14" Background="White">
+                    <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <StackPanel Margin="24,20">
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#F5F3FF">
+                                <iconPacks:PackIconPhosphorIcons Kind="ClipboardText" Width="16" Height="16" Foreground="#8B5CF6"/>
+                            </Border>
+                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="EXPEDIENTES DE REMEDIDAS" FontSize="11" FontWeight="Bold" Foreground="#1E293B"/>
+                                <TextBlock Text="Estado de entrega" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Barra de progreso visual -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding BarraEntregadas}"/>
+                                <ColumnDefinition Width="{Binding BarraPendientes}"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Height="14" CornerRadius="7,0,0,7" Background="#8B5CF6"/>
+                            <Border Grid.Column="1" Height="14" CornerRadius="0,7,7,0" Background="#E2E8F0"/>
+                        </Grid>
+
+                        <!-- Porcentaje grande -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <TextBlock Text="{Binding PorcentajeEntregadas}" FontSize="36" FontWeight="Bold" Foreground="#8B5CF6"/>
+                            <TextBlock Text=" entregados" FontSize="14" Foreground="#64748B" VerticalAlignment="Bottom" Margin="4,0,0,6"/>
+                        </StackPanel>
+
+                        <!-- Leyenda -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#F5F3FF" CornerRadius="10" Padding="12,10" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <Border Width="10" Height="10" CornerRadius="5" Background="#8B5CF6" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" Entregados" FontSize="11" Foreground="#6D28D9" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding RemedidasEntregadas}" FontSize="22" FontWeight="Bold" Foreground="#5B21B6"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="#F8FAFC" CornerRadius="10" Padding="12,10" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <Border Width="10" Height="10" CornerRadius="5" Background="#CBD5E1" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" Pendientes" FontSize="11" Foreground="#475569" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding RemedidasPendientes}" FontSize="22" FontWeight="Bold" Foreground="#334155"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Panel derecho: Trámites por Estado -->
+                <Border Grid.Column="2" CornerRadius="14" Background="White">
+                    <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <StackPanel Margin="24,20">
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#FFFBEB">
+                                <iconPacks:PackIconPhosphorIcons Kind="ChartBar" Width="16" Height="16" Foreground="#F59E0B"/>
+                            </Border>
+                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="TRÁMITES POR ESTADO" FontSize="11" FontWeight="Bold" Foreground="#1E293B"/>
+                                <TextBlock Text="Distribución actual" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Sin datos placeholder -->
+                        <TextBlock Text="Sin trámites registrados" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,20">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TramitesPorEstado.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- Barras -->
+                        <ItemsControl ItemsSource="{Binding TramitesPorEstado}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Label}" FontSize="12" Foreground="#374151"
+                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <Border Height="10" CornerRadius="5" Width="{Binding BarraPixels}"
+                                                    HorizontalAlignment="Left"
+                                                    Background="{Binding BarBrush}"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="{Binding BgBrush}" CornerRadius="6"
+                                                Padding="4,2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Count}" FontSize="11" FontWeight="Bold"
+                                                       Foreground="{Binding TextBrush}" HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ── SECCIÓN: RESUMEN FINANCIERO ────────────────────────── -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Border Width="4" Height="16" CornerRadius="2" Background="#10B981" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="ACTIVIDAD FINANCIERA" FontSize="11" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Grid Margin="0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Valor total contratos -->
+                <Border Grid.Column="0" CornerRadius="12" Background="White">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <StackPanel Margin="20,18">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#EFF6FF">
+                                <iconPacks:PackIconPhosphorIcons Kind="CurrencyDollar" Width="16" Height="16" Foreground="#3B82F6"/>
+                            </Border>
+                            <TextBlock Text="VALOR CONTRATOS" FontSize="10" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding ValorTotalContratos}" FontSize="20" FontWeight="Bold" Foreground="#1E40AF"/>
+                        <TextBlock Text="monto total firmado" FontSize="11" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Total pagado en contratos -->
+                <Border Grid.Column="2" CornerRadius="12" Background="White">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <StackPanel Margin="20,18">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#ECFDF5">
+                                <iconPacks:PackIconPhosphorIcons Kind="CheckCircle" Width="16" Height="16" Foreground="#10B981"/>
+                            </Border>
+                            <TextBlock Text="PAGADO (CONTRATOS)" FontSize="10" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding TotalPagadoContratos}" FontSize="20" FontWeight="Bold" Foreground="#065F46"/>
+                        <TextBlock Text="abonado por clientes" FontSize="11" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Saldo pendiente contratos -->
+                <Border Grid.Column="4" CornerRadius="12" Background="White">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <StackPanel Margin="20,18">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#FEF2F2">
+                                <iconPacks:PackIconPhosphorIcons Kind="Clock" Width="16" Height="16" Foreground="#EF4444"/>
+                            </Border>
+                            <TextBlock Text="SALDO PENDIENTE" FontSize="10" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding SaldoPendienteContratos}" FontSize="20" FontWeight="Bold" Foreground="#991B1B"/>
+                        <TextBlock Text="por cobrar en contratos" FontSize="11" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cobros remedidas -->
+                <Border Grid.Column="6" CornerRadius="12" Background="White">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.07" Color="#000"/></Border.Effect>
+                    <StackPanel Margin="20,18">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#ECFEFF">
+                                <iconPacks:PackIconPhosphorIcons Kind="Coins" Width="16" Height="16" Foreground="#06B6D4"/>
+                            </Border>
+                            <TextBlock Text="COBROS REMEDIDAS" FontSize="10" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding TotalCobrosRemedidas}" FontSize="20" FontWeight="Bold" Foreground="#155E75"/>
+                        <TextBlock Text="ingresos por remedidas" FontSize="11" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>
-

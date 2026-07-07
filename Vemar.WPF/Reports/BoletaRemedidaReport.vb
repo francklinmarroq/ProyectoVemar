@@ -41,12 +41,8 @@ Namespace Vemar.WPF.Reports
 
                     Dim pdfBytes = report.Render("PDF")
                     Dim clave = If(String.IsNullOrWhiteSpace(remedida.ClaveSure), "remedida", remedida.ClaveSure)
-                    Dim filePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                        $"Boleta_Remedida_{clave}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf")
-                    File.WriteAllBytes(filePath, pdfBytes)
-                    Process.Start(New ProcessStartInfo With {.FileName = filePath, .UseShellExecute = True})
-                    Return filePath
+                    PdfPreviewHelper.ShowPreview(pdfBytes, "Boleta de Remedida", $"Boleta_Remedida_{clave}_{DateTime.Now:yyyyMMdd_HHmmss}")
+                    Return String.Empty
                 Catch ex As Exception
                     Dim msg = ex.Message
                     Dim inner = ex.InnerException

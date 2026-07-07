@@ -10,6 +10,7 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
     Private ReadOnly _cobroService As IDataService(Of CobroRemedida)
     Private ReadOnly _gastoService As IDataService(Of GastoRemedida)
     Private ReadOnly _movimientoService As IDataService(Of Movimiento)
+    Private ReadOnly _tipoMovimientoService As IDataService(Of TipoMovimiento)
     Private _itemsSource As New ObservableCollection(Of Remedida)
     Private _itemsView As ICollectionView
     Private _busqueda As String = ""
@@ -174,9 +175,10 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
     Public ReadOnly Property ModificarCommand As ICommand
     Public ReadOnly Property EliminarCommand As ICommand
     Public ReadOnly Property VerCobrosCommand As ICommand
+    Public ReadOnly Property VerGastosCommand As ICommand
+    Public ReadOnly Property VerMovimientosCommand As ICommand
     Public ReadOnly Property ExportarExcelCommand As ICommand
     Public ReadOnly Property ExportarPdfCommand As ICommand
-    Public ReadOnly Property VerGastosCommand As ICommand
     Public ReadOnly Property ReporteFinancieroPdfCommand As ICommand
     Public ReadOnly Property ReporteFinancieroExcelCommand As ICommand
     Public ReadOnly Property BoletaPdfCommand As ICommand
@@ -191,11 +193,13 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
     Public Sub New(service As IDataService(Of Remedida),
                    cobroService As IDataService(Of CobroRemedida),
                    gastoService As IDataService(Of GastoRemedida),
-                   movimientoService As IDataService(Of Movimiento))
+                   movimientoService As IDataService(Of Movimiento),
+                   tipoMovimientoService As IDataService(Of TipoMovimiento))
         _service = service
         _cobroService = cobroService
         _gastoService = gastoService
         _movimientoService = movimientoService
+        _tipoMovimientoService = tipoMovimientoService
 
         AgregarCommand = New RelayCommand(Sub(o)
                                              _remedidaEditando = Nothing
@@ -268,6 +272,16 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
 
                                                win.ShowDialog()
                                            End Sub)
+
+        VerMovimientosCommand = New RelayCommand(Sub(o)
+                                                   Dim r = TryCast(o, Remedida)
+                                                   If r Is Nothing Then Return
+                                                   Dim vm As New MovimientosRemedidaViewModel(_movimientoService, _tipoMovimientoService, r)
+                                                   Dim win As New MovimientosRemedidaWindow()
+                                                   win.DataContext = vm
+                                                   win.Owner = Application.Current.MainWindow
+                                                   win.ShowDialog()
+                                               End Sub)
 
         ReporteFinancieroPdfCommand = New RelayCommand(Async Sub(o)
                                                           Dim r = TryCast(o, Remedida)

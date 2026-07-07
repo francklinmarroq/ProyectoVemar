@@ -226,12 +226,8 @@ Namespace Vemar.WPF.Reports
                     report.DataSources.Add(New ReportDataSource("DataSet1", dt))
 
                     Dim pdfBytes = report.Render("PDF")
-                    Dim filePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                        $"EstadoCajaChica_{DateTime.Now:yyyyMMdd_HHmmss}.pdf")
-                    File.WriteAllBytes(filePath, pdfBytes)
-                    Process.Start(New ProcessStartInfo With {.FileName = filePath, .UseShellExecute = True})
-                    Return filePath
+                    PdfPreviewHelper.ShowPreview(pdfBytes, "Estado de Caja Chica", $"EstadoCajaChica_{DateTime.Now:yyyyMMdd_HHmmss}")
+                    Return String.Empty
                 Catch ex As Exception
                     Dim msg = BuildMsg(ex)
                     Application.Current.Dispatcher.Invoke(Sub()

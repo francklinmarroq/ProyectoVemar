@@ -402,6 +402,12 @@ namespace Vemar.EF.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FormaPago")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Valor")
                         .HasColumnType("decimal(18,2)");
 
