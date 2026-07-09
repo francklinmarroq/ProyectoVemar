@@ -121,11 +121,17 @@
                 </StackPanel>
             </UniformGrid>
 
-            <!-- Concepto -->
-            <StackPanel Margin="0,0,0,12">
-                <TextBlock Text="CONCEPTO" Style="{StaticResource Lbl}"/>
-                <TextBox Text="{Binding Concepto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Fld}"/>
-            </StackPanel>
+            <!-- Concepto y N° Factura -->
+            <UniformGrid Columns="2" Margin="0,0,0,12">
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="CONCEPTO" Style="{StaticResource Lbl}"/>
+                    <TextBox Text="{Binding Concepto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Fld}"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="N° FACTURA (OPCIONAL)" Style="{StaticResource Lbl}"/>
+                    <TextBox Text="{Binding NumeroFactura, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Fld}"/>
+                </StackPanel>
+            </UniformGrid>
 
             <!-- Vínculo -->
             <TextBlock Text="VINCULAR A (OPCIONAL)" Style="{StaticResource Lbl}"/>

@@ -54,8 +54,8 @@
                             <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
                                 <ContentPresenter VerticalAlignment="Center"/>
                             </Border>
-                            <Thumb x:Name="PART_LeftHeaderGripper" HorizontalAlignment="Left" Width="8" Cursor="SizeWE" Background="Transparent" BorderThickness="0"/>
-                            <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Width="8" Cursor="SizeWE" Background="Transparent" BorderThickness="0"/>
+                            <Thumb x:Name="PART_LeftHeaderGripper" HorizontalAlignment="Left" Width="6" Cursor="SizeWE"><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="Transparent"/></ControlTemplate></Thumb.Template></Thumb>
+                            <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Width="6" Cursor="SizeWE"><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="Transparent"><Rectangle Width="1" HorizontalAlignment="Right" Fill="#40FFFFFF"/></Border></ControlTemplate></Thumb.Template></Thumb>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>

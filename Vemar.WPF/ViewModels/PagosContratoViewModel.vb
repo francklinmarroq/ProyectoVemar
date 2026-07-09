@@ -128,10 +128,18 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
         End Set
     End Property
 
+    Private _editandoId As Integer = 0
+
     Public ReadOnly Property AgregarCommand As ICommand
+    Public ReadOnly Property EditarCommand As ICommand
     Public ReadOnly Property EliminarCommand As ICommand
     Public ReadOnly Property ReciboPdfCommand As ICommand
-    Public ReadOnly Property SolicitudPagoCommand As ICommand
+
+    Public ReadOnly Property TituloFormulario As String
+        Get
+            Return If(_editandoId = 0, "Nuevo Pago", "Editar Pago")
+        End Get
+    End Property
     Public ReadOnly Property GuardarCommand As ICommand
         Get
             Return _guardarCommand
@@ -142,16 +150,9 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
         _service = service
         _contratoFijo = contratoFijo
 
-        SolicitudPagoCommand = New RelayCommand(Async Sub(o)
-                                                   Try
-                                                       Dim rpt As New Vemar.WPF.Reports.SolicitudPagoReport()
-                                                       Await rpt.GeneratePdfAsync(_contratoFijo, Items.OrderBy(Function(x) x.Id).ToList())
-                                                   Catch ex As Exception
-                                                       MessageBox.Show("Error al generar solicitud: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
-                                                   End Try
-                                               End Sub)
-
         AgregarCommand = New RelayCommand(Sub(o)
+                                             _editandoId = 0
+                                             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(TituloFormulario)))
                                              Valor = ""
                                              Descripcion = ""
                                              FormaPago = ""
@@ -159,7 +160,21 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
                                              Dim win As New AgregarPagoContratoWindow()
                                              win.DataContext = Me
                                              win.Owner = Application.Current.MainWindow
+                                             win.ShowDialog()
+                                         End Sub)
 
+        EditarCommand = New RelayCommand(Sub(o)
+                                             Dim p = TryCast(o, PagoContrato)
+                                             If p Is Nothing Then Return
+                                             _editandoId = p.Id
+                                             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(TituloFormulario)))
+                                             Valor = p.Valor.ToString()
+                                             Descripcion = If(p.Descripcion, "")
+                                             FormaPago = If(p.FormaPago, "")
+                                             Fecha = If(p.Fecha = Date.MinValue, DateTime.Today, p.Fecha)
+                                             Dim win As New AgregarPagoContratoWindow()
+                                             win.DataContext = Me
+                                             win.Owner = Application.Current.MainWindow
                                              win.ShowDialog()
                                          End Sub)
 
@@ -216,14 +231,26 @@ Public Class PagosContratoViewModel : Implements INotifyPropertyChanged
     Public Async Sub Guardar(obj As Object)
         Try
             Dim v As Decimal = 0
-            Decimal.TryParse(Valor, v)
-            Await _service.Add(New PagoContrato With {
-                .Valor = v,
-                .Descripcion = Descripcion,
-                .FormaPago = FormaPago,
-                .Fecha = Fecha,
-                .Contrato = _contratoFijo
-            })
+            Decimal.TryParse(Valor.Replace(",", "."), Globalization.NumberStyles.Any,
+                             Globalization.CultureInfo.InvariantCulture, v)
+            If _editandoId = 0 Then
+                Await _service.Add(New PagoContrato With {
+                    .Valor = v,
+                    .Descripcion = Descripcion,
+                    .FormaPago = FormaPago,
+                    .Fecha = Fecha,
+                    .Contrato = _contratoFijo
+                })
+            Else
+                Await _service.Update(_editandoId, New PagoContrato With {
+                    .Id = _editandoId,
+                    .Valor = v,
+                    .Descripcion = Descripcion,
+                    .FormaPago = FormaPago,
+                    .Fecha = Fecha,
+                    .Contrato = _contratoFijo
+                })
+            End If
             RaiseEvent GuardadoExitoso(Me, EventArgs.Empty)
             CargarItems()
         Catch ex As Exception

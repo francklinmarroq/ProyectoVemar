@@ -367,26 +367,23 @@ Namespace Vemar.WPF.Reports
             Const pageH As Double = 11.0
             Const margin As Double = 0.5
             Const cW As Double = 7.5              ' contentWidth = pageW - 2*margin
-            Const logoSize As Double = 0.9
-            Const logoRight As Double = 1.05      ' info text starts here
-            Const cWInfo As Double = 6.45         ' cW - logoRight
-            Const sep1Top As Double = 0.97
-
-            ' Remedida info block
-            Const ibTop As Double = 1.08           ' infoBlockTop
             Const ibRowH As Double = 0.22
             Const ibLeftW As Double = 3.5          ' left column width
             Const ibRightX As Double = 3.9         ' right column x
             Const ibRightW As Double = 3.6         ' cW - ibRightX
             Const ibRows As Integer = 4            ' rows in left/right columns
 
-            Const objetoTop As Double = ibTop + ibRows * ibRowH + 0.02
-            Const sep2Top As Double = objetoTop + ibRowH + 0.04
-            Const tablixTop As Double = sep2Top + 0.12
-
             Dim fechaGen = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
             Dim logoB64 = GetLogoBase64()
             Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
+
+            Dim hdr = ReportHeaderHelper.BuildHeader(logoB64, cW, "rfr")
+
+            ' Remedida info block
+            Dim ibTop As Double = hdr.heightUsed + 0.56
+            Dim objetoTop As Double = ibTop + ibRows * ibRowH + 0.02
+            Dim sep2Top As Double = objetoTop + ibRowH + 0.04
+            Dim tablixTop As Double = sep2Top + 0.12
 
             ' ── Expresiones condicionales para el Tablix ──
             Dim bgExpr = "=IIF(Fields!Tipo.Value=""SECTION_G"",""#EA580C"",IIF(Fields!Tipo.Value=""SECTION_C"",""#16A34A"",IIF(Fields!Tipo.Value=""HDR_G"",""#FFF7ED"",IIF(Fields!Tipo.Value=""HDR_C"",""#F0FDF4"",IIF(Fields!Tipo.Value=""TOTAL_G"" OR Fields!Tipo.Value=""TOTAL_C"",""#F8FAFC"",IIF(Fields!Tipo.Value=""BALANCE"",""#EFF6FF"",""White""))))))"
@@ -424,24 +421,12 @@ Namespace Vemar.WPF.Reports
             ' Body
             sb.Append("<Body><ReportItems>")
 
-            ' Logo
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo""><Source>Embedded</Source><Value>VemarLogo</Value>")
-                sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append("<Top>0in</Top><Left>0in</Left>")
-                sb.Append($"<Height>{FmtIn(logoSize)}</Height><Width>{FmtIn(logoSize)}</Width>")
-                sb.Append("<Style/></Image>")
-            End If
-
-            Dim hLeft = FmtIn(If(hasLogo, logoRight, 0.0))
-            Dim hWidth = FmtIn(If(hasLogo, cWInfo, cW))
+            ' ── Membrete ────────────────────────────────────────────────────
+            sb.Append(hdr.xml)
 
             ' Encabezado empresa / título / fecha
-            AppendTxt(sb, "TxtEmpresa", "CONSTRUCTORA VEMAR S. de R.L. de C.V.", "0.05in", hLeft, "0.28in", hWidth, "13pt", "Bold", "#1E3A8A")
-            AppendTxt(sb, "TxtTitulo", "REPORTE FINANCIERO DE REMEDIDA", "0.35in", hLeft, "0.25in", hWidth, "11pt", "Bold", "#1E40AF")
-            AppendTxt(sb, "TxtFecha", $"Generado: {fechaGen}", "0.62in", hLeft, "0.18in", hWidth, "8pt", "Normal", "#64748B")
-
-            AppendSep(sb, "RctSep1", FmtIn(sep1Top), FmtIn(cW), "#1E40AF")
+            AppendTxt(sb, "TxtTitulo", "REPORTE FINANCIERO DE REMEDIDA", FmtIn(hdr.heightUsed + 0.05), "0in", "0.25in", FmtIn(cW), "11pt", "Bold", "#1E40AF")
+            AppendTxt(sb, "TxtFecha", $"Generado: {fechaGen}", FmtIn(hdr.heightUsed + 0.30), "0in", "0.18in", FmtIn(cW), "8pt", "Normal", "#64748B")
 
             ' Datos encabezado remedida (4 filas x 2 columnas)
             Dim leftData = New (String, String)() {

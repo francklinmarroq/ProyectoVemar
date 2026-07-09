@@ -71,8 +71,10 @@ Namespace Vemar.WPF.Reports
             Dim area = p.Area.ToString("N2", CultureInfo.InvariantCulture) & " m²"
 
             Dim clienteNombre = XmlEsc(If(p.Cliente?.Nombre, "___________________________"))
-            Dim clienteRtn = XmlEsc(If(p.Cliente?.Rtn, "___________________________"))
-            Dim clienteRep = XmlEsc(If(p.Cliente?.Representante, ""))
+            Dim clienteRtn = XmlEscOpt(p.Cliente?.Rtn)
+            Dim clienteRep = XmlEscOpt(p.Cliente?.Representante)
+            Dim clienteRepDni = XmlEscOpt(p.Cliente?.DniRepresentante)
+            Dim clienteRepRtn = XmlEscOpt(p.Cliente?.RtnRepresentante)
             Dim proyNombre = XmlEsc(If(p.Nombre, "—"))
             Dim claveSure = XmlEsc(If(p.ClaveSure, "—"))
             Dim matricula = XmlEsc(If(p.Matricula, "—"))
@@ -95,23 +97,14 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Body><ReportItems>")
 
             ' ── Membrete ──────────────────────────────────────────────────────
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo""><Source>Embedded</Source><Value>VemarLogo</Value>")
-                sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append("<Top>0in</Top><Left>0in</Left><Height>0.75in</Height><Width>0.75in</Width><Style/></Image>")
-            End If
+            Dim hdr = ReportHeaderHelper.BuildHeader(logoB64, cW, "bp")
+            sb.Append(hdr.xml)
 
-            Dim hL = FmtIn(If(hasLogo, 0.85, 0.0))
-            Dim hW = FmtIn(If(hasLogo, cW - 0.85, cW))
-
-            T(sb, "TxEmp", "CONSTRUCTORA VEMAR S. de R.L. de C.V.", "0.04in", hL, "0.28in", hW, "13pt", "Bold", "#1E3A8A", "Left")
-            T(sb, "TxTit", "ACTA DE COMPROMISO DEL URBANIZADOR", "0.34in", hL, "0.25in", hW, "11pt", "Bold", "#1E40AF", "Left")
-            T(sb, "TxGen", $"Fecha: {fechaGen}    |    Registro No. {p.Id}", "0.61in", hL, "0.18in", hW, "8pt", "Normal", "#64748B", "Left")
-
-            Sep(sb, "S0", "0.86in", FmtIn(cW), "#1E40AF", "2pt")
+            T(sb, "TxTit", "ACTA DE COMPROMISO DEL URBANIZADOR", FmtIn(hdr.heightUsed + 0.05), "0in", "0.25in", FmtIn(cW), "11pt", "Bold", "#1E40AF", "Left")
+            T(sb, "TxGen", $"Fecha: {fechaGen}    |    Registro No. {p.Id}", FmtIn(hdr.heightUsed + 0.30), "0in", "0.18in", FmtIn(cW), "8pt", "Normal", "#64748B", "Left")
 
             ' ── Nombre del proyecto ──
-            Dim nTop = 0.98
+            Dim nTop = hdr.heightUsed + 0.56
             BoxRect(sb, "BxNom", FmtIn(nTop), "0in", "0.72in", FmtIn(cW), "#1E40AF")
             T(sb, "LbNom", "NOMBRE DEL PROYECTO", FmtIn(nTop + 0.06), "0.12in", "0.2in", FmtIn(cW - 0.2), "8pt", "Bold", "#94A3B8", "Left")
             T(sb, "VlNom", proyNombre, FmtIn(nTop + 0.28), "0.1in", "0.35in", FmtIn(cW - 0.15), "14pt", "Bold", "#1E3A8A", "Left")
@@ -134,17 +127,16 @@ Namespace Vemar.WPF.Reports
             Dim col1W = (cW - 0.1) / 2
             Dim col2X = col1W + 0.1
 
-            ' Fila 1: Nombre del proyecto (ancho completo)
-            BoxRect(sb, "BxNP", FmtIn(gTop), "0in", FmtIn(gRowH), FmtIn(cW), "#FFFFFF")
-            T(sb, "LbNP", "Nombre del Proyecto", FmtIn(gTop + 0.05), "0.08in", "0.14in", FmtIn(cW - 0.16), "7pt", "Normal", "#64748B", "Left")
-            T(sb, "VlNP", proyNombre, FmtIn(gTop + 0.18), "0.08in", "0.18in", FmtIn(cW - 0.16), "11pt", "Bold", "#0F172A", "Left")
-
             FieldPair(sb, "Cl", "Cliente / Urbanizador", clienteNombre,
                           "Rtn", "R.T.N.", clienteRtn,
-                          FmtIn(gTop + gRowH + 0.06), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+                          FmtIn(gTop), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
 
             FieldPair(sb, "Rep", "Representante Legal", clienteRep,
-                          "Tel", "Teléfono", XmlEsc(If(p.Cliente?.Telefono, "—")),
+                          "RepDni", "DNI Representante", clienteRepDni,
+                          FmtIn(gTop + (gRowH + 0.06)), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+
+            FieldPair(sb, "RepRtn", "RTN Representante", clienteRepRtn,
+                          "Tel", "Teléfono", XmlEscOpt(p.Cliente?.Telefono),
                           FmtIn(gTop + (gRowH + 0.06) * 2), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
 
             FieldPair(sb, "Cat", "Categoría", categoria,
@@ -271,6 +263,11 @@ Namespace Vemar.WPF.Reports
 
         Private Function XmlEsc(s As String) As String
             If String.IsNullOrEmpty(s) Then Return "—"
+            Return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("""", "&quot;")
+        End Function
+
+        Private Function XmlEscOpt(s As String) As String
+            If String.IsNullOrWhiteSpace(s) Then Return ""
             Return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("""", "&quot;")
         End Function
 

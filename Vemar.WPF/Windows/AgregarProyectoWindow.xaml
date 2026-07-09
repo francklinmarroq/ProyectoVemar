@@ -98,11 +98,18 @@
                     <TextBox Text="{Binding ClaveSure, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" b:DniTextBoxBehavior.IsEnabled="True"/>
                 </StackPanel>
             </UniformGrid>
-            <UniformGrid Columns="4" Margin="0,0,0,0">
+            <UniformGrid Columns="4" Margin="0,0,0,12">
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Área" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Area, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Valor del Proyecto (L)" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding ValorProyecto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
+                </StackPanel>
+            </UniformGrid>
+            <UniformGrid Columns="4" Margin="0,0,0,0">
+                <StackPanel Margin="0,0,8,0" Grid.Column="0"/>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Cliente" Style="{StaticResource FieldLabel}"/>
                     <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"

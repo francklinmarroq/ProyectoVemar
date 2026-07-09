@@ -20,6 +20,7 @@ Public Class CajaChicaViewModel : Inherits ViewModelBase : Implements INotifyPro
     Private _concepto As String = ""
     Private _monto As String = ""
     Private _tipoOperacion As String = "Entrada"
+    Private _numeroFactura As String = ""
     Private _vinculoTipo As String = "Ninguno"     ' "Ninguno" | "Remedida" | "Proyecto"
     Private _remedidaSel As Remedida
     Private _proyectoSel As Proyecto
@@ -145,6 +146,16 @@ Public Class CajaChicaViewModel : Inherits ViewModelBase : Implements INotifyPro
         Set(v As String)
             _tipoOperacion = v
             OnProp(NameOf(TipoOperacion))
+        End Set
+    End Property
+
+    Public Property NumeroFactura As String
+        Get
+            Return _numeroFactura
+        End Get
+        Set(v As String)
+            _numeroFactura = v
+            OnProp(NameOf(NumeroFactura))
         End Set
     End Property
 
@@ -299,6 +310,7 @@ Public Class CajaChicaViewModel : Inherits ViewModelBase : Implements INotifyPro
         Fecha = Date.Today
         Concepto = ""
         Monto = ""
+        NumeroFactura = ""
         TipoOperacion = "Entrada"
         VinculoTipo = "Ninguno"
         RemedidaSeleccionada = Nothing
@@ -359,6 +371,7 @@ Public Class CajaChicaViewModel : Inherits ViewModelBase : Implements INotifyPro
                 .Concepto = Concepto,
                 .Monto = montoVal,
                 .TipoOperacion = TipoOperacion,
+                .NumeroFactura = If(String.IsNullOrWhiteSpace(NumeroFactura), Nothing, NumeroFactura.Trim()),
                 .Remedida = If(VinculoTipo = "Remedida", RemedidaSeleccionada, Nothing),
                 .Proyecto = If(VinculoTipo = "Proyecto", ProyectoSeleccionado, Nothing)
             }

@@ -29,18 +29,18 @@ Namespace Vemar.WPF.Reports
             Return _logoBase64
         End Function
 
-        Public Async Function GeneratePdfAsync(contrato As Contrato, pagosAnteriores As List(Of PagoContrato)) As Task(Of String)
+        Public Async Function GeneratePdfAsync(proyecto As Proyecto, valorTotal As Decimal, cobrosAnteriores As List(Of CobroProyecto), montoSolicitud As Decimal) As Task(Of String)
             Return Await Task.Run(Function()
                 Try
-                    Dim rdlcXml = BuildRdlcXml(contrato, pagosAnteriores)
+                    Dim rdlcXml = BuildRdlcXml(proyecto, valorTotal, cobrosAnteriores, montoSolicitud)
                     Dim report As New LocalReport()
                     Using ms As New MemoryStream(Encoding.UTF8.GetBytes(rdlcXml))
                         report.LoadReportDefinition(ms)
                     End Using
 
                     Dim pdfBytes = report.Render("PDF")
-                    Dim nombre = If(String.IsNullOrWhiteSpace(contrato.Proyecto?.Nombre), "proyecto", contrato.Proyecto.Nombre)
-                    Dim nSolicitud = pagosAnteriores.Count + 1
+                    Dim nombre = If(String.IsNullOrWhiteSpace(proyecto.Nombre), "proyecto", proyecto.Nombre)
+                    Dim nSolicitud = cobrosAnteriores.Count + 1
                     PdfPreviewHelper.ShowPreview(pdfBytes, "Solicitud de Pago", $"SolicitudPago_{nombre}_N{nSolicitud}_{DateTime.Now:yyyyMMdd_HHmmss}")
                     Return String.Empty
                 Catch ex As Exception
@@ -58,7 +58,7 @@ Namespace Vemar.WPF.Reports
             End Function)
         End Function
 
-        Private Function BuildRdlcXml(contrato As Contrato, pagos As List(Of PagoContrato)) As String
+        Private Function BuildRdlcXml(proyecto As Proyecto, valorContrato As Decimal, pagos As List(Of CobroProyecto), montoSolicitud As Decimal) As String
             Const pW As Double = 8.5
             Const pH As Double = 11.0
             Const mg As Double = 0.6
@@ -67,19 +67,17 @@ Namespace Vemar.WPF.Reports
             Dim logoB64 = GetLogoBase64()
             Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
 
-            Dim proyecto = contrato.Proyecto
-            Dim cliente = proyecto?.Cliente
-            Dim valorContrato = contrato.Valor
+            Dim cliente = proyecto.Cliente
             Dim nSolicitud = pagos.Count + 1
 
             ' Calcular saldo actual
-            Dim totalPagado = pagos.Sum(Function(p) p.Valor)
+            Dim totalPagado = pagos.Sum(Function(p) p.Monto)
             Dim saldoActual = valorContrato - totalPagado
 
             Dim clienteNombre = If(cliente?.Nombre, "").ToUpper()
             Dim fechaDoc = DateTime.Now.ToString("dd 'DE' MMMM 'DEL' yyyy", New CultureInfo("es-ES")).ToUpper()
-            Dim proyectoNombre = If(proyecto?.Nombre, "").ToUpper()
-            Dim proyectoDesc = If(contrato.Descripcion, "")
+            Dim proyectoNombre = If(proyecto.Nombre, "").ToUpper()
+            Dim proyectoDesc = If(proyecto.Ubicacion, "")
 
             Dim IC = CultureInfo.InvariantCulture
             Dim Fmt = Function(v As Decimal) "L " & v.ToString("N2", IC)
@@ -118,20 +116,26 @@ Namespace Vemar.WPF.Reports
                         Dim safe = text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("""", "&quot;")
                         sb.Append($"<Textbox Name=""{Id()}"">")
                         sb.Append($"<Left>{left}in</Left><Top>{top}in</Top><Width>{w}in</Width><Height>{h}in</Height>")
-                        sb.Append($"<Style>")
-                        sb.Append($"<FontSize>{fontSize}pt</FontSize>")
-                        If bold Then sb.Append("<FontWeight>Bold</FontWeight>")
-                        If italic Then sb.Append("<FontStyle>Italic</FontStyle>")
-                        sb.Append($"<TextAlign>{align}</TextAlign>")
-                        sb.Append($"<Color>{color}</Color>")
-                        sb.Append($"<BackgroundColor>{bgColor}</BackgroundColor>")
+                        sb.Append("<Style>")
+                        If bgColor <> "Transparent" Then sb.Append($"<BackgroundColor>{bgColor}</BackgroundColor>")
                         sb.Append("<VerticalAlign>Middle</VerticalAlign>")
                         sb.Append("<PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight>")
                         If border <> "None" Then
                             sb.Append($"<Border><Color>{borderColor}</Color><Style>{border}</Style></Border>")
                         End If
                         sb.Append("</Style>")
+                        sb.Append("<Paragraphs><Paragraph>")
+                        sb.Append($"<Style><TextAlign>{align}</TextAlign></Style>")
+                        sb.Append("<TextRuns><TextRun>")
                         sb.Append($"<Value>{safe}</Value>")
+                        sb.Append("<Style>")
+                        sb.Append($"<FontSize>{fontSize}pt</FontSize>")
+                        If bold Then sb.Append("<FontWeight>Bold</FontWeight>")
+                        If italic Then sb.Append("<FontStyle>Italic</FontStyle>")
+                        sb.Append($"<Color>{color}</Color>")
+                        sb.Append("</Style>")
+                        sb.Append("</TextRun></TextRuns>")
+                        sb.Append("</Paragraph></Paragraphs>")
                         sb.Append("</Textbox>")
                     End Sub
 
@@ -144,33 +148,43 @@ Namespace Vemar.WPF.Reports
                            sb.Append($"<Rectangle Name=""{Id()}"">")
                            sb.Append($"<Left>{left}in</Left><Top>{top}in</Top><Width>{w}in</Width><Height>{h}in</Height>")
                            sb.Append("<Style>")
-                           sb.Append($"<BackgroundColor>{bgColor}</BackgroundColor>")
-                           sb.Append($"<Border><Color>{borderColor}</Color><Style>{borderStyle}</Style><Width>{borderWidth}</Width></Border>")
+                           If bgColor <> "Transparent" Then sb.Append($"<BackgroundColor>{bgColor}</BackgroundColor>")
+                           If borderStyle <> "None" AndAlso borderColor <> "Transparent" Then
+                               sb.Append($"<Border><Color>{borderColor}</Color><Style>{borderStyle}</Style><Width>{borderWidth}</Width></Border>")
+                           End If
                            sb.Append("</Style>")
                            sb.Append("</Rectangle>")
                        End Sub
 
+            ' ── FONDO HEADER ──────────────────────────────────────────────────────
+            Dim hdrH2 = 1.0
+            Rect(mg, y, cW - mg, hdrH2, "#F8FAFC", "None", "#000000", "0pt")
+
             ' ── LOGO (izquierda) ──────────────────────────────────────────────────
             If hasLogo Then
                 sb.Append($"<Image Name=""{Id()}"">")
-                sb.Append($"<Left>{mg}in</Left><Top>{y}in</Top><Width>1.3in</Width><Height>0.75in</Height>")
+                sb.Append($"<Left>{mg + 0.05}in</Left><Top>{y + 0.1}in</Top><Width>1.1in</Width><Height>0.8in</Height>")
                 sb.Append("<Source>Embedded</Source><Value>VemarLogo</Value>")
                 sb.Append("<Sizing>FitProportional</Sizing>")
                 sb.Append("</Image>")
             End If
 
             ' ── MEMBRETE (centro) ─────────────────────────────────────────────────
-            Dim mLeft = mg + 1.35
-            Dim mW = cW - 1.35
-            T(mLeft, y, mW, 0.22, "CONSTRUCTORA", 7, False, "Center", "#555555", "Transparent", False, "None", "#000000")
-            T(mLeft, y + 0.22, mW, 0.34, "VEMAR", 20, True, "Center", "#1A1A1A", "Transparent", False, "None", "#000000")
-            T(mLeft, y + 0.56, mW, 0.16, "~CONSULTORÍA · AMBIENTE · OBRA CIVIL~", 7, False, "Center", "#555555", "Transparent", False, "None", "#000000")
-            T(mLeft, y + 0.72, mW, 0.14, "EMAIL: constructora.vemar@yahoo.com", 7, False, "Center", "#666666", "Transparent", False, "None", "#000000")
-            T(mLeft, y + 0.86, mW, 0.14, "RTN: 03019012468535", 7, False, "Center", "#666666", "Transparent", False, "None", "#000000")
-            y += 1.05
+            Dim mLeft = mg + 1.25
+            Dim mW = cW - mg - 1.25 - 0.9
+            T(mLeft, y + 0.08, mW, 0.18, "CONSTRUCTORA VEMAR S. de R.L. de C.V.", 7, False, "Center", "#94A3B8", "Transparent", False, "None", "#000000")
+            T(mLeft, y + 0.26, mW, 0.38, "VEMAR", 22, True, "Center", "#1E3A8A", "Transparent", False, "None", "#000000")
+            T(mLeft, y + 0.62, mW, 0.16, "Consultoría  ·  Ambiente  ·  Obra Civil", 8, False, "Center", "#64748B", "Transparent", True, "None", "#000000")
+            T(mLeft, y + 0.80, mW, 0.14, "constructora.vemar@yahoo.com  |  RTN: 03019012468535", 7, False, "Center", "#94A3B8", "Transparent", False, "None", "#000000")
 
-            ' ── NÚMERO DE PÁGINA ────────────────────────────────────────────────
-            T(mg + cW - 0.8, 0.0, 0.8, 0.2, "Pág. 1/1", 8, False, "Right", "#666666", "Transparent", False, "None", "#000000")
+            ' ── NÚMERO DE PÁGINA (derecha) ──────────────────────────────────────
+            T(mg + cW - mg - 0.9, y + 0.08, 0.9, 0.16, "Pág. 1 / 1", 7, False, "Right", "#94A3B8", "Transparent", False, "None", "#000000")
+
+            y += hdrH2
+
+            ' ── LÍNEA AZUL DIVISORIA ─────────────────────────────────────────────
+            Rect(mg, y, cW - mg, 0.04, "#1E3A8A", "None", "#000000", "0pt")
+            y += 0.1
 
             ' ── TÍTULO SOLICITUD DE PAGO ─────────────────────────────────────────
             y += 0.15
@@ -178,7 +192,7 @@ Namespace Vemar.WPF.Reports
             y += 0.38
 
             ' ── CAJA AMARILLA CON DATOS DEL CLIENTE/PROYECTO ─────────────────────
-            Dim boxH = 0.85
+            Dim boxH = 1.1
             Rect(mg, y, cW, boxH, "#FFFDE7", "Solid", "#C8A000", "1pt")
 
             Dim lx = mg + 0.08
@@ -189,15 +203,16 @@ Namespace Vemar.WPF.Reports
             T(lx + 1.2, y + 0.04 + bLine, cW - 1.28, bLine, fechaDoc, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx, y + 0.04 + bLine * 2, 1.8, bLine, "NOMBRE DEL PROYECTO:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx + 1.8, y + 0.04 + bLine * 2, cW - 1.88, bLine, proyectoNombre, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
-            T(lx, y + 0.04 + bLine * 3, 1.8, bLine, "DESCRIPCIÓN DEL PROYECTO:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
-            T(lx + 1.8, y + 0.04 + bLine * 3, cW - 1.88, bLine, proyectoDesc, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
+            T(lx, y + 0.04 + bLine * 3, 2.1, bLine, "DESCRIPCIÓN DEL PROYECTO:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
+            T(lx + 2.1, y + 0.04 + bLine * 3, cW - 2.18, bLine, proyectoDesc, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
 
             y += boxH + 0.18
 
             ' ── TABLA DE PAGOS ────────────────────────────────────────────────────
-            ' Anchos de columnas: ITEM=0.45, DESC=2.3, FORMA=1.3, FECHA=1.0, MONTO=1.1, SALDO=1.15
-            Dim colX() As Double = {mg, mg + 0.45, mg + 2.75, mg + 4.05, mg + 5.05, mg + 6.15}
-            Dim colW() As Double = {0.45, 2.3, 1.3, 1.0, 1.1, 1.15}
+            ' Columnas suman 6.7in (= cW - mg) para no desbordar el body
+            ' ITEM=0.4, DESC=2.1, FORMA=1.2, FECHA=0.95, MONTO=1.05, SALDO=1.0
+            Dim colX() As Double = {mg, mg + 0.4, mg + 2.5, mg + 3.7, mg + 4.65, mg + 5.7}
+            Dim colW() As Double = {0.4, 2.1, 1.2, 0.95, 1.05, 1.0}
             Dim hdrH = 0.28
 
             ' Encabezado tabla
@@ -221,21 +236,21 @@ Namespace Vemar.WPF.Reports
             T(colX(5), y, colW(5), rowH, Fmt(valorContrato), 9, True, "Right", "#000000", "White", False, "Solid", "#D1D5DB")
             y += rowH
 
-            ' Filas de pagos anteriores
+            ' Filas de cobros anteriores al cliente
             Dim saldoCorr = valorContrato
             For i = 0 To pagos.Count - 1
                 Dim p = pagos(i)
-                saldoCorr -= p.Valor
+                saldoCorr -= p.Monto
                 Dim rowBg = If(i Mod 2 = 0, altBg, "White")
                 Dim nPago = i + 1
                 Dim fechaStr = If(p.Fecha = Date.MinValue, "", FmtFecha(p.Fecha))
-                Dim desc = If(String.IsNullOrWhiteSpace(p.Descripcion), $"PAGO N°{nPago}", p.Descripcion.ToUpper())
+                Dim desc = If(String.IsNullOrWhiteSpace(p.Descripcion), $"COBRO N°{nPago}", p.Descripcion.ToUpper())
                 Dim forma = If(String.IsNullOrWhiteSpace(p.FormaPago), "", p.FormaPago)
                 T(colX(0), y, colW(0), rowH, (nPago + 1).ToString(), 9, False, "Center", "#000000", rowBg, False, "Solid", "#D1D5DB")
                 T(colX(1), y, colW(1), rowH, desc, 9, False, "Left", "#000000", rowBg, False, "Solid", "#D1D5DB")
                 T(colX(2), y, colW(2), rowH, forma, 9, False, "Center", "#000000", rowBg, False, "Solid", "#D1D5DB")
                 T(colX(3), y, colW(3), rowH, fechaStr, 9, False, "Center", "#000000", rowBg, False, "Solid", "#D1D5DB")
-                T(colX(4), y, colW(4), rowH, Fmt(p.Valor), 9, False, "Right", "#000000", rowBg, False, "Solid", "#D1D5DB")
+                T(colX(4), y, colW(4), rowH, Fmt(p.Monto), 9, False, "Right", "#000000", rowBg, False, "Solid", "#D1D5DB")
                 T(colX(5), y, colW(5), rowH, Fmt(saldoCorr), 9, False, "Right", "#000000", rowBg, False, "Solid", "#D1D5DB")
                 y += rowH
             Next
@@ -243,19 +258,19 @@ Namespace Vemar.WPF.Reports
             ' Fila solicitud actual (resaltada en amarillo)
             Dim nSol = pagos.Count + 2
             Dim solicitudDesc = $"SOLICITUD DE PAGO N°{nSolicitud}"
-            Rect(colX(0), y, cW, rowH, "#FFFDE7", "Solid", "#C8A000", "1pt")
+            Dim saldoTrasEsta = saldoCorr - montoSolicitud
+            Rect(colX(0), y, cW - mg, rowH, "#FFFDE7", "Solid", "#C8A000", "1pt")
             T(colX(0), y, colW(0), rowH, nSol.ToString(), 9, True, "Center", "#000000", "Transparent", False, "Solid", "#C8A000")
             T(colX(1), y, colW(1), rowH, solicitudDesc, 9, True, "Left", "#000000", "Transparent", False, "Solid", "#C8A000")
-            T(colX(2), y, colW(2), rowH, "Pendiente", 9, True, "Center", "#555555", "Transparent", False, "Solid", "#C8A000")
-            T(colX(3), y, colW(3), rowH, "Pendiente", 9, True, "Center", "#555555", "Transparent", False, "Solid", "#C8A000")
-            T(colX(4), y, colW(4), rowH, Fmt(saldoCorr), 9, True, "Right", "#000000", "Transparent", False, "Solid", "#C8A000")
-            T(colX(5), y, colW(5), rowH, Fmt(saldoCorr), 9, True, "Right", "#000000", "Transparent", False, "Solid", "#C8A000")
+            T(colX(2), y, colW(2), rowH, "Por cobrar", 9, True, "Center", "#555555", "Transparent", False, "Solid", "#C8A000")
+            T(colX(3), y, colW(3), rowH, DateTime.Now.ToString("d/MM/yyyy"), 9, True, "Center", "#555555", "Transparent", False, "Solid", "#C8A000")
+            T(colX(4), y, colW(4), rowH, Fmt(montoSolicitud), 9, True, "Right", "#000000", "Transparent", False, "Solid", "#C8A000")
+            T(colX(5), y, colW(5), rowH, Fmt(saldoTrasEsta), 9, True, "Right", "#000000", "Transparent", False, "Solid", "#C8A000")
             y += rowH + 0.18
 
             ' ── TOTAL A CANCELAR ─────────────────────────────────────────────────
-            ' Convertir saldo a letras sencillo
-            Dim saldoEntero = Math.Floor(saldoCorr)
-            Dim totalTexto = $"TOTAL, A CANCELAR: {Fmt(saldoCorr)} ({NumerosALetras(saldoEntero)} con 00/100)"
+            Dim saldoEntero = Math.Floor(montoSolicitud)
+            Dim totalTexto = $"TOTAL, A CANCELAR: {Fmt(montoSolicitud)} ({NumerosALetras(saldoEntero)} con 00/100)"
             T(mg, y, cW, 0.22, totalTexto, 9, True, "Center", "#000000", "Transparent", False, "None", "#000000")
             y += 0.35
 
@@ -281,10 +296,10 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Page>")
             sb.Append($"<PageHeight>{pH}in</PageHeight>")
             sb.Append($"<PageWidth>{pW}in</PageWidth>")
-            sb.Append($"<TopMargin>{mg}in</TopMargin>")
-            sb.Append($"<BottomMargin>{mg}in</BottomMargin>")
-            sb.Append($"<LeftMargin>{mg}in</LeftMargin>")
-            sb.Append($"<RightMargin>{mg}in</RightMargin>")
+            sb.Append("<TopMargin>0.1in</TopMargin>")
+            sb.Append("<BottomMargin>0.1in</BottomMargin>")
+            sb.Append("<LeftMargin>0in</LeftMargin>")
+            sb.Append("<RightMargin>0in</RightMargin>")
             sb.Append("</Page>")
             sb.Append("</Report>")
             Return sb.ToString()

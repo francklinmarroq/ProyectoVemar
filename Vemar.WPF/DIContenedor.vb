@@ -99,6 +99,7 @@ Module DIContenedor
         services.AddSingleton(Of IDataService(Of TipoMovimiento), GenericDataService(Of TipoMovimiento))()
         services.AddSingleton(Of IDataService(Of Usuario), GenericDataService(Of Usuario))()
         services.AddSingleton(Of IDataService(Of CajaChica), CajaChicaDataService)()
+        services.AddSingleton(Of IDataService(Of CobroProyecto), CobroProyectoDataService)()
 
         ' Dashboard ViewModel
         services.AddSingleton(Of DashboardViewModel)()

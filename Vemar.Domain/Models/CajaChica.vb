@@ -4,6 +4,7 @@ Public Class CajaChica : Inherits DomainObject
     Private _concepto As String
     Private _monto As Decimal
     Private _tipoOperacion As String   ' "Entrada" | "Salida"
+    Private _numeroFactura As String
     Private _remedida As Remedida
     Private _proyecto As Proyecto
 
@@ -41,6 +42,15 @@ Public Class CajaChica : Inherits DomainObject
         End Get
         Set(value As String)
             _tipoOperacion = value
+        End Set
+    End Property
+
+    Public Property NumeroFactura As String
+        Get
+            Return _numeroFactura
+        End Get
+        Set(value As String)
+            _numeroFactura = value
         End Set
     End Property
 

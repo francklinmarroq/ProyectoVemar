@@ -17,6 +17,7 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     Private ReadOnly _tramiteService As IDataService(Of Tramite)
     Private ReadOnly _asignacionService As IDataService(Of Asignacion)
     Private ReadOnly _avanceService As IDataService(Of Avance)
+    Private ReadOnly _cobroProyectoService As IDataService(Of CobroProyecto)
     Private _itemsSource As New ObservableCollection(Of Proyecto)
     Private _itemsView As ICollectionView
     Private _clientes As New ObservableCollection(Of Cliente)
@@ -31,6 +32,7 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     Private _matricula As String = ""
     Private _claveSure As String = ""
     Private _area As String = ""
+    Private _valorProyecto As String = ""
     Private _clienteSeleccionado As Cliente
     Private _zonificacionSeleccionada As Zonificacion
     Private _categoriaSeleccionada As CategoriaProyecto
@@ -147,6 +149,16 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
         End Set
     End Property
 
+    Public Property ValorProyecto As String
+        Get
+            Return _valorProyecto
+        End Get
+        Set(value As String)
+            _valorProyecto = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(ValorProyecto)))
+        End Set
+    End Property
+
     Public Property ClienteSeleccionado As Cliente
         Get
             Return _clienteSeleccionado
@@ -196,6 +208,8 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     Public ReadOnly Property AvancesExcelCommand As ICommand
     Public ReadOnly Property ContratosPdfCommand As ICommand
     Public ReadOnly Property ContratosExcelCommand As ICommand
+    Public ReadOnly Property VerSolicitudesCommand As ICommand
+    Public ReadOnly Property SolicitudPagoCommand As ICommand
     Public ReadOnly Property GuardarCommand As ICommand
         Get
             Return _guardarCommand
@@ -212,7 +226,8 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
                    gastoService As IDataService(Of GastoProyecto),
                    tramiteService As IDataService(Of Tramite),
                    asignacionService As IDataService(Of Asignacion),
-                   avanceService As IDataService(Of Avance))
+                   avanceService As IDataService(Of Avance),
+                   cobroProyectoService As IDataService(Of CobroProyecto))
         _service = service
         _clienteService = clienteService
         _zonificacionService = zonificacionService
@@ -224,6 +239,7 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
         _tramiteService = tramiteService
         _asignacionService = asignacionService
         _avanceService = avanceService
+        _cobroProyectoService = cobroProyectoService
 
         AgregarCommand = New RelayCommand(Sub(o)
                                              _proyectoEditando = Nothing
@@ -246,6 +262,7 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
                                                Matricula = p.Matricula
                                                ClaveSure = p.ClaveSure
                                                Area = p.Area.ToString()
+                                               ValorProyecto = p.ValorProyecto.ToString()
                                                ClienteSeleccionado = Clientes.FirstOrDefault(Function(c) c.Id = p.Cliente?.Id)
                                                ZonificacionSeleccionada = Zonificaciones.FirstOrDefault(Function(z) z.Id = p.Zonificacion?.Id)
                                                CategoriaSeleccionada = Categorias.FirstOrDefault(Function(c) c.Id = p.CategoriaProyecto?.Id)
@@ -433,6 +450,48 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
                                                      End Try
                                                  End Sub)
 
+        SolicitudPagoCommand = New RelayCommand(Async Sub(o)
+                                                   Dim p = TryCast(o, Proyecto)
+                                                   If p Is Nothing Then Return
+                                                   Try
+                                                       If p.ValorProyecto <= 0 Then
+                                                           MessageBox.Show("El proyecto no tiene un valor definido. Edite el proyecto y establezca el Valor del Proyecto antes de generar una solicitud de pago.",
+                                                                           "Valor no definido", MessageBoxButton.OK, MessageBoxImage.Warning)
+                                                           Return
+                                                       End If
+                                                       Dim todosCobros = Await _cobroProyectoService.GetAll()
+                                                       Dim cobros = todosCobros.Where(Function(c) c.Proyecto?.Id = p.Id).OrderBy(Function(x) x.Id).ToList()
+                                                       Dim totalCobrado = cobros.Sum(Function(c) c.Monto)
+                                                       Dim saldoPendiente = p.ValorProyecto - totalCobrado
+                                                       Dim dlg As New MontoSolicitudWindow(saldoPendiente)
+                                                       dlg.Owner = Application.Current.MainWindow
+                                                       dlg.ShowDialog()
+                                                       If Not dlg.Confirmado Then Return
+                                                       Dim nuevoCobro As New CobroProyecto With {
+                                                           .Proyecto = p,
+                                                           .Fecha = DateTime.Now,
+                                                           .Monto = dlg.MontoIngresado,
+                                                           .Descripcion = $"Solicitud de Pago N°{cobros.Count + 1}",
+                                                           .FormaPago = "Por cobrar"
+                                                       }
+                                                       Await _cobroProyectoService.Add(nuevoCobro)
+                                                       Dim rpt As New Vemar.WPF.Reports.SolicitudPagoReport()
+                                                       Await rpt.GeneratePdfAsync(p, p.ValorProyecto, cobros, dlg.MontoIngresado)
+                                                   Catch ex As Exception
+                                                       MessageBox.Show("Error al generar solicitud: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+                                                   End Try
+                                               End Sub)
+
+        VerSolicitudesCommand = New RelayCommand(Sub(o)
+                                                    Dim p = TryCast(o, Proyecto)
+                                                    If p Is Nothing Then Return
+                                                    Dim vm As New SolicitudesProyectoViewModel(_cobroProyectoService, p)
+                                                    Dim win As New SolicitudesProyectoWindow()
+                                                    win.DataContext = vm
+                                                    win.Owner = Application.Current.MainWindow
+                                                    win.ShowDialog()
+                                                End Sub)
+
         Dim _report As New Vemar.WPF.Reports.ProyectosReport()
         ExportarExcelCommand = New RelayCommand(Sub(o)
                                                    _report.GenerateExcelAsync(_itemsSource.ToList(), "Proyectos")
@@ -475,7 +534,7 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     End Sub
 
     Private Sub LimpiarFormulario()
-        Nombre = "" : Ubicacion = "" : Matricula = "" : ClaveSure = "" : Area = ""
+        Nombre = "" : Ubicacion = "" : Matricula = "" : ClaveSure = "" : Area = "" : ValorProyecto = ""
         ClienteSeleccionado = Nothing : ZonificacionSeleccionada = Nothing : CategoriaSeleccionada = Nothing
     End Sub
 
@@ -499,9 +558,12 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
             Dim areaDecimal As Decimal = 0
             Decimal.TryParse(Area?.Replace(",", "."), Globalization.NumberStyles.Any,
                              Globalization.CultureInfo.InvariantCulture, areaDecimal)
+            Dim valorDecimal As Decimal = 0
+            Decimal.TryParse(ValorProyecto?.Replace(",", "."), Globalization.NumberStyles.Any,
+                             Globalization.CultureInfo.InvariantCulture, valorDecimal)
             Dim item As New Proyecto With {
                 .Nombre = Nombre, .Ubicacion = Ubicacion, .Matricula = Matricula,
-                .ClaveSure = ClaveSure, .Area = areaDecimal,
+                .ClaveSure = ClaveSure, .Area = areaDecimal, .ValorProyecto = valorDecimal,
                 .Cliente = ClienteSeleccionado, .Zonificacion = ZonificacionSeleccionada,
                 .CategoriaProyecto = CategoriaSeleccionada
             }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vemar.EF;
 
@@ -11,9 +12,11 @@ using Vemar.EF;
 namespace Vemar.EF.Migrations
 {
     [DbContext(typeof(VemarDbContext))]
-    partial class VemarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260709144359_CajaChicaNumeroFactura")]
+    partial class CajaChicaNumeroFactura
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -181,39 +184,6 @@ namespace Vemar.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clientes");
-                });
-
-            modelBuilder.Entity("Vemar.Domain.CobroProyecto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EsEfectuado")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FormaPago")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Monto")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("ProyectoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProyectoId");
-
-                    b.ToTable("CobrosProyectos");
                 });
 
             modelBuilder.Entity("Vemar.Domain.CobroRemedida", b =>
@@ -483,9 +453,6 @@ namespace Vemar.EF.Migrations
                     b.Property<string>("Ubicacion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("ValorProyecto")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int?>("ZonificacionId")
                         .HasColumnType("int");
 
@@ -711,15 +678,6 @@ namespace Vemar.EF.Migrations
                     b.Navigation("Proyecto");
 
                     b.Navigation("Remedida");
-                });
-
-            modelBuilder.Entity("Vemar.Domain.CobroProyecto", b =>
-                {
-                    b.HasOne("Vemar.Domain.Proyecto", "Proyecto")
-                        .WithMany()
-                        .HasForeignKey("ProyectoId");
-
-                    b.Navigation("Proyecto");
                 });
 
             modelBuilder.Entity("Vemar.Domain.CobroRemedida", b =>

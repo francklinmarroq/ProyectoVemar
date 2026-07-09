@@ -85,26 +85,16 @@ Namespace Vemar.WPF.Reports
 
             sb.Append("<Body><ReportItems>")
 
-            ' ── Logo ──
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo""><Source>Embedded</Source><Value>VemarLogo</Value>")
-                sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append("<Top>0in</Top><Left>0in</Left><Height>0.75in</Height><Width>0.75in</Width><Style/></Image>")
-            End If
-
-            Dim hL = FmtIn(If(hasLogo, 0.85, 0.0))
-            Dim hW = FmtIn(If(hasLogo, cW - 0.85, cW))
+            ' ── Membrete ──────────────────────────────────────────────────────
+            Dim hdr = ReportHeaderHelper.BuildHeader(logoB64, cW, "br")
+            sb.Append(hdr.xml)
 
             ' ── Encabezado texto ──
-            T(sb, "TxEmp", "CONSTRUCTORA VEMAR S. de R.L. de C.V.", "0.04in", hL, "0.28in", hW, "13pt", "Bold", "#1E3A8A", "Left")
-            T(sb, "TxTit", "BOLETA DE RECEPCIÓN — REMEDIDA", "0.34in", hL, "0.25in", hW, "11pt", "Bold", "#1E40AF", "Left")
-            T(sb, "TxGen", $"Generado: {fechaGen}    |    ID: {r.Id}", "0.61in", hL, "0.18in", hW, "8pt", "Normal", "#64748B", "Left")
-
-            ' Línea divisora encabezado
-            Sep(sb, "S0", "0.86in", FmtIn(cW), "#1E40AF", "2pt")
+            T(sb, "TxTit", "BOLETA DE RECEPCIÓN — REMEDIDA", FmtIn(hdr.heightUsed + 0.05), "0in", "0.25in", FmtIn(cW), "11pt", "Bold", "#1E40AF", "Left")
+            T(sb, "TxGen", $"Generado: {fechaGen}    |    ID: {r.Id}", FmtIn(hdr.heightUsed + 0.30), "0in", "0.18in", FmtIn(cW), "8pt", "Normal", "#64748B", "Left")
 
             ' ── Caja identificadora grande (CLAVE SURE | MATRÍCULA) ──
-            Dim bTop = 0.98
+            Dim bTop = hdr.heightUsed + 0.56
             Dim bH = 0.72
             Dim halfW = (cW - 0.1) / 2
 

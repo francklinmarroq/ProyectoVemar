@@ -14,6 +14,7 @@ Public Class GastosProyectoViewModel : Inherits ViewModelBase : Implements INoti
     Private _cantidad As String = ""
     Private _costoUnitario As String = ""
     Private _pendiente As Boolean = False
+    Private _editandoId As Integer = 0   ' 0 = nuevo, >0 = editar
 
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
     Public Event GuardadoExitoso As EventHandler
@@ -21,6 +22,12 @@ Public Class GastosProyectoViewModel : Inherits ViewModelBase : Implements INoti
     Public ReadOnly Property TituloProyecto As String
         Get
             Return $"Gastos — {_proyectoFijo.Nombre}"
+        End Get
+    End Property
+
+    Public ReadOnly Property TituloFormulario As String
+        Get
+            Return If(_editandoId = 0, "Nuevo Gasto", "Editar Gasto")
         End Get
     End Property
 
@@ -72,6 +79,7 @@ Public Class GastosProyectoViewModel : Inherits ViewModelBase : Implements INoti
     End Property
 
     Public ReadOnly Property AgregarCommand As ICommand
+    Public ReadOnly Property EditarCommand As ICommand
     Public ReadOnly Property EliminarCommand As ICommand
     Public ReadOnly Property GuardarCommand As ICommand
         Get
@@ -84,6 +92,8 @@ Public Class GastosProyectoViewModel : Inherits ViewModelBase : Implements INoti
         _proyectoFijo = proyectoFijo
 
         AgregarCommand = New RelayCommand(Sub(o)
+                                             _editandoId = 0
+                                             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(TituloFormulario)))
                                              Descripcion = ""
                                              Cantidad = ""
                                              CostoUnitario = ""
@@ -91,7 +101,21 @@ Public Class GastosProyectoViewModel : Inherits ViewModelBase : Implements INoti
                                              Dim win As New AgregarGastoProyectoWindow()
                                              win.DataContext = Me
                                              win.Owner = Application.Current.MainWindow
+                                             win.ShowDialog()
+                                         End Sub)
 
+        EditarCommand = New RelayCommand(Sub(o)
+                                             Dim g = TryCast(o, GastoProyecto)
+                                             If g Is Nothing Then Return
+                                             _editandoId = g.Id
+                                             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(TituloFormulario)))
+                                             Descripcion = g.Descripcion
+                                             Cantidad = g.Cantidad.ToString()
+                                             CostoUnitario = g.CostoUnitario.ToString()
+                                             PendienteDePago = g.PendienteDePago
+                                             Dim win As New AgregarGastoProyectoWindow()
+                                             win.DataContext = Me
+                                             win.Owner = Application.Current.MainWindow
                                              win.ShowDialog()
                                          End Sub)
 
@@ -141,15 +165,28 @@ Public Class GastosProyectoViewModel : Inherits ViewModelBase : Implements INoti
     Public Async Sub Guardar(obj As Object)
         Try
             Dim c As Decimal = 0, cu As Decimal = 0
-            Decimal.TryParse(Cantidad, c)
-            Decimal.TryParse(CostoUnitario, cu)
-            Await _service.Add(New GastoProyecto With {
-                .Descripcion = Descripcion,
-                .Cantidad = c,
-                .CostoUnitario = cu,
-                .PendienteDePago = PendienteDePago,
-                .Proyecto = _proyectoFijo
-            })
+            Decimal.TryParse(Cantidad.Replace(",", "."), Globalization.NumberStyles.Any,
+                             Globalization.CultureInfo.InvariantCulture, c)
+            Decimal.TryParse(CostoUnitario.Replace(",", "."), Globalization.NumberStyles.Any,
+                             Globalization.CultureInfo.InvariantCulture, cu)
+            If _editandoId = 0 Then
+                Await _service.Add(New GastoProyecto With {
+                    .Descripcion = Descripcion,
+                    .Cantidad = c,
+                    .CostoUnitario = cu,
+                    .PendienteDePago = PendienteDePago,
+                    .Proyecto = _proyectoFijo
+                })
+            Else
+                Await _service.Update(_editandoId, New GastoProyecto With {
+                    .Id = _editandoId,
+                    .Descripcion = Descripcion,
+                    .Cantidad = c,
+                    .CostoUnitario = cu,
+                    .PendienteDePago = PendienteDePago,
+                    .Proyecto = _proyectoFijo
+                })
+            End If
             RaiseEvent GuardadoExitoso(Me, EventArgs.Empty)
             CargarItems()
         Catch ex As Exception

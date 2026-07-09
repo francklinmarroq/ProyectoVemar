@@ -314,10 +314,6 @@ Namespace Vemar.WPF.Reports
             Const pageH As Double = 8.5
             Const margin As Double = 0.5
             Const cW As Double = 10.0
-            Const logoSize As Double = 0.85
-            Const infoLeft As Double = 1.0
-            Const infoW As Double = 9.0
-            Const sepTop As Double = 0.93
 
             Dim fechaGen = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
             Dim periodo = If(String.IsNullOrWhiteSpace(fechaDesde) AndAlso String.IsNullOrWhiteSpace(fechaHasta),
@@ -379,27 +375,17 @@ Namespace Vemar.WPF.Reports
             ' Body
             sb.Append("<Body><ReportItems>")
 
-            ' Logo
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo""><Source>Embedded</Source><Value>VemarLogo</Value>")
-                sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append("<Top>0in</Top><Left>0in</Left>")
-                sb.Append($"<Height>{FmtIn(logoSize)}</Height><Width>{FmtIn(logoSize)}</Width><Style/></Image>")
-            End If
+            ' ── Membrete ────────────────────────────────────────────────────
+            Dim hdr = ReportHeaderHelper.BuildHeader(logoB64, cW, "cc")
+            sb.Append(hdr.xml)
 
-            Dim hLeft = FmtIn(If(hasLogo, infoLeft, 0.0))
-            Dim hWidth = FmtIn(If(hasLogo, infoW, cW))
-
-            AppendTxt(sb, "TxtEmpresa", "CONSTRUCTORA VEMAR S. de R.L. de C.V.", "0.05in", hLeft, "0.28in", hWidth, "13pt", "Bold", "#1E3A8A")
-            AppendTxt(sb, "TxtTitulo", "ESTADO DE CAJA CHICA", "0.35in", hLeft, "0.25in", hWidth, "11pt", "Bold", "#1E40AF")
-            AppendTxt(sb, "TxtPeriodo", periodo, "0.60in", hLeft, "0.18in", hWidth, "9pt", "Bold", "#374151")
+            AppendTxt(sb, "TxtTitulo", "ESTADO DE CAJA CHICA", FmtIn(hdr.heightUsed + 0.05), "0in", "0.25in", FmtIn(cW), "11pt", "Bold", "#1E40AF")
+            AppendTxt(sb, "TxtPeriodo", periodo, FmtIn(hdr.heightUsed + 0.30), "0in", "0.18in", FmtIn(cW), "9pt", "Bold", "#374151")
             AppendTxt(sb, "TxtFecha", $"Generado: {fechaGen}     Registros en período: {items.Count}",
-                      "0.78in", hLeft, "0.16in", hWidth, "7.5pt", "Normal", "#64748B")
-
-            AppendSep(sb, "RctSep", FmtIn(sepTop), FmtIn(cW), "#1E40AF")
+                      FmtIn(hdr.heightUsed + 0.48), "0in", "0.16in", FmtIn(cW), "7.5pt", "Normal", "#64748B")
 
             ' ── Panel "Estado Actual de Caja Chica" (siempre muestra totales globales) ──
-            Dim panY = 1.00
+            Dim panY = hdr.heightUsed + 0.70
             Dim panH = 0.52
             Dim colW4 = cW / 4.0
 
@@ -435,7 +421,7 @@ Namespace Vemar.WPF.Reports
             AppendTxt(sb, "TxtPerSub", $"Entradas: L {totalEntradas:N2}   |   Salidas: L {totalSalidas:N2}   |   Saldo período: L {saldo:N2}   |   Registros: {items.Count}",
                       FmtIn(panY + panH + 0.28), "0in", "0.16in", FmtIn(cW), "7.5pt", "Normal", "#64748B")
 
-            Const tablixTop = 1.90
+            Dim tablixTop = hdr.heightUsed + 0.90
 
             ' Tablix
             sb.Append("<Tablix Name=""Tablix1""><TablixBody>")

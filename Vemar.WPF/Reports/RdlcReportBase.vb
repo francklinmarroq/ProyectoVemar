@@ -248,11 +248,11 @@ Namespace Vemar.WPF.Reports
             Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
 
             ' Dimensiones del encabezado
-            Const logoSize As Double = 0.9     ' cuadrado del logo
+            Const logoSize As Double = 0.85    ' cuadrado del logo
             Const logoLeft As Double = 0.0
             Const infoLeft As Double = 1.05    ' texto a la derecha del logo
-            Const sepTop As Double = 0.97      ' línea separadora
-            Const tablixTop As Double = 1.08   ' inicio del tablix
+            Const sepTop As Double = 1.02      ' línea separadora azul
+            Const tablixTop As Double = 1.28   ' inicio del tablix (deja espacio para título)
 
             Dim sb As New StringBuilder()
 
@@ -301,13 +301,19 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Body>")
             sb.Append("<ReportItems>")
 
-            ' Logo (imagen embebida)
+            ' ── Fondo gris sutil del encabezado ──────────────────────────
+            sb.Append("<Rectangle Name=""RctHdrBg"">")
+            sb.Append($"<Top>0in</Top><Left>0in</Left><Height>{FmtIn(sepTop)}</Height><Width>{totalW}</Width>")
+            sb.Append("<Style><BackgroundColor>#F8FAFC</BackgroundColor></Style>")
+            sb.Append("</Rectangle>")
+
+            ' ── Logo ─────────────────────────────────────────────────────
             If hasLogo Then
                 sb.Append("<Image Name=""ImgLogo"">")
                 sb.Append("<Source>Embedded</Source>")
                 sb.Append("<Value>VemarLogo</Value>")
                 sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append($"<Top>{FmtIn(0)}</Top>")
+                sb.Append($"<Top>0.08in</Top>")
                 sb.Append($"<Left>{FmtIn(logoLeft)}</Left>")
                 sb.Append($"<Height>{FmtIn(logoSize)}</Height>")
                 sb.Append($"<Width>{FmtIn(logoSize)}</Width>")
@@ -315,46 +321,87 @@ Namespace Vemar.WPF.Reports
                 sb.Append("</Image>")
             End If
 
-            ' Nombre de la empresa
-            Dim infoW = totalIn - If(hasLogo, infoLeft, 0.0)
+            Dim infoW = totalIn - If(hasLogo, infoLeft, 0.0) - 0.9
             Dim infoLeftFmt = FmtIn(If(hasLogo, infoLeft, 0.0))
 
-            sb.Append("<Textbox Name=""TxtEmpresa"">")
+            ' "CONSTRUCTORA VEMAR S. de R.L. de C.V." — pequeño gris
+            sb.Append("<Textbox Name=""TxtEmpresaSub"">")
             sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph><TextRuns><TextRun>")
+            sb.Append("<Paragraphs><Paragraph>")
+            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
+            sb.Append("<TextRuns><TextRun>")
             sb.Append("<Value>CONSTRUCTORA VEMAR S. de R.L. de C.V.</Value>")
-            sb.Append("<Style><FontSize>13pt</FontSize><FontWeight>Bold</FontWeight><Color>#1E3A8A</Color></Style>")
+            sb.Append("<Style><FontSize>7pt</FontSize><Color>#94A3B8</Color></Style>")
             sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.05in</Top><Left>{infoLeftFmt}</Left><Height>0.28in</Height><Width>{FmtIn(infoW)}</Width>")
+            sb.Append($"<Top>0.06in</Top><Left>{infoLeftFmt}</Left><Height>0.18in</Height><Width>{FmtIn(infoW)}</Width>")
             sb.Append("</Textbox>")
 
-            ' Título del reporte
+            ' "VEMAR" — grande azul
+            sb.Append("<Textbox Name=""TxtVemar"">")
+            sb.Append("<CanGrow>true</CanGrow>")
+            sb.Append("<Paragraphs><Paragraph>")
+            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
+            sb.Append("<TextRuns><TextRun>")
+            sb.Append("<Value>VEMAR</Value>")
+            sb.Append("<Style><FontSize>22pt</FontSize><FontWeight>Bold</FontWeight><Color>#1E3A8A</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
+            sb.Append($"<Top>0.22in</Top><Left>{infoLeftFmt}</Left><Height>0.36in</Height><Width>{FmtIn(infoW)}</Width>")
+            sb.Append("</Textbox>")
+
+            ' "Consultoría · Ambiente · Obra Civil" — itálica gris
+            sb.Append("<Textbox Name=""TxtSlogan"">")
+            sb.Append("<CanGrow>true</CanGrow>")
+            sb.Append("<Paragraphs><Paragraph>")
+            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
+            sb.Append("<TextRuns><TextRun>")
+            sb.Append("<Value>Consultoría  ·  Ambiente  ·  Obra Civil</Value>")
+            sb.Append("<Style><FontSize>8pt</FontSize><FontStyle>Italic</FontStyle><Color>#64748B</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
+            sb.Append($"<Top>0.59in</Top><Left>{infoLeftFmt}</Left><Height>0.16in</Height><Width>{FmtIn(infoW)}</Width>")
+            sb.Append("</Textbox>")
+
+            ' Email | RTN — gris claro
+            sb.Append("<Textbox Name=""TxtContacto"">")
+            sb.Append("<CanGrow>true</CanGrow>")
+            sb.Append("<Paragraphs><Paragraph>")
+            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
+            sb.Append("<TextRuns><TextRun>")
+            sb.Append("<Value>constructora.vemar@yahoo.com  |  RTN: 03019012468535</Value>")
+            sb.Append("<Style><FontSize>7pt</FontSize><Color>#94A3B8</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
+            sb.Append($"<Top>0.77in</Top><Left>{infoLeftFmt}</Left><Height>0.14in</Height><Width>{FmtIn(infoW)}</Width>")
+            sb.Append("</Textbox>")
+
+            ' Pág. arriba derecha
+            Dim pgLeft = totalIn - 0.9
+            sb.Append("<Textbox Name=""TxtPag"">")
+            sb.Append("<CanGrow>true</CanGrow>")
+            sb.Append("<Paragraphs><Paragraph>")
+            sb.Append("<Style><TextAlign>Right</TextAlign></Style>")
+            sb.Append("<TextRuns><TextRun>")
+            sb.Append($"<Value>Generado: {fecha}</Value>")
+            sb.Append("<Style><FontSize>7pt</FontSize><Color>#94A3B8</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
+            sb.Append($"<Top>0.06in</Top><Left>{FmtIn(pgLeft)}</Left><Height>0.16in</Height><Width>0.9in</Width>")
+            sb.Append("</Textbox>")
+
+            ' ── Línea azul separadora ─────────────────────────────────────
+            sb.Append("<Rectangle Name=""RctSep"">")
+            sb.Append($"<Top>{FmtIn(sepTop)}</Top><Left>0in</Left><Height>0.04in</Height><Width>{totalW}</Width>")
+            sb.Append("<Style><BackgroundColor>#1E3A8A</BackgroundColor></Style>")
+            sb.Append("</Rectangle>")
+
+            ' ── Título del reporte debajo de la línea ─────────────────────
             sb.Append("<Textbox Name=""TxtTitulo"">")
             sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph><TextRuns><TextRun>")
-            sb.Append($"<Value>REPORTE DE {XmlEsc(ReportTitle.ToUpper())}</Value>")
-            sb.Append("<Style><FontSize>11pt</FontSize><FontWeight>Bold</FontWeight><Color>#1E40AF</Color></Style>")
+            sb.Append("<Paragraphs><Paragraph>")
+            sb.Append("<Style><TextAlign>Left</TextAlign></Style>")
+            sb.Append("<TextRuns><TextRun>")
+            sb.Append($"<Value>REPORTE DE {XmlEsc(ReportTitle.ToUpper())}   —   {totalRecords} registro(s)</Value>")
+            sb.Append("<Style><FontSize>9pt</FontSize><FontWeight>Bold</FontWeight><Color>#1E3A8A</Color></Style>")
             sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.33in</Top><Left>{infoLeftFmt}</Left><Height>0.25in</Height><Width>{FmtIn(infoW)}</Width>")
+            sb.Append($"<Top>{FmtIn(sepTop + 0.07)}</Top><Left>0in</Left><Height>0.18in</Height><Width>{totalW}</Width>")
             sb.Append("</Textbox>")
-
-            ' Fecha y total de registros
-            sb.Append("<Textbox Name=""TxtInfo"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph><TextRuns><TextRun>")
-            sb.Append($"<Value>Generado: {fecha}     Total de registros: {totalRecords}</Value>")
-            sb.Append("<Style><FontSize>8pt</FontSize><Color>#64748B</Color></Style>")
-            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.60in</Top><Left>{infoLeftFmt}</Left><Height>0.18in</Height><Width>{FmtIn(infoW)}</Width>")
-            sb.Append("</Textbox>")
-
-            ' Línea separadora (Rectangle con borde inferior)
-            sb.Append("<Rectangle Name=""RctSep"">")
-            sb.Append($"<Top>{FmtIn(sepTop)}</Top><Left>0in</Left><Height>0.02in</Height><Width>{totalW}</Width>")
-            sb.Append("<Style>")
-            sb.Append("<BottomBorder><Color>#1E40AF</Color><Style>Solid</Style><Width>1.5pt</Width></BottomBorder>")
-            sb.Append("</Style>")
-            sb.Append("</Rectangle>")
 
             ' ── Tablix ────────────────────────────────────────────────
             sb.Append($"<Tablix Name=""Tablix1"">")

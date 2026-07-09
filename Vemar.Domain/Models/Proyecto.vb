@@ -9,6 +9,7 @@ Public Class Proyecto : Inherits DomainObject
     Private _categoriaProyecto As CategoriaProyecto
     Private _matricula As String
     Private _claveSure As String
+    Private _valorProyecto As Decimal
 
     Public Property Nombre As String
         Get
@@ -80,6 +81,15 @@ Public Class Proyecto : Inherits DomainObject
         End Get
         Set(value As String)
             _claveSure = value
+        End Set
+    End Property
+
+    Public Property ValorProyecto As Decimal
+        Get
+            Return _valorProyecto
+        End Get
+        Set(value As Decimal)
+            _valorProyecto = value
         End Set
     End Property
 

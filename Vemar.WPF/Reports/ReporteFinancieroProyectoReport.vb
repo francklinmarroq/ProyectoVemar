@@ -349,25 +349,22 @@ Namespace Vemar.WPF.Reports
             Const pageH As Double = 11.0
             Const margin As Double = 0.5
             Const cW As Double = 7.5
-            Const logoSize As Double = 0.9
-            Const logoRight As Double = 1.05
-            Const cWInfo As Double = 6.45
-            Const sep1Top As Double = 0.97
-
-            Const ibTop As Double = 1.08
             Const ibRowH As Double = 0.22
             Const ibLeftW As Double = 3.5
             Const ibRightX As Double = 3.9
             Const ibRightW As Double = 3.6
             Const ibRows As Integer = 4
 
-            Const objetoTop As Double = ibTop + ibRows * ibRowH + 0.02
-            Const sep2Top As Double = objetoTop + ibRowH + 0.04
-            Const tablixTop As Double = sep2Top + 0.12
-
             Dim fechaGen = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
             Dim logoB64 = GetLogoBase64()
             Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
+
+            Dim hdr = ReportHeaderHelper.BuildHeader(logoB64, cW, "rfp")
+
+            Dim ibTop As Double = hdr.heightUsed + 0.56
+            Dim objetoTop As Double = ibTop + ibRows * ibRowH + 0.02
+            Dim sep2Top As Double = objetoTop + ibRowH + 0.04
+            Dim tablixTop As Double = sep2Top + 0.12
 
             ' Expresiones condicionales (colores por tipo de fila)
             Dim bgExpr = "=IIF(Fields!Tipo.Value=""SECTION_G"",""#EA580C"",IIF(Fields!Tipo.Value=""SECTION_P"",""#1E40AF"",IIF(Fields!Tipo.Value=""HDR_G"",""#FFF7ED"",IIF(Fields!Tipo.Value=""HDR_P"",""#EFF6FF"",IIF(Fields!Tipo.Value=""TOTAL_G"" OR Fields!Tipo.Value=""TOTAL_P"",""#F8FAFC"",IIF(Fields!Tipo.Value=""TOTAL_E"",""#FEE2E2"",""White""))))))"
@@ -402,22 +399,11 @@ Namespace Vemar.WPF.Reports
 
             sb.Append("<Body><ReportItems>")
 
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo""><Source>Embedded</Source><Value>VemarLogo</Value>")
-                sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append("<Top>0in</Top><Left>0in</Left>")
-                sb.Append($"<Height>{FmtIn(logoSize)}</Height><Width>{FmtIn(logoSize)}</Width>")
-                sb.Append("<Style/></Image>")
-            End If
+            ' ── Membrete ────────────────────────────────────────────────────
+            sb.Append(hdr.xml)
 
-            Dim hLeft = FmtIn(If(hasLogo, logoRight, 0.0))
-            Dim hWidth = FmtIn(If(hasLogo, cWInfo, cW))
-
-            AppendTxt(sb, "TxtEmpresa", "CONSTRUCTORA VEMAR S. de R.L. de C.V.", "0.05in", hLeft, "0.28in", hWidth, "13pt", "Bold", "#1E3A8A")
-            AppendTxt(sb, "TxtTitulo", "REPORTE FINANCIERO DE PROYECTO", "0.35in", hLeft, "0.25in", hWidth, "11pt", "Bold", "#1E40AF")
-            AppendTxt(sb, "TxtFecha", $"Generado: {fechaGen}", "0.62in", hLeft, "0.18in", hWidth, "8pt", "Normal", "#64748B")
-
-            AppendSep(sb, "RctSep1", FmtIn(sep1Top), FmtIn(cW), "#1E40AF")
+            AppendTxt(sb, "TxtTitulo", "REPORTE FINANCIERO DE PROYECTO", FmtIn(hdr.heightUsed + 0.05), "0in", "0.25in", FmtIn(cW), "11pt", "Bold", "#1E40AF")
+            AppendTxt(sb, "TxtFecha", $"Generado: {fechaGen}", FmtIn(hdr.heightUsed + 0.30), "0in", "0.18in", FmtIn(cW), "8pt", "Normal", "#64748B")
 
             ' Datos del proyecto (4 filas x 2 columnas)
             Dim leftData = New (String, String)() {

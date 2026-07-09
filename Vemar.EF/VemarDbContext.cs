@@ -11,6 +11,7 @@ namespace Vemar.EF
     public class VemarDbContext : DbContext
     {
         DbSet<CajaChica> CajasChicas { get; set; }
+        DbSet<CobroProyecto> CobrosProyectos { get; set; }
         DbSet<Asignacion> Asignaciones { get; set; }
         DbSet<Avance> Avances { get; set; }
         DbSet<CategoriaProyecto> CategoriasProyectos { get; set; }

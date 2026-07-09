@@ -99,18 +99,8 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Body><ReportItems>")
 
             ' ── Membrete ────────────────────────────────────────────────────
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo""><Source>Embedded</Source><Value>VemarLogo</Value>")
-                sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append("<Top>0in</Top><Left>0in</Left><Height>0.80in</Height><Width>0.80in</Width><Style/></Image>")
-            End If
-
-            Dim nL = FmtIn(If(hasLogo, 0.90, 0.0))
-            Dim nW = FmtIn(3.80)
-
-            T(sb, "TxEmp", "CONSTRUCTORA VEMAR S. DE R.L. DE C.V.", "0.02in", nL, "0.28in", nW, "11pt", "Bold", "#1E3A8A", "Left")
-            T(sb, "TxAdr", "Bo. Abajo, Calle Principal, Comayagua, Honduras C.A.", "0.32in", nL, "0.20in", nW, "8pt", "Normal", "#374151", "Left")
-            T(sb, "TxCtc", "Cel: +504 9865-3381    R.T.N. 03019012468535", "0.52in", nL, "0.18in", nW, "8pt", "Normal", "#374151", "Left")
+            Dim hdr = ReportHeaderHelper.BuildHeader(logoB64, cW, "rcr")
+            sb.Append(hdr.xml)
 
             Dim amtLeft = 5.10
             T(sb, "TxPorLps", "Por LPS.", "0.10in", FmtIn(amtLeft), "0.20in", "0.72in", "9pt", "Bold", "#374151", "Left")
@@ -120,10 +110,8 @@ Namespace Vemar.WPF.Reports
             T(sb, "TxFchLbl", "Fecha:", "0.52in", FmtIn(amtLeft), "0.20in", "0.55in", "8pt", "Normal", "#374151", "Left")
             TUnder(sb, "TxFcha", fecha, "0.52in", FmtIn(amtLeft + 0.58), "0.20in", FmtIn(cW - amtLeft - 0.58))
 
-            Sep(sb, "S0", "0.88in", FmtIn(cW), "#1E3A8A", "2pt")
-
             ' ── Líneas de formulario ─────────────────────────────────────────
-            Dim y = 1.02
+            Dim y As Double = hdr.heightUsed
 
             ' Recibí de: (propietario de la remedida)
             T(sb, "LbRec", "Recib" & Chr(237) & " de:", FmtIn(y), "0in", "0.22in", "1.05in", "9pt", "Bold", "#374151", "Left")
