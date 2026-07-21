@@ -36,6 +36,7 @@ Namespace Vemar.WPF.Reports
             Public Property Tipo As String
             Public Property Fecha As String
             Public Property Concepto As String
+            Public Property Factura As String
             Public Property Vinculo As String
             Public Property Entrada As String
             Public Property Salida As String
@@ -55,7 +56,7 @@ Namespace Vemar.WPF.Reports
                     Using wb As New XLWorkbook()
                         Dim ws = wb.Worksheets.Add("Caja Chica")
                         Dim r As Integer = 1
-                        Const cols = 6
+                        Const cols = 7
 
                         ' Encabezado empresa
                         ws.Cell(r, 1).Value = "CONSTRUCTORA VEMAR S. de R.L. de C.V."
@@ -94,7 +95,7 @@ Namespace Vemar.WPF.Reports
                         r += 1
 
                         ' Fila de cabeceras estado actual
-                        Dim hdrsEA = {"Total Entradas (L)", "Total Salidas (L)", "Saldo Actual (L)", "No. Movimientos", "", ""}
+                        Dim hdrsEA = {"Total Entradas (L)", "Total Salidas (L)", "Saldo Actual (L)", "No. Movimientos", "", "", ""}
                         For i = 0 To cols - 1
                             ws.Cell(r, i + 1).Value = hdrsEA(i)
                             With ws.Cell(r, i + 1).Style.Font : .Bold = True : .FontSize = 9 : .FontColor = XLColor.FromHtml("#374151") : End With
@@ -122,8 +123,8 @@ Namespace Vemar.WPF.Reports
                         r += 1
 
                         ' Encabezados
-                        Dim headers = {"FECHA", "CONCEPTO", "VÍNCULO", "TIPO", "ENTRADA (L)", "SALIDA (L)"}
-                        For i = 0 To 5
+                        Dim headers = {"FECHA", "CONCEPTO", "N° FACTURA", "VÍNCULO", "TIPO", "ENTRADA (L)", "SALIDA (L)"}
+                        For i = 0 To 6
                             ws.Cell(r, i + 1).Value = headers(i)
                             With ws.Cell(r, i + 1).Style
                                 .Font.Bold = True
@@ -144,17 +145,18 @@ Namespace Vemar.WPF.Reports
 
                             ws.Cell(r, 1).Value = item.Fecha.ToString("dd/MM/yyyy")
                             ws.Cell(r, 2).Value = item.Concepto
-                            ws.Cell(r, 3).Value = vinculo
-                            ws.Cell(r, 4).Value = item.TipoOperacion
-                            ws.Cell(r, 4).Style.Font.FontColor = If(esEntrada, XLColor.FromHtml("#16A34A"), XLColor.FromHtml("#DC2626"))
+                            ws.Cell(r, 3).Value = If(item.NumeroFactura, "")
+                            ws.Cell(r, 4).Value = vinculo
+                            ws.Cell(r, 5).Value = item.TipoOperacion
+                            ws.Cell(r, 5).Style.Font.FontColor = If(esEntrada, XLColor.FromHtml("#16A34A"), XLColor.FromHtml("#DC2626"))
                             If esEntrada Then
-                                ws.Cell(r, 5).Value = item.Monto.ToString("N2")
-                                ws.Cell(r, 5).Style.Font.FontColor = XLColor.FromHtml("#16A34A")
-                                ws.Cell(r, 6).Value = ""
-                            Else
-                                ws.Cell(r, 5).Value = ""
                                 ws.Cell(r, 6).Value = item.Monto.ToString("N2")
-                                ws.Cell(r, 6).Style.Font.FontColor = XLColor.FromHtml("#DC2626")
+                                ws.Cell(r, 6).Style.Font.FontColor = XLColor.FromHtml("#16A34A")
+                                ws.Cell(r, 7).Value = ""
+                            Else
+                                ws.Cell(r, 6).Value = ""
+                                ws.Cell(r, 7).Value = item.Monto.ToString("N2")
+                                ws.Cell(r, 7).Style.Font.FontColor = XLColor.FromHtml("#DC2626")
                             End If
                             If r Mod 2 = 0 Then ws.Range(r, 1, r, cols).Style.Fill.BackgroundColor = XLColor.FromHtml("#F8FAFC")
                             r += 1
@@ -168,14 +170,14 @@ Namespace Vemar.WPF.Reports
                         totRange.Style.Border.TopBorderColor = XLColor.FromHtml("#1E40AF")
 
                         ws.Cell(r, 1).Value = "TOTALES"
-                        ws.Range(r, 1, r, 4).Merge()
+                        ws.Range(r, 1, r, 5).Merge()
                         With ws.Cell(r, 1).Style.Font : .Bold = True : .FontSize = 11 : .FontColor = XLColor.FromHtml("#1E40AF") : End With
 
-                        ws.Cell(r, 5).Value = totalEntradas.ToString("N2")
-                        With ws.Cell(r, 5).Style.Font : .Bold = True : .FontColor = XLColor.FromHtml("#16A34A") : End With
+                        ws.Cell(r, 6).Value = totalEntradas.ToString("N2")
+                        With ws.Cell(r, 6).Style.Font : .Bold = True : .FontColor = XLColor.FromHtml("#16A34A") : End With
 
-                        ws.Cell(r, 6).Value = totalSalidas.ToString("N2")
-                        With ws.Cell(r, 6).Style.Font : .Bold = True : .FontColor = XLColor.FromHtml("#DC2626") : End With
+                        ws.Cell(r, 7).Value = totalSalidas.ToString("N2")
+                        With ws.Cell(r, 7).Style.Font : .Bold = True : .FontColor = XLColor.FromHtml("#DC2626") : End With
                         r += 1
 
                         ' Saldo
@@ -185,13 +187,13 @@ Namespace Vemar.WPF.Reports
                         saldoRange.Style.Fill.BackgroundColor = If(saldo >= 0, XLColor.FromHtml("#F0FDF4"), XLColor.FromHtml("#FFF1F2"))
 
                         ws.Cell(r, 1).Value = "SALDO  (Entradas - Salidas):"
-                        ws.Range(r, 1, r, 4).Merge()
+                        ws.Range(r, 1, r, 5).Merge()
                         With ws.Cell(r, 1).Style.Font : .Bold = True : .FontSize = 12 : .FontColor = saldoColor : End With
 
-                        ws.Cell(r, 5).Value = saldo.ToString("N2") & " L"
-                        ws.Range(r, 5, r, cols).Merge()
-                        With ws.Cell(r, 5).Style.Font : .Bold = True : .FontSize = 12 : .FontColor = saldoColor : End With
-                        ws.Cell(r, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+                        ws.Cell(r, 6).Value = saldo.ToString("N2") & " L"
+                        ws.Range(r, 6, r, cols).Merge()
+                        With ws.Cell(r, 6).Style.Font : .Bold = True : .FontSize = 12 : .FontColor = saldoColor : End With
+                        ws.Cell(r, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
 
                         ws.Columns().AdjustToContents()
                         wb.SaveAs(filePath)
@@ -262,6 +264,7 @@ Namespace Vemar.WPF.Reports
                     .Tipo = item.TipoOperacion,
                     .Fecha = item.Fecha.ToString("dd/MM/yyyy"),
                     .Concepto = item.Concepto,
+                    .Factura = If(item.NumeroFactura, ""),
                     .Vinculo = GetVinculo(item),
                     .Entrada = If(esEntrada, item.Monto.ToString("N2"), ""),
                     .Salida = If(Not esEntrada, item.Monto.ToString("N2"), "")
@@ -273,6 +276,7 @@ Namespace Vemar.WPF.Reports
                 .Tipo = "TOTAL",
                 .Fecha = "",
                 .Concepto = "TOTALES",
+                .Factura = "",
                 .Vinculo = "",
                 .Entrada = totalEntradas.ToString("N2"),
                 .Salida = totalSalidas.ToString("N2")
@@ -284,6 +288,7 @@ Namespace Vemar.WPF.Reports
                 .Tipo = If(saldo >= 0, "SUPERAVIT", "DEFICIT"),
                 .Fecha = "",
                 .Concepto = "SALDO  (Entradas - Salidas)",
+                .Factura = "",
                 .Vinculo = "",
                 .Entrada = saldo.ToString("N2") & " L",
                 .Salida = If(saldo >= 0, "SUPERÁVIT", "DÉFICIT")
@@ -297,11 +302,12 @@ Namespace Vemar.WPF.Reports
             dt.Columns.Add("Tipo")
             dt.Columns.Add("Fecha")
             dt.Columns.Add("Concepto")
+            dt.Columns.Add("Factura")
             dt.Columns.Add("Vinculo")
             dt.Columns.Add("Entrada")
             dt.Columns.Add("Salida")
             For Each row In rows
-                dt.Rows.Add(row.Tipo, row.Fecha, row.Concepto, row.Vinculo, row.Entrada, row.Salida)
+                dt.Rows.Add(row.Tipo, row.Fecha, row.Concepto, row.Factura, row.Vinculo, row.Entrada, row.Salida)
             Next
             Return dt
         End Function
@@ -313,7 +319,10 @@ Namespace Vemar.WPF.Reports
             Const pageW As Double = 11.0
             Const pageH As Double = 8.5
             Const margin As Double = 0.5
-            Const cW As Double = 10.0
+            ' El ancho del cuerpo + márgenes debe ser ESTRICTAMENTE menor que pageW.
+            ' Si es exactamente igual (10.0 + 0.5 + 0.5 = 11.0), RDLC considera que el
+            ' contenido llega al borde imprimible y emite una segunda página en blanco.
+            Const cW As Double = 9.9
 
             Dim fechaGen = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
             Dim periodo = If(String.IsNullOrWhiteSpace(fechaDesde) AndAlso String.IsNullOrWhiteSpace(fechaHasta),
@@ -339,14 +348,15 @@ Namespace Vemar.WPF.Reports
             ' Expresiones condicionales RDLC
             Dim bgExpr = "=IIF(Fields!Tipo.Value=""TOTAL"",""#EFF6FF"",IIF(Fields!Tipo.Value=""SUPERAVIT"",""#F0FDF4"",IIF(Fields!Tipo.Value=""DEFICIT"",""#FFF1F2"",IIF(Fields!Tipo.Value=""Entrada"",""#F0FDF4"",""White""))))"
             Dim boldExpr = "=IIF(Fields!Tipo.Value=""TOTAL"" OR Fields!Tipo.Value=""SUPERAVIT"" OR Fields!Tipo.Value=""DEFICIT"",""Bold"",""Normal"")"
-            Dim sizeExpr = "=IIF(Fields!Tipo.Value=""SUPERAVIT"" OR Fields!Tipo.Value=""DEFICIT"",""10pt"",""8pt"")"
+            Dim sizeExpr = "=IIF(Fields!Tipo.Value=""SUPERAVIT"" OR Fields!Tipo.Value=""DEFICIT"",""11pt"",""9pt"")"
             Dim entradaColorExpr = "=IIF(Fields!Tipo.Value=""TOTAL"" OR Fields!Tipo.Value=""SUPERAVIT"" OR Fields!Tipo.Value=""DEFICIT"",""#16A34A"",""#1F2937"")"
             Dim salidaColorExpr = "=IIF(Fields!Tipo.Value=""TOTAL"" OR Fields!Tipo.Value=""DEFICIT"",""#DC2626"",IIF(Fields!Tipo.Value=""SUPERAVIT"",""#16A34A"",""#1F2937""))"
 
             ' Anchos de columna
-            Dim colWidths = {0.9, 3.8, 2.2, 1.5, 1.6}
-            Dim colFields = {"Fecha", "Concepto", "Vinculo", "Entrada", "Salida"}
-            Dim colHdrs = {"FECHA", "CONCEPTO", "VÍNCULO", "ENTRADA (L)", "SALIDA (L)"}
+            ' La suma de anchos de columna (9.9) debe coincidir con cW para no exceder el cuerpo.
+            Dim colWidths = {0.9, 2.75, 1.3, 2.15, 1.4, 1.4}
+            Dim colFields = {"Fecha", "Concepto", "Factura", "Vinculo", "Entrada", "Salida"}
+            Dim colHdrs = {"FECHA", "CONCEPTO", "N° FACTURA", "VÍNCULO", "ENTRADA (L)", "SALIDA (L)"}
 
             Dim sb As New StringBuilder()
             sb.Append("<?xml version=""1.0"" encoding=""utf-8""?>")
@@ -355,7 +365,8 @@ Namespace Vemar.WPF.Reports
 
             ' EmbeddedImages
             If hasLogo Then
-                sb.Append($"<EmbeddedImages><EmbeddedImage Name=""VemarLogo""><MIMEType>image/png</MIMEType><ImageData>{logoB64}</ImageData></EmbeddedImage></EmbeddedImages>")
+                Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+                sb.Append($"<EmbeddedImages><EmbeddedImage Name=""VemarLogo""><MIMEType>image/png</MIMEType><ImageData>{logoB64}</ImageData></EmbeddedImage><EmbeddedImage Name=""VemarBanner""><MIMEType>image/jpeg</MIMEType><ImageData>{bannerB64}</ImageData></EmbeddedImage></EmbeddedImages>")
             End If
 
             ' DataSources + DataSets
@@ -367,7 +378,7 @@ Namespace Vemar.WPF.Reports
             sb.Append("<DataSets><DataSet Name=""DataSet1""><Query>")
             sb.Append("<DataSourceName>DataSource1</DataSourceName>")
             sb.Append("<CommandText>/* Local Query */</CommandText></Query><Fields>")
-            For Each f In {"Tipo", "Fecha", "Concepto", "Vinculo", "Entrada", "Salida"}
+            For Each f In {"Tipo", "Fecha", "Concepto", "Factura", "Vinculo", "Entrada", "Salida"}
                 sb.Append($"<Field Name=""{f}""><DataField>{f}</DataField></Field>")
             Next
             sb.Append("</Fields></DataSet></DataSets>")
@@ -408,10 +419,11 @@ Namespace Vemar.WPF.Reports
             AppendTxt(sb, "PL3", "Saldo Actual",          FmtIn(lblY), FmtIn(colW4 * 2),       "0.14in", FmtIn(colW4), "7pt", "Normal", "#64748B")
             AppendTxt(sb, "PL4", "Total Movimientos",     FmtIn(lblY), FmtIn(colW4 * 3),       "0.14in", FmtIn(colW4), "7pt", "Normal", "#64748B")
 
-            AppendTxt(sb, "PV1", $"L {allEnt:N2}",       FmtIn(valY), FmtIn(colW4 * 0 + 0.12), "0.16in", FmtIn(colW4), "9pt", "Bold", "#16A34A")
-            AppendTxt(sb, "PV2", $"L {allSal:N2}",       FmtIn(valY), FmtIn(colW4 * 1 + 0.12), "0.16in", FmtIn(colW4), "9pt", "Bold", "#DC2626")
-            AppendTxt(sb, "PV3", $"L {allSaldo:N2}",     FmtIn(valY), FmtIn(colW4 * 2 + 0.12), "0.16in", FmtIn(colW4), "9pt", "Bold", allSaldoHex)
-            AppendTxt(sb, "PV4", all.Count.ToString(),   FmtIn(valY), FmtIn(colW4 * 3 + 0.12), "0.16in", FmtIn(colW4), "9pt", "Bold", "#374151")
+            ' Ancho = colW4 - 0.12 para compensar la sangría y no exceder el borde derecho del cuerpo.
+            AppendTxt(sb, "PV1", $"L {allEnt:N2}",       FmtIn(valY), FmtIn(colW4 * 0 + 0.12), "0.16in", FmtIn(colW4 - 0.12), "9pt", "Bold", "#16A34A")
+            AppendTxt(sb, "PV2", $"L {allSal:N2}",       FmtIn(valY), FmtIn(colW4 * 1 + 0.12), "0.16in", FmtIn(colW4 - 0.12), "9pt", "Bold", "#DC2626")
+            AppendTxt(sb, "PV3", $"L {allSaldo:N2}",     FmtIn(valY), FmtIn(colW4 * 2 + 0.12), "0.16in", FmtIn(colW4 - 0.12), "9pt", "Bold", allSaldoHex)
+            AppendTxt(sb, "PV4", all.Count.ToString(),   FmtIn(valY), FmtIn(colW4 * 3 + 0.12), "0.16in", FmtIn(colW4 - 0.12), "9pt", "Bold", "#374151")
 
             ' Separador si hay filtro de período
             Dim periodoLabel = If(esPeriodoFiltrado, $"DETALLE DEL PERÍODO: {periodo}", "DETALLE DE TODOS LOS REGISTROS")
@@ -421,7 +433,7 @@ Namespace Vemar.WPF.Reports
             AppendTxt(sb, "TxtPerSub", $"Entradas: L {totalEntradas:N2}   |   Salidas: L {totalSalidas:N2}   |   Saldo período: L {saldo:N2}   |   Registros: {items.Count}",
                       FmtIn(panY + panH + 0.28), "0in", "0.16in", FmtIn(cW), "7.5pt", "Normal", "#64748B")
 
-            Dim tablixTop = hdr.heightUsed + 0.90
+            Dim tablixTop = panY + panH + 0.28 + 0.16 + 0.10
 
             ' Tablix
             sb.Append("<Tablix Name=""Tablix1""><TablixBody>")
@@ -432,23 +444,23 @@ Namespace Vemar.WPF.Reports
             sb.Append("</TablixColumns><TablixRows>")
 
             ' Fila encabezados
-            sb.Append("<TablixRow><Height>0.27in</Height><TablixCells>")
+            sb.Append("<TablixRow><Height>0.32in</Height><TablixCells>")
             For i = 0 To colHdrs.Length - 1
                 sb.Append("<TablixCell><CellContents>")
                 sb.Append($"<Textbox Name=""Hdr{i}""><CanGrow>true</CanGrow>")
                 sb.Append("<Paragraphs><Paragraph><TextRuns><TextRun>")
                 sb.Append($"<Value>{XmlEsc(colHdrs(i))}</Value>")
-                sb.Append("<Style><FontWeight>Bold</FontWeight><Color>White</Color><FontSize>8pt</FontSize></Style>")
+                sb.Append("<Style><FontWeight>Bold</FontWeight><Color>White</Color><FontSize>9.5pt</FontSize></Style>")
                 sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-                sb.Append("<Style><BackgroundColor>#1E40AF</BackgroundColor>")
-                sb.Append("<PaddingLeft>5pt</PaddingLeft><PaddingRight>4pt</PaddingRight>")
-                sb.Append("<PaddingTop>3pt</PaddingTop><PaddingBottom>3pt</PaddingBottom>")
+                sb.Append("<Style><BackgroundColor>#1E40AF</BackgroundColor><VerticalAlign>Middle</VerticalAlign>")
+                sb.Append("<PaddingLeft>6pt</PaddingLeft><PaddingRight>5pt</PaddingRight>")
+                sb.Append("<PaddingTop>6pt</PaddingTop><PaddingBottom>6pt</PaddingBottom>")
                 sb.Append("</Style></Textbox></CellContents></TablixCell>")
             Next
             sb.Append("</TablixCells></TablixRow>")
 
             ' Fila datos
-            sb.Append("<TablixRow><Height>0.22in</Height><TablixCells>")
+            sb.Append("<TablixRow><Height>0.30in</Height><TablixCells>")
             For i = 0 To colFields.Length - 1
                 Dim fld = colFields(i)
                 Dim colorExpr As String
@@ -469,10 +481,10 @@ Namespace Vemar.WPF.Reports
                 sb.Append("</Style>")
                 sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
                 sb.Append("<Style>")
-                sb.Append($"<BackgroundColor>{bgExpr}</BackgroundColor>")
+                sb.Append($"<BackgroundColor>{bgExpr}</BackgroundColor><VerticalAlign>Middle</VerticalAlign>")
                 sb.Append("<BottomBorder><Color>#E2E8F0</Color><Style>Solid</Style><Width>0.5pt</Width></BottomBorder>")
-                sb.Append("<PaddingLeft>5pt</PaddingLeft><PaddingRight>4pt</PaddingRight>")
-                sb.Append("<PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom>")
+                sb.Append("<PaddingLeft>6pt</PaddingLeft><PaddingRight>5pt</PaddingRight>")
+                sb.Append("<PaddingTop>5pt</PaddingTop><PaddingBottom>5pt</PaddingBottom>")
                 sb.Append("</Style></Textbox></CellContents></TablixCell>")
             Next
             sb.Append("</TablixCells></TablixRow>")
@@ -493,13 +505,28 @@ Namespace Vemar.WPF.Reports
             sb.Append($"<Top>{FmtIn(tablixTop)}</Top><Left>0in</Left>")
             sb.Append($"<Height>0.5in</Height><Width>{FmtIn(cW)}</Width></Tablix>")
 
-            sb.Append("</ReportItems><Height>7.5in</Height></Body>")
+            ' Estimar líneas extra por wrap en Concepto (2.8in ≈ 44 car./línea) y Vínculo (2.2in ≈ 33 car./línea),
+            ' para que el cálculo de altura refleje el alto real de filas con texto largo y no se generen páginas
+            ' adicionales casi en blanco por subestimar el contenido.
+            Dim wrapExtraH As Double = 0
+            For Each item In items
+                Dim conceptoLineas = Math.Max(1, CInt(Math.Ceiling(If(item.Concepto, "").Length / 44.0)))
+                Dim vinculoLineas = Math.Max(1, CInt(Math.Ceiling(GetVinculo(item).Length / 33.0)))
+                Dim lineasFila = Math.Max(conceptoLineas, vinculoLineas)
+                If lineasFila > 1 Then wrapExtraH += (lineasFila - 1) * 0.16
+            Next
+
+            Dim ccContentH As Double = tablixTop + 0.32 + ((items.Count + 2) * 0.30) + wrapExtraH + 0.10
+            Dim ccMaxBodyH As Double = pageH - margin * 2 - 0.02
+            sb.Append($"</ReportItems><Height>{FmtIn(Math.Min(ccContentH, ccMaxBodyH))}</Height></Body>")
             sb.Append($"<Width>{FmtIn(cW)}</Width>")
             sb.Append("<Page>")
             sb.Append($"<PageHeight>{FmtIn(pageH)}</PageHeight><PageWidth>{FmtIn(pageW)}</PageWidth>")
             sb.Append($"<LeftMargin>{FmtIn(margin)}</LeftMargin><RightMargin>{FmtIn(margin)}</RightMargin>")
             sb.Append("<TopMargin>0.50in</TopMargin><BottomMargin>0.50in</BottomMargin>")
-            sb.Append("</Page><Language>es-HN</Language></Report>")
+            sb.Append("</Page><Language>es-HN</Language>")
+            sb.Append("<ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>")
+            sb.Append("</Report>")
 
             Return sb.ToString()
         End Function

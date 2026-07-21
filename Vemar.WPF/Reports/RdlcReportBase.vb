@@ -244,15 +244,13 @@ Namespace Vemar.WPF.Reports
 
             Dim totalW = FmtIn(totalIn)
             Dim fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-            Dim logoB64 = GetLogoBase64()
-            Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
+            Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+            Dim hasBanner = Not String.IsNullOrEmpty(bannerB64)
 
             ' Dimensiones del encabezado
-            Const logoSize As Double = 0.85    ' cuadrado del logo
-            Const logoLeft As Double = 0.0
-            Const infoLeft As Double = 1.05    ' texto a la derecha del logo
-            Const sepTop As Double = 1.02      ' línea separadora azul
-            Const tablixTop As Double = 1.28   ' inicio del tablix (deja espacio para título)
+            Const bannerH As Double = 1.60     ' altura del banner
+            Const sepTop As Double = 1.64      ' línea separadora azul
+            Const tablixTop As Double = 1.88   ' inicio del tablix (deja espacio para título)
 
             Dim sb As New StringBuilder()
 
@@ -260,12 +258,12 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Report xmlns=""http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"" ")
             sb.Append("xmlns:rd=""http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"">")
 
-            ' ── EmbeddedImages (logo) ──────────────────────────────────
-            If hasLogo Then
+            ' ── EmbeddedImages (banner) ────────────────────────────────
+            If hasBanner Then
                 sb.Append("<EmbeddedImages>")
-                sb.Append("<EmbeddedImage Name=""VemarLogo"">")
-                sb.Append("<MIMEType>image/png</MIMEType>")
-                sb.Append($"<ImageData>{logoB64}</ImageData>")
+                sb.Append("<EmbeddedImage Name=""VemarBanner"">")
+                sb.Append("<MIMEType>image/jpeg</MIMEType>")
+                sb.Append($"<ImageData>{bannerB64}</ImageData>")
                 sb.Append("</EmbeddedImage>")
                 sb.Append("</EmbeddedImages>")
             End If
@@ -301,89 +299,17 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Body>")
             sb.Append("<ReportItems>")
 
-            ' ── Fondo gris sutil del encabezado ──────────────────────────
-            sb.Append("<Rectangle Name=""RctHdrBg"">")
-            sb.Append($"<Top>0in</Top><Left>0in</Left><Height>{FmtIn(sepTop)}</Height><Width>{totalW}</Width>")
-            sb.Append("<Style><BackgroundColor>#F8FAFC</BackgroundColor></Style>")
-            sb.Append("</Rectangle>")
-
-            ' ── Logo ─────────────────────────────────────────────────────
-            If hasLogo Then
-                sb.Append("<Image Name=""ImgLogo"">")
-                sb.Append("<Source>Embedded</Source>")
-                sb.Append("<Value>VemarLogo</Value>")
+            ' ── Banner corporativo ────────────────────────────────────────
+            If hasBanner Then
+                Dim bannerW As Double = 5.12
+                Dim bannerLeft As Double = Math.Max(0, (totalIn - bannerW) / 2.0)
+                sb.Append("<Image Name=""ImgBanner"">")
+                sb.Append("<Source>Embedded</Source><Value>VemarBanner</Value>")
                 sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append($"<Top>0.08in</Top>")
-                sb.Append($"<Left>{FmtIn(logoLeft)}</Left>")
-                sb.Append($"<Height>{FmtIn(logoSize)}</Height>")
-                sb.Append($"<Width>{FmtIn(logoSize)}</Width>")
+                sb.Append($"<Top>0in</Top><Left>{FmtIn(bannerLeft)}</Left><Height>{FmtIn(bannerH)}</Height><Width>{FmtIn(bannerW)}</Width>")
                 sb.Append("<Style/>")
                 sb.Append("</Image>")
             End If
-
-            Dim infoW = totalIn - If(hasLogo, infoLeft, 0.0) - 0.9
-            Dim infoLeftFmt = FmtIn(If(hasLogo, infoLeft, 0.0))
-
-            ' "CONSTRUCTORA VEMAR S. de R.L. de C.V." — pequeño gris
-            sb.Append("<Textbox Name=""TxtEmpresaSub"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph>")
-            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
-            sb.Append("<TextRuns><TextRun>")
-            sb.Append("<Value>CONSTRUCTORA VEMAR S. de R.L. de C.V.</Value>")
-            sb.Append("<Style><FontSize>7pt</FontSize><Color>#94A3B8</Color></Style>")
-            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.06in</Top><Left>{infoLeftFmt}</Left><Height>0.18in</Height><Width>{FmtIn(infoW)}</Width>")
-            sb.Append("</Textbox>")
-
-            ' "VEMAR" — grande azul
-            sb.Append("<Textbox Name=""TxtVemar"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph>")
-            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
-            sb.Append("<TextRuns><TextRun>")
-            sb.Append("<Value>VEMAR</Value>")
-            sb.Append("<Style><FontSize>22pt</FontSize><FontWeight>Bold</FontWeight><Color>#1E3A8A</Color></Style>")
-            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.22in</Top><Left>{infoLeftFmt}</Left><Height>0.36in</Height><Width>{FmtIn(infoW)}</Width>")
-            sb.Append("</Textbox>")
-
-            ' "Consultoría · Ambiente · Obra Civil" — itálica gris
-            sb.Append("<Textbox Name=""TxtSlogan"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph>")
-            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
-            sb.Append("<TextRuns><TextRun>")
-            sb.Append("<Value>Consultoría  ·  Ambiente  ·  Obra Civil</Value>")
-            sb.Append("<Style><FontSize>8pt</FontSize><FontStyle>Italic</FontStyle><Color>#64748B</Color></Style>")
-            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.59in</Top><Left>{infoLeftFmt}</Left><Height>0.16in</Height><Width>{FmtIn(infoW)}</Width>")
-            sb.Append("</Textbox>")
-
-            ' Email | RTN — gris claro
-            sb.Append("<Textbox Name=""TxtContacto"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph>")
-            sb.Append("<Style><TextAlign>Center</TextAlign></Style>")
-            sb.Append("<TextRuns><TextRun>")
-            sb.Append("<Value>constructora.vemar@yahoo.com  |  RTN: 03019012468535</Value>")
-            sb.Append("<Style><FontSize>7pt</FontSize><Color>#94A3B8</Color></Style>")
-            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.77in</Top><Left>{infoLeftFmt}</Left><Height>0.14in</Height><Width>{FmtIn(infoW)}</Width>")
-            sb.Append("</Textbox>")
-
-            ' Pág. arriba derecha
-            Dim pgLeft = totalIn - 0.9
-            sb.Append("<Textbox Name=""TxtPag"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph>")
-            sb.Append("<Style><TextAlign>Right</TextAlign></Style>")
-            sb.Append("<TextRuns><TextRun>")
-            sb.Append($"<Value>Generado: {fecha}</Value>")
-            sb.Append("<Style><FontSize>7pt</FontSize><Color>#94A3B8</Color></Style>")
-            sb.Append("</TextRun></TextRuns></Paragraph></Paragraphs>")
-            sb.Append($"<Top>0.06in</Top><Left>{FmtIn(pgLeft)}</Left><Height>0.16in</Height><Width>0.9in</Width>")
-            sb.Append("</Textbox>")
 
             ' ── Línea azul separadora ─────────────────────────────────────
             sb.Append("<Rectangle Name=""RctSep"">")
@@ -488,7 +414,15 @@ Namespace Vemar.WPF.Reports
             sb.Append("</Tablix>")
 
             sb.Append("</ReportItems>")
-            sb.Append("<Height>9in</Height>")
+
+            ' Altura del body basada en el contenido real (no la página completa),
+            ' para que reportes con pocas filas no generen una segunda página vacía.
+            Const headerRowH As Double = 0.28
+            Const dataRowH As Double = 0.22
+            Dim contentH As Double = tablixTop + headerRowH + (totalRecords * dataRowH) + 0.10
+            Dim maxBodyH As Double = pageH - 0.5 - 0.75 - 0.02   ' topMargin + bottomMargin - epsilon
+            Dim bodyH As Double = Math.Min(contentH, maxBodyH)
+            sb.Append($"<Height>{FmtIn(bodyH)}</Height>")
             sb.Append("</Body>")
 
             ' Width del reporte (requerido en schema 2008/01)

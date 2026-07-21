@@ -1,100 +1,66 @@
 Imports System.Text
 Imports System.Globalization
+Imports System.IO
+Imports System.Reflection
 
 Namespace Vemar.WPF.Reports
 
-    ''' Genera el XML del encabezado corporativo estándar para todos los PDFs.
-    ''' Devuelve el bloque de ReportItems (sin wrapper) y la altura usada en pulgadas.
     Public Module ReportHeaderHelper
 
-        ''' <param name="logoB64">Base64 del logo; String.Empty si no hay.</param>
+        Private _bannerB64 As String = Nothing
+
+        Public Function GetBannerBase64() As String
+            If _bannerB64 IsNot Nothing Then Return _bannerB64
+            Try
+                Dim asm = Assembly.GetExecutingAssembly()
+                Using stream = asm.GetManifestResourceStream("Vemar.WPF.PortadaVemar.jpeg")
+                    If stream Is Nothing Then
+                        _bannerB64 = String.Empty
+                        Return _bannerB64
+                    End If
+                    Dim bytes(CInt(stream.Length) - 1) As Byte
+                    stream.Read(bytes, 0, bytes.Length)
+                    _bannerB64 = Convert.ToBase64String(bytes)
+                End Using
+            Catch
+                _bannerB64 = String.Empty
+            End Try
+            Return _bannerB64
+        End Function
+
+        ''' <param name="logoB64">Ya no se usa; se mantiene por compatibilidad de firma.</param>
         ''' <param name="cW">Ancho del contenido disponible en pulgadas.</param>
         ''' <param name="idPrefix">Prefijo único para nombres de elementos RDLC.</param>
-        ''' <returns>Tupla con el XML del header y los pulgadas usadas (para que el contenido continúe debajo).</returns>
         Public Function BuildHeader(logoB64 As String, cW As Double, idPrefix As String) As (xml As String, heightUsed As Double)
-            Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
-            Dim sb As New StringBuilder()
             Dim IC = CultureInfo.InvariantCulture
             Dim F = Function(d As Double) d.ToString("F2", IC) & "in"
+            Dim sb As New StringBuilder()
 
-            Const hdrH As Double = 1.02    ' altura del área gris
-            Const sepH As Double = 0.04    ' grosor línea azul
-            Const titleH As Double = 0.18  ' altura fila título
-            Dim totalH As Double = hdrH + sepH + 0.06 + titleH
+            Dim bannerB64 = GetBannerBase64()
+            Const bannerH As Double = 2.05   ' altura del banner en pulgadas
+            Const sepH As Double = 0.04      ' línea separadora azul
+            Const gap As Double = 0.08       ' espacio antes del contenido
 
-            ' Fondo gris
-            sb.Append($"<Rectangle Name=""{idPrefix}BgHdr"">")
-            sb.Append($"<Top>0in</Top><Left>0in</Left><Height>{F(hdrH)}</Height><Width>{F(cW)}</Width>")
-            sb.Append("<Style><BackgroundColor>#F8FAFC</BackgroundColor></Style>")
-            sb.Append("</Rectangle>")
-
-            ' Logo
-            If hasLogo Then
-                sb.Append($"<Image Name=""{idPrefix}Logo"">")
-                sb.Append("<Source>Embedded</Source><Value>VemarLogo</Value>")
+            If Not String.IsNullOrEmpty(bannerB64) Then
+                sb.Append($"<Image Name=""{idPrefix}Banner"">")
+                sb.Append("<Source>Embedded</Source><Value>VemarBanner</Value>")
                 sb.Append("<Sizing>FitProportional</Sizing>")
-                sb.Append($"<Top>0.08in</Top><Left>0in</Left><Height>0.85in</Height><Width>0.85in</Width>")
+                Dim bannerW As Double = Math.Min(6.56, cW)
+                Dim bannerLeft As Double = Math.Max(0, (cW - bannerW) / 2.0)
+                sb.Append($"<Top>0in</Top><Left>{F(bannerLeft)}</Left><Height>{F(bannerH)}</Height><Width>{F(bannerW)}</Width>")
                 sb.Append("<Style/>")
                 sb.Append("</Image>")
             End If
 
-            Dim lx = If(hasLogo, 0.95, 0.0)
-            Dim txtW = cW - lx - 0.95
-            Dim lxF = F(lx)
-            Dim twF = F(txtW)
-            Dim pgL = F(cW - 0.95)
-
-            ' "CONSTRUCTORA VEMAR…" — gris pequeño centrado
-            Tb(sb, $"{idPrefix}Sub", "CONSTRUCTORA VEMAR S. de R.L. de C.V.",
-               "0.06in", lxF, "0.17in", twF, "7pt", "Normal", "#94A3B8", "Center", False)
-
-            ' "VEMAR" — grande azul centrado
-            Tb(sb, $"{idPrefix}Brand", "VEMAR",
-               "0.22in", lxF, "0.36in", twF, "22pt", "Bold", "#1E3A8A", "Center", False)
-
-            ' Slogan — itálica gris centrado
-            Tb(sb, $"{idPrefix}Slogan", "Consultoría  ·  Ambiente  ·  Obra Civil",
-               "0.59in", lxF, "0.16in", twF, "8pt", "Normal", "#64748B", "Center", True)
-
-            ' Email | RTN — gris claro centrado
-            Tb(sb, $"{idPrefix}Ctc", "constructora.vemar@yahoo.com  |  RTN: 03019012468535",
-               "0.77in", lxF, "0.14in", twF, "7pt", "Normal", "#94A3B8", "Center", False)
-
-            ' Fecha generación — arriba derecha
-            Tb(sb, $"{idPrefix}Fecha", "Generado: " & DateTime.Now.ToString("dd/MM/yyyy"),
-               "0.06in", pgL, "0.16in", "0.95in", "7pt", "Normal", "#94A3B8", "Right", False)
-
-            ' Línea azul separadora
+            ' Línea azul separadora debajo del banner
             sb.Append($"<Rectangle Name=""{idPrefix}Sep"">")
-            sb.Append($"<Top>{F(hdrH)}</Top><Left>0in</Left><Height>{F(sepH)}</Height><Width>{F(cW)}</Width>")
+            sb.Append($"<Top>{F(bannerH)}</Top><Left>0in</Left><Height>{F(sepH)}</Height><Width>{F(cW)}</Width>")
             sb.Append("<Style><BackgroundColor>#1E3A8A</BackgroundColor></Style>")
             sb.Append("</Rectangle>")
 
+            Dim totalH As Double = bannerH + sepH + gap  ' 1.60 + 0.04 + 0.08 = 1.72
             Return (sb.ToString(), totalH)
         End Function
-
-        Private Sub Tb(sb As StringBuilder, name As String, text As String,
-                       top As String, left As String, height As String, width As String,
-                       fontSize As String, weight As String, color As String,
-                       align As String, italic As Boolean)
-            Dim safe = text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")
-            sb.Append($"<Textbox Name=""{name}"">")
-            sb.Append("<CanGrow>true</CanGrow>")
-            sb.Append("<Paragraphs><Paragraph>")
-            sb.Append($"<Style><TextAlign>{align}</TextAlign></Style>")
-            sb.Append("<TextRuns><TextRun>")
-            sb.Append($"<Value>{safe}</Value>")
-            sb.Append("<Style>")
-            sb.Append($"<FontSize>{fontSize}</FontSize>")
-            If weight = "Bold" Then sb.Append("<FontWeight>Bold</FontWeight>")
-            If italic Then sb.Append("<FontStyle>Italic</FontStyle>")
-            sb.Append($"<Color>{color}</Color>")
-            sb.Append("</Style>")
-            sb.Append("</TextRun></TextRuns>")
-            sb.Append("</Paragraph></Paragraphs>")
-            sb.Append($"<Top>{top}</Top><Left>{left}</Left><Height>{height}</Height><Width>{width}</Width>")
-            sb.Append("</Textbox>")
-        End Sub
 
     End Module
 

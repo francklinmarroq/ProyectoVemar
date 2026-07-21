@@ -358,9 +358,11 @@ Public Class RemedidasViewModel : Inherits ViewModelBase : Implements INotifyPro
                                 If r Is Nothing Then Return False
                                 If String.IsNullOrWhiteSpace(_busqueda) Then Return True
                                 Dim q = _busqueda.ToLower()
-                                Return (r.Representante?.ToLower().Contains(q) OrElse
-                                        r.ClaveSure?.ToLower().Contains(q) OrElse
-                                        r.Matricula?.ToLower().Contains(q))
+                                Return (If(r.Propietario?.ToLower().Contains(q), False) OrElse
+                                        If(r.Representante?.ToLower().Contains(q), False) OrElse
+                                        If(r.ClaveSure?.ToLower().Contains(q), False) OrElse
+                                        If(r.Matricula?.ToLower().Contains(q), False) OrElse
+                                        If(r.Cam?.ToLower().Contains(q), False))
                             End Function
         CargarItems()
     End Sub

@@ -22,7 +22,7 @@ Namespace Vemar.WPF.Reports
                 {"Id", item.Id.ToString()},
                 {"Contratista", If(item.Contratista?.Nombre, "")},
                 {"Proyecto", If(item.Proyecto?.Nombre, "")},
-                {"Valor", item.Valor.ToString("C2")},
+                {"Valor", "L. " & item.Valor.ToString("N2")},
                 {"Descripcion", If(item.Descripcion, "")}
             }
         End Function

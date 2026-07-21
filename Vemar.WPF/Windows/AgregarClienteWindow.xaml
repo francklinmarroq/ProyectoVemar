@@ -80,11 +80,16 @@
                 <Border Width="4" CornerRadius="2" Background="#3B82F6" Margin="0,0,10,0"/>
                 <TextBlock Text="{Binding TituloFormulario}" FontSize="16" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
             </StackPanel>
-            <!-- Fila 1: Nombre · RTN · Teléfono · Email Corporativo -->
-            <UniformGrid Columns="4" Margin="0,0,0,12">
+            <!-- Fila 1: Nombre · Identidad · RTN · Teléfono · Email Corporativo -->
+            <UniformGrid Columns="5" Margin="0,0,0,12">
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Nombre Propietario" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Identidad Propietario" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding DniPropietario, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"
+                             b:DniTextBoxBehavior.IsEnabled="True"/>
                 </StackPanel>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="RTN" Style="{StaticResource FieldLabel}"/>

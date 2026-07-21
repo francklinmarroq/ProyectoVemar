@@ -36,6 +36,9 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\logo.png" />
+    <Resource Include="Resources\logo.png" />
+    <EmbeddedResource Include="Resources\PortadaVemar.jpeg" />
+    <Resource Include="Resources\PortadaVemar.jpeg" />
   </ItemGroup>
 
 </Project>

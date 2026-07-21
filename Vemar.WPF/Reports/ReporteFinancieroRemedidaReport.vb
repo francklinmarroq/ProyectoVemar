@@ -46,7 +46,7 @@ Namespace Vemar.WPF.Reports
                 Try
                     Dim rows = BuildRows(gastos, cobros)
                     Dim dt = BuildDataTable(rows)
-                    Dim rdlcXml = BuildRdlcXml(remedida)
+                    Dim rdlcXml = BuildRdlcXml(remedida, rows.Count)
 
                     Dim report As New LocalReport()
                     Using ms As New MemoryStream(Encoding.UTF8.GetBytes(rdlcXml))
@@ -362,7 +362,7 @@ Namespace Vemar.WPF.Reports
         End Function
 
         ' ─── RDLC dinámico ─────────────────────────────────────────────────
-        Private Function BuildRdlcXml(remedida As Remedida) As String
+        Private Function BuildRdlcXml(remedida As Remedida, rowCount As Integer) As String
             Const pageW As Double = 8.5
             Const pageH As Double = 11.0
             Const margin As Double = 0.5
@@ -397,12 +397,19 @@ Namespace Vemar.WPF.Reports
             sb.Append("xmlns:rd=""http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"">")
 
             ' EmbeddedImages
+            Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+            sb.Append("<EmbeddedImages>")
             If hasLogo Then
-                sb.Append("<EmbeddedImages><EmbeddedImage Name=""VemarLogo"">")
+                sb.Append("<EmbeddedImage Name=""VemarLogo"">")
                 sb.Append("<MIMEType>image/png</MIMEType>")
                 sb.Append($"<ImageData>{logoB64}</ImageData>")
-                sb.Append("</EmbeddedImage></EmbeddedImages>")
+                sb.Append("</EmbeddedImage>")
             End If
+            sb.Append("<EmbeddedImage Name=""VemarBanner"">")
+            sb.Append("<MIMEType>image/jpeg</MIMEType>")
+            sb.Append($"<ImageData>{bannerB64}</ImageData>")
+            sb.Append("</EmbeddedImage>")
+            sb.Append("</EmbeddedImages>")
 
             ' DataSources + DataSets
             sb.Append("<DataSources><DataSource Name=""DataSource1""><ConnectionProperties>")
@@ -501,7 +508,9 @@ Namespace Vemar.WPF.Reports
             sb.Append($"<Height>0.26in</Height><Width>{FmtIn(cW)}</Width>")
             sb.Append("</Tablix>")
 
-            sb.Append("</ReportItems><Height>10in</Height></Body>")
+            Dim rfrContentH As Double = tablixTop + (rowCount * 0.26) + 0.10
+            Dim rfrMaxBodyH As Double = pageH - margin * 2 - 0.02
+            sb.Append($"</ReportItems><Height>{FmtIn(Math.Min(rfrContentH, rfrMaxBodyH))}</Height></Body>")
             sb.Append($"<Width>{FmtIn(cW)}</Width>")
             sb.Append("<Page>")
             sb.Append($"<PageHeight>{FmtIn(pageH)}</PageHeight><PageWidth>{FmtIn(pageW)}</PageWidth>")

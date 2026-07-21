@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:b="clr-namespace:Vemar.WPF"
     Background="#F1F5F9">
     <UserControl.Resources>
         <Style x:Key="Lbl" TargetType="TextBlock"><Setter Property="FontSize" Value="12"/><Setter Property="Foreground" Value="#3B82F6"/><Setter Property="Margin" Value="0,0,0,4"/></Style>
@@ -151,13 +152,36 @@
                         <DataGridTextColumn Header="CLIENTE" Binding="{Binding Proyecto.Cliente.Nombre}" Width="140"/>
                         <DataGridTextColumn Header="F. ASIGNACION" Binding="{Binding FechaAsignacion, StringFormat='{}{0:dd/MM/yyyy}'}" Width="110"/>
                         <DataGridTextColumn Header="F. FINALIZACION" Binding="{Binding FechaFinalizacion, StringFormat='{}{0:dd/MM/yyyy}'}" Width="110"/>
-                        <DataGridTemplateColumn Header="ACCIONES" Width="80">
+                        <DataGridTemplateColumn Header="ACCIONES" Width="70">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Button ToolTip="Modificar" Command="{Binding DataContext.ModificarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Cursor="Hand" Width="32" Height="32" Margin="2,0"><Button.Template><ControlTemplate TargetType="Button"><Border x:Name="bg" Background="#EFF6FF" CornerRadius="7"><iconPacks:PackIconPhosphorIcons Kind="PencilSimple" Width="15" Height="15" Foreground="#3B82F6" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="bg" Property="Background" Value="#DBEAFE"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template></Button>
-                                        <Button ToolTip="Eliminar" Command="{Binding DataContext.EliminarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Cursor="Hand" Width="32" Height="32" Margin="2,0"><Button.Template><ControlTemplate TargetType="Button"><Border x:Name="bg" Background="#FEF2F2" CornerRadius="7"><iconPacks:PackIconPhosphorIcons Kind="Trash" Width="15" Height="15" Foreground="#EF4444" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="bg" Property="Background" Value="#FEE2E2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template></Button>
-                                    </StackPanel>
+                                    <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Style="{StaticResource KebabButtonStyle}"
+                                            b:KebabMenuBehavior.OpenOnClick="True"
+                                            Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=DataGrid}}">
+                                        <Button.ContextMenu>
+                                            <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                                <MenuItem Command="{Binding ModificarCommand}"
+                                                          CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                    <MenuItem.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <iconPacks:PackIconPhosphorIcons Kind="PencilSimple" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Modificar" FontSize="12" Foreground="#1F2937" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </MenuItem.Header>
+                                                </MenuItem>
+                                                <MenuItem Command="{Binding EliminarCommand}"
+                                                          CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                                    <MenuItem.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <iconPacks:PackIconPhosphorIcons Kind="Trash" Width="14" Height="14" Foreground="#EF4444" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Eliminar" FontSize="12" Foreground="#1F2937" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </MenuItem.Header>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </Button.ContextMenu>
+                                    </Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

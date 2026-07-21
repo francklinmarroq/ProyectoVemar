@@ -23,6 +23,7 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
     Private _tipoSeleccionado As TipoTramite
     Private _estadoSeleccionado As EstadoTramite
     Private _proyectoSeleccionado As Proyecto
+    Private _fecha As DateTime? = DateTime.Today
     Private _tituloFormulario As String = "Nuevo Trámite"
 
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
@@ -126,6 +127,16 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
         End Set
     End Property
 
+    Public Property Fecha As DateTime?
+        Get
+            Return _fecha
+        End Get
+        Set(value As DateTime?)
+            _fecha = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Fecha)))
+        End Set
+    End Property
+
     Public ReadOnly Property AgregarCommand As ICommand
     Public ReadOnly Property ModificarCommand As ICommand
     Public ReadOnly Property EliminarCommand As ICommand
@@ -153,6 +164,7 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
                                              TipoSeleccionado = Nothing
                                              EstadoSeleccionado = Nothing
                                              ProyectoSeleccionado = Nothing
+                                             Fecha = DateTime.Today
                                              Dim win As New AgregarTramiteWindow()
                                              win.DataContext = Me
                                              win.Owner = Application.Current.MainWindow
@@ -169,6 +181,7 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
                                                TipoSeleccionado = Tipos.FirstOrDefault(Function(x) x.Id = t.TipoTramite?.Id)
                                                EstadoSeleccionado = Estados.FirstOrDefault(Function(x) x.Id = t.EstadoTramite?.Id)
                                                ProyectoSeleccionado = Proyectos.FirstOrDefault(Function(x) x.Id = t.Proyecto?.Id)
+                                               Fecha = t.Fecha
                                                Dim win As New AgregarTramiteWindow()
                                                win.DataContext = Me
                                                win.Owner = Application.Current.MainWindow
@@ -241,7 +254,8 @@ Public Class TramitesViewModel : Inherits ViewModelBase : Implements INotifyProp
                 .Descripcion = Descripcion,
                 .TipoTramite = TipoSeleccionado,
                 .EstadoTramite = EstadoSeleccionado,
-                .Proyecto = ProyectoSeleccionado
+                .Proyecto = ProyectoSeleccionado,
+                .Fecha = Fecha
             }
             If _tramiteEditando IsNot Nothing Then
                 Await _service.Update(_tramiteEditando.Id, item)

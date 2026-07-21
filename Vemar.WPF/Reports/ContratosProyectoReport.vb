@@ -32,7 +32,7 @@ Namespace Vemar.WPF.Reports
             Return New Dictionary(Of String, String) From {
                 {"Id", item.Id.ToString()},
                 {"Contratista", If(item.Contratista?.Nombre, "")},
-                {"Valor", item.Valor.ToString("C2")},
+                {"Valor", "L. " & item.Valor.ToString("N2")},
                 {"Descripcion", If(item.Descripcion, "")}
             }
         End Function

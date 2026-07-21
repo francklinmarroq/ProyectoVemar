@@ -2,6 +2,7 @@
     Private _rtn As String
     Private _nombre As String
     Private _direccion As String
+    Private _dniPropietario As String
     Private _representante As String
     Private _dniRepresentante As String
     Private _rtnRepresentante As String
@@ -34,6 +35,15 @@
         End Get
         Set(value As String)
             _direccion = value
+        End Set
+    End Property
+
+    Public Property DniPropietario As String
+        Get
+            Return _dniPropietario
+        End Get
+        Set(value As String)
+            _dniPropietario = value
         End Set
     End Property
 

@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.ObjectModel
 Imports System.ComponentModel
+Imports System.Linq
 Imports Vemar.Domain
 
 Public Class CobrosRemedidaViewModel : Implements INotifyPropertyChanged
@@ -68,7 +69,8 @@ Public Class CobrosRemedidaViewModel : Implements INotifyPropertyChanged
                                                 If c Is Nothing Then Return
                                                 Try
                                                     Dim rpt As New Vemar.WPF.Reports.ReciboCobroRemedidaReport()
-                                                    Await rpt.GeneratePdfAsync(c, _remedidaFija)
+                                                    Dim totalAbonado = Items.Where(Function(i) i.Id <= c.Id).Sum(Function(i) i.Cantidad)
+                                                    Await rpt.GeneratePdfAsync(c, _remedidaFija, totalAbonado)
                                                 Catch ex As Exception
                                                     MessageBox.Show("Error al generar recibo: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
                                                 End Try

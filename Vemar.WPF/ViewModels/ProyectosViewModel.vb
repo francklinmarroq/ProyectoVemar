@@ -29,11 +29,13 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     Private _busqueda As String = ""
     Private _nombre As String = ""
     Private _ubicacion As String = ""
+    Private _descripcion As String = ""
     Private _matricula As String = ""
     Private _claveSure As String = ""
     Private _area As String = ""
     Private _valorProyecto As String = ""
     Private _clienteSeleccionado As Cliente
+    Private _representanteLegal As String = ""
     Private _zonificacionSeleccionada As Zonificacion
     Private _categoriaSeleccionada As CategoriaProyecto
     Private _tituloFormulario As String = "Nuevo Proyecto"
@@ -119,6 +121,16 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
         End Set
     End Property
 
+    Public Property Descripcion As String
+        Get
+            Return _descripcion
+        End Get
+        Set(value As String)
+            _descripcion = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Descripcion)))
+        End Set
+    End Property
+
     Public Property Matricula As String
         Get
             Return _matricula
@@ -166,7 +178,19 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
         Set(value As Cliente)
             _clienteSeleccionado = value
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(ClienteSeleccionado)))
+            ' Al elegir un cliente, se carga su representante legal para poder verlo/editarlo.
+            RepresentanteLegal = If(value?.Representante, "")
             _guardarCommand?.RaiseCanExecuteChanged()
+        End Set
+    End Property
+
+    Public Property RepresentanteLegal As String
+        Get
+            Return _representanteLegal
+        End Get
+        Set(value As String)
+            _representanteLegal = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(RepresentanteLegal)))
         End Set
     End Property
 
@@ -259,6 +283,7 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
                                                TituloFormulario = "Modificar Proyecto"
                                                Nombre = p.Nombre
                                                Ubicacion = p.Ubicacion
+                                               Descripcion = p.Descripcion
                                                Matricula = p.Matricula
                                                ClaveSure = p.ClaveSure
                                                Area = p.Area.ToString()
@@ -534,8 +559,9 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
     End Sub
 
     Private Sub LimpiarFormulario()
-        Nombre = "" : Ubicacion = "" : Matricula = "" : ClaveSure = "" : Area = "" : ValorProyecto = ""
+        Nombre = "" : Ubicacion = "" : Descripcion = "" : Matricula = "" : ClaveSure = "" : Area = "" : ValorProyecto = ""
         ClienteSeleccionado = Nothing : ZonificacionSeleccionada = Nothing : CategoriaSeleccionada = Nothing
+        RepresentanteLegal = ""
     End Sub
 
     Public Async Sub Eliminar(obj As Object)
@@ -561,8 +587,15 @@ Public Class ProyectosViewModel : Inherits ViewModelBase : Implements INotifyPro
             Dim valorDecimal As Decimal = 0
             Decimal.TryParse(ValorProyecto?.Replace(",", "."), Globalization.NumberStyles.Any,
                              Globalization.CultureInfo.InvariantCulture, valorDecimal)
+            ' Si cambió el representante legal, se actualiza en el cliente seleccionado.
+            If ClienteSeleccionado IsNot Nothing AndAlso
+               Not String.Equals(If(ClienteSeleccionado.Representante, ""), If(RepresentanteLegal, "")) Then
+                ClienteSeleccionado.Representante = RepresentanteLegal
+                Await _clienteService.Update(ClienteSeleccionado.Id, ClienteSeleccionado)
+            End If
+
             Dim item As New Proyecto With {
-                .Nombre = Nombre, .Ubicacion = Ubicacion, .Matricula = Matricula,
+                .Nombre = Nombre, .Ubicacion = Ubicacion, .Descripcion = Descripcion, .Matricula = Matricula,
                 .ClaveSure = ClaveSure, .Area = areaDecimal, .ValorProyecto = valorDecimal,
                 .Cliente = ClienteSeleccionado, .Zonificacion = ZonificacionSeleccionada,
                 .CategoriaProyecto = CategoriaSeleccionada

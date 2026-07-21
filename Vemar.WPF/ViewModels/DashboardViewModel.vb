@@ -12,6 +12,15 @@ Public Class DashboardBarItem
     Public Property TextBrush As SolidColorBrush
 End Class
 
+Public Class ActividadItem
+    Public Property Icono As String
+    Public Property Titulo As String
+    Public Property Subtitulo As String
+    Public Property FechaTexto As String
+    Public Property IconBrush As SolidColorBrush
+    Public Property IconBgBrush As SolidColorBrush
+End Class
+
 Public Class DashboardViewModel
     Inherits ViewModelBase
     Implements INotifyPropertyChanged
@@ -23,8 +32,6 @@ Public Class DashboardViewModel
     Private ReadOnly _contratistaService As IDataService(Of Contratista)
     Private ReadOnly _tramiteService As IDataService(Of Tramite)
     Private ReadOnly _contratoService As IDataService(Of Contrato)
-    Private ReadOnly _pagoService As IDataService(Of PagoContrato)
-    Private ReadOnly _cobroService As IDataService(Of CobroRemedida)
 
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
@@ -166,51 +173,6 @@ Public Class DashboardViewModel
         End Set
     End Property
 
-    ' ── Financiero ────────────────────────────────────────────────────
-    Private _valorTotalContratos As String = "L 0.00"
-    Public Property ValorTotalContratos As String
-        Get
-            Return _valorTotalContratos
-        End Get
-        Set(value As String)
-            _valorTotalContratos = value
-            Notify(NameOf(ValorTotalContratos))
-        End Set
-    End Property
-
-    Private _totalPagadoContratos As String = "L 0.00"
-    Public Property TotalPagadoContratos As String
-        Get
-            Return _totalPagadoContratos
-        End Get
-        Set(value As String)
-            _totalPagadoContratos = value
-            Notify(NameOf(TotalPagadoContratos))
-        End Set
-    End Property
-
-    Private _saldoPendienteContratos As String = "L 0.00"
-    Public Property SaldoPendienteContratos As String
-        Get
-            Return _saldoPendienteContratos
-        End Get
-        Set(value As String)
-            _saldoPendienteContratos = value
-            Notify(NameOf(SaldoPendienteContratos))
-        End Set
-    End Property
-
-    Private _totalCobrosRemedidas As String = "L 0.00"
-    Public Property TotalCobrosRemedidas As String
-        Get
-            Return _totalCobrosRemedidas
-        End Get
-        Set(value As String)
-            _totalCobrosRemedidas = value
-            Notify(NameOf(TotalCobrosRemedidas))
-        End Set
-    End Property
-
     ' ── Chart ─────────────────────────────────────────────────────────
     Private _tramitesPorEstado As New ObservableCollection(Of DashboardBarItem)
     Public Property TramitesPorEstado As ObservableCollection(Of DashboardBarItem)
@@ -220,6 +182,29 @@ Public Class DashboardViewModel
         Set(value As ObservableCollection(Of DashboardBarItem))
             _tramitesPorEstado = value
             Notify(NameOf(TramitesPorEstado))
+        End Set
+    End Property
+
+    ' ── Actividad reciente ───────────────────────────────────────────
+    Private _actividadReciente As New ObservableCollection(Of ActividadItem)
+    Public Property ActividadReciente As ObservableCollection(Of ActividadItem)
+        Get
+            Return _actividadReciente
+        End Get
+        Set(value As ObservableCollection(Of ActividadItem))
+            _actividadReciente = value
+            Notify(NameOf(ActividadReciente))
+        End Set
+    End Property
+
+    Private _sinActividad As Boolean = True
+    Public Property SinActividad As Boolean
+        Get
+            Return _sinActividad
+        End Get
+        Set(value As Boolean)
+            _sinActividad = value
+            Notify(NameOf(SinActividad))
         End Set
     End Property
 
@@ -243,9 +228,7 @@ Public Class DashboardViewModel
         colaboradorService As IDataService(Of Colaborador),
         contratistaService As IDataService(Of Contratista),
         tramiteService As IDataService(Of Tramite),
-        contratoService As IDataService(Of Contrato),
-        pagoService As IDataService(Of PagoContrato),
-        cobroService As IDataService(Of CobroRemedida))
+        contratoService As IDataService(Of Contrato))
 
         _clienteService = clienteService
         _remedidaService = remedidaService
@@ -254,8 +237,6 @@ Public Class DashboardViewModel
         _contratistaService = contratistaService
         _tramiteService = tramiteService
         _contratoService = contratoService
-        _pagoService = pagoService
-        _cobroService = cobroService
 
         FechaHoy = Date.Today.ToString("dddd, dd 'de' MMMM 'de' yyyy",
                                        New Globalization.CultureInfo("es-HN"))
@@ -329,22 +310,56 @@ Public Class DashboardViewModel
 
             Dim contratos = (Await _contratoService.GetAll()).ToList()
             TotalContratos = contratos.Count
-            Dim valorTotal = contratos.Sum(Function(c) c.Valor)
 
-            Dim pagos = (Await _pagoService.GetAll()).ToList()
-            Dim totalPagado = pagos.Sum(Function(p) p.Valor)
-
-            Dim cobros = (Await _cobroService.GetAll()).ToList()
-            Dim totalCobros = cobros.Sum(Function(c) c.Cantidad)
-
-            Dim fmt = Function(v As Decimal) "L " & v.ToString("N2", Globalization.CultureInfo.InvariantCulture)
-            ValorTotalContratos = fmt(valorTotal)
-            TotalPagadoContratos = fmt(totalPagado)
-            SaldoPendienteContratos = fmt(valorTotal - totalPagado)
-            TotalCobrosRemedidas = fmt(totalCobros)
+            ConstruirActividadReciente(remedidas, tramites)
 
         Catch ex As Exception
             ' Dashboard is non-critical, silently ignore
         End Try
     End Sub
+
+    ' Construye un feed cronológico con las últimas remedidas y trámites registrados.
+    ' Solo estas entidades tienen campo Fecha; proyectos y contratos no lo tienen.
+    Private Sub ConstruirActividadReciente(remedidas As List(Of Remedida), tramites As List(Of Tramite))
+        Dim eventos As New List(Of (Fecha As Date, Item As ActividadItem))
+
+        For Each r In remedidas
+            Dim clave = If(String.IsNullOrWhiteSpace(r.ClaveSure), "#" & r.Id.ToString(), r.ClaveSure)
+            eventos.Add((r.Fecha, New ActividadItem With {
+                .Icono = "Ruler",
+                .Titulo = "Remedida " & clave,
+                .Subtitulo = If(r.ExpedienteEntregado, "Expediente entregado", "Expediente pendiente"),
+                .FechaTexto = r.Fecha.ToString("dd/MM/yyyy"),
+                .IconBrush = MakeBrush("#8B5CF6"),
+                .IconBgBrush = MakeBrush("#F5F3FF")
+            }))
+        Next
+
+        For Each t In tramites
+            Dim fecha = t.Fecha.GetValueOrDefault()
+            Dim titulo = If(String.IsNullOrWhiteSpace(t.Descripcion),
+                            "Trámite #" & t.Id.ToString(), t.Descripcion)
+            eventos.Add((fecha, New ActividadItem With {
+                .Icono = "FolderOpen",
+                .Titulo = titulo,
+                .Subtitulo = "Estado: " & If(t.EstadoTramite?.Estado, "Sin estado"),
+                .FechaTexto = If(t.Fecha.HasValue, fecha.ToString("dd/MM/yyyy"), "Sin fecha"),
+                .IconBrush = MakeBrush("#F59E0B"),
+                .IconBgBrush = MakeBrush("#FFFBEB")
+            }))
+        Next
+
+        Dim recientes = eventos _
+            .OrderByDescending(Function(e) e.Fecha) _
+            .Take(6) _
+            .Select(Function(e) e.Item) _
+            .ToList()
+
+        ActividadReciente = New ObservableCollection(Of ActividadItem)(recientes)
+        SinActividad = recientes.Count = 0
+    End Sub
+
+    Private Shared Function MakeBrush(hex As String) As SolidColorBrush
+        Return New SolidColorBrush(CType(ColorConverter.ConvertFromString(hex), Color))
+    End Function
 End Class

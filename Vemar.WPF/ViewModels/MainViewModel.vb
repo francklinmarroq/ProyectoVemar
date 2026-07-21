@@ -52,7 +52,10 @@ Public Class MainViewModel : Inherits ViewModelBase : Implements INotifyProperty
 
         ExitApplicationCommand = New RelayCommand(Sub(o) Application.Current.Shutdown())
 
-        NavegarDashboardCommand = New RelayCommand(Sub(o) CurrentView = _dashboardVM)
+        NavegarDashboardCommand = New RelayCommand(Sub(o)
+                                                        CurrentView = _dashboardVM
+                                                        _dashboardVM.CargarEstadisticas()
+                                                    End Sub)
         NavegarClientesCommand = New RelayCommand(Sub(o) CurrentView = _vmFactory.CreateViewModel(ViewModelType.ClientesViewModel))
         NavegarRemedidasCommand = New RelayCommand(Sub(o) CurrentView = _vmFactory.CreateViewModel(ViewModelType.RemedidasViewModel))
         NavegarProyectosCommand = New RelayCommand(Sub(o) CurrentView = _vmFactory.CreateViewModel(ViewModelType.ProyectosViewModel))

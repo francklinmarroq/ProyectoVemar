@@ -144,7 +144,7 @@
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}"
-                        MaxLength="6" />
+                        MaxLength="10" />
                 </Grid>
                 <!--#endregion-->
 

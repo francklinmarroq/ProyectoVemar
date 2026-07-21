@@ -34,7 +34,7 @@ Namespace Vemar.WPF.Reports
             Return New Dictionary(Of String, String) From {
                 {"Id", item.Id.ToString()},
                 {"Colaborador", If(item.Colaborador?.Nombre, "")},
-                {"Cliente", If(item.Cliente?.Nombre, "")},
+                {"Cliente", If(item.Cliente?.Nombre, If(item.Proyecto?.Cliente?.Nombre, ""))},
                 {"FechaAsignacion", item.FechaAsignacion.ToString("dd/MM/yyyy")},
                 {"FechaFinalizacion", If(item.FechaFinalizacion?.ToString("dd/MM/yyyy"), "")},
                 {"Observaciones", If(item.Observaciones, "")}

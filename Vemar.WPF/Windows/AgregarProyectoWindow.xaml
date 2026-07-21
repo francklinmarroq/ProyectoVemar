@@ -91,7 +91,7 @@
                 </StackPanel>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Matrícula" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" MaxLength="6"/>
+                    <TextBox Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" MaxLength="10"/>
                 </StackPanel>
                 <StackPanel>
                     <TextBlock Text="Clave SURE" Style="{StaticResource FieldLabel}"/>
@@ -108,12 +108,19 @@
                     <TextBox Text="{Binding ValorProyecto, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
             </UniformGrid>
+            <StackPanel Margin="0,0,0,12">
+                <TextBlock Text="Descripción" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Descripcion, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" TextWrapping="Wrap" AcceptsReturn="True" Height="60"/>
+            </StackPanel>
             <UniformGrid Columns="4" Margin="0,0,0,0">
-                <StackPanel Margin="0,0,8,0" Grid.Column="0"/>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Cliente" Style="{StaticResource FieldLabel}"/>
                     <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
                               DisplayMemberPath="Nombre" Height="36" FontSize="13" Padding="8,0" VerticalContentAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Representante Legal" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding RepresentanteLegal, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}"/>
                 </StackPanel>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Zonificación" Style="{StaticResource FieldLabel}"/>

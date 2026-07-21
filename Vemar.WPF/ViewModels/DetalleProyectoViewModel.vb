@@ -18,6 +18,7 @@ Public Class DetalleProyectoViewModel : Inherits ViewModelBase : Implements INot
     Private _categoriaSeleccionada As CategoriaProyecto
     Private _nombre As String = String.Empty
     Private _ubicacion As String = String.Empty
+    Private _descripcion As String = String.Empty
     Private _matricula As String = String.Empty
     Private _claveSure As String = String.Empty
     Private _area As String = String.Empty
@@ -108,6 +109,16 @@ Public Class DetalleProyectoViewModel : Inherits ViewModelBase : Implements INot
         End Set
     End Property
 
+    Public Property Descripcion As String
+        Get
+            Return _descripcion
+        End Get
+        Set(value As String)
+            _descripcion = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(Descripcion)))
+        End Set
+    End Property
+
     Public Property Matricula As String
         Get
             Return _matricula
@@ -182,6 +193,7 @@ Public Class DetalleProyectoViewModel : Inherits ViewModelBase : Implements INot
             Dim proyecto As New Proyecto With {
                 .Nombre = Nombre,
                 .Ubicacion = Ubicacion,
+                .Descripcion = Descripcion,
                 .Matricula = Matricula,
                 .ClaveSure = ClaveSure,
                 .Area = areaDecimal,

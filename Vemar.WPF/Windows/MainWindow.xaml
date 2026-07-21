@@ -110,10 +110,6 @@
         <!-- ===== BARRA DE MENÚ SUPERIOR (ventanas flotantes) ===== -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Archivo">
-                <MenuItem Header="Reportes">
-                    <MenuItem Header="Nuevo Reporte"/>
-                </MenuItem>
-                <Separator/>
                 <MenuItem Command="{Binding ExitApplicationCommand}" Header="Salir">
                     <MenuItem.Icon>
                         <iconPacks:PackIconPhosphorIcons Foreground="#E53E3E" Kind="SignOut"/>
@@ -121,59 +117,13 @@
                 </MenuItem>
             </MenuItem>
 
-            <MenuItem Header="Clientes">
-                <MenuItem Command="{Binding AbrirAgregarClienteCommand}" Header="Nuevo Cliente">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="UserPlus"/></MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoClientesCommand}" Header="Listado de Clientes">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="UserList"/></MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-
-            <MenuItem Header="Remedidas">
-                <MenuItem Command="{Binding AbrirDetalleRemedidaCommand}" Header="Nueva Remedida">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="Ruler"/></MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoRemedidasCommand}" Header="Listado de Remedidas">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="ListBullets"/></MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-
-            <MenuItem Header="Proyectos">
-                <MenuItem Command="{Binding AbrirDetalleProyectoCommand}" Header="Nuevo Proyecto">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="FolderPlus"/></MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoProyectosCommand}" Header="Listado de Proyectos">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="Buildings"/></MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-
-            <MenuItem Header="Colaboradores">
-                <MenuItem Command="{Binding AbrirDetalleColaboradorCommand}" Header="Nuevo Colaborador">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="UserPlus"/></MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoColaboradoresCommand}" Header="Listado de Colaboradores">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="Users"/></MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-
-            <MenuItem Header="Contratistas">
-                <MenuItem Command="{Binding AbrirDetalleContratistaCommand}" Header="Nuevo Contratista">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="HardHat"/></MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoContratistasCommand}" Header="Listado de Contratistas">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="Wrench"/></MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-
-            <MenuItem Header="Trámites">
-                <MenuItem Command="{Binding AbrirDetalleTramiteCommand}" Header="Nuevo Trámite">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="Green" Kind="FilePlus"/></MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Command="{Binding AbrirListadoTramitesCommand}" Header="Listado de Trámites">
-                    <MenuItem.Icon><iconPacks:PackIconPhosphorIcons Foreground="CornflowerBlue" Kind="ClipboardText"/></MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
+            <MenuItem Header="Clientes" Command="{Binding NavegarClientesCommand}"/>
+            <MenuItem Header="Remedidas" Command="{Binding NavegarRemedidasCommand}"/>
+            <MenuItem Header="Movimientos" Command="{Binding NavegarMovimientosCommand}"/>
+            <MenuItem Header="Proyectos" Command="{Binding NavegarProyectosCommand}"/>
+            <MenuItem Header="Colaboradores" Command="{Binding NavegarColaboradoresCommand}"/>
+            <MenuItem Header="Contratistas" Command="{Binding NavegarContratistasCommand}"/>
+            <MenuItem Header="Trámites" Command="{Binding NavegarTramitesCommand}"/>
         </Menu>
 
         <!-- ===== ÁREA PRINCIPAL ===== -->
@@ -185,7 +135,17 @@
 
             <!-- ===== SIDEBAR ===== -->
             <Border Grid.Column="0" Background="#1A202C">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <DockPanel>
+
+                    <!-- Header del logo: bloque blanco, sin esquinas redondeadas, separado del menú -->
+                    <Border DockPanel.Dock="Top" Background="White" Padding="10,10">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#000000" BlurRadius="10" ShadowDepth="2" Direction="270" Opacity="0.30"/>
+                        </Border.Effect>
+                        <Image Source="/Resources/logo.png" Width="58" Height="58" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,4,0,12">
 
                         <!-- Logo / Dashboard -->
@@ -210,6 +170,13 @@
                             <StackPanel Orientation="Horizontal">
                                 <iconPacks:PackIconPhosphorIcons Kind="Ruler" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
                                 <TextBlock Text="Remedidas" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavegarMovimientosCommand}" Style="{StaticResource SidebarBtn}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconPhosphorIcons Kind="ArrowsLeftRight" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
+                                <TextBlock Text="Movimientos" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
@@ -275,14 +242,6 @@
                             </StackPanel>
                         </Button>
 
-
-                        <Button Command="{Binding NavegarMovimientosCommand}" Style="{StaticResource SidebarBtn}">
-                            <StackPanel Orientation="Horizontal">
-                                <iconPacks:PackIconPhosphorIcons Kind="ArrowsLeftRight" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
-                                <TextBlock Text="Movimientos" Foreground="#CBD5E0" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
                         <Button Command="{Binding NavegarCajaChicaCommand}" Style="{StaticResource SidebarBtn}">
                             <StackPanel Orientation="Horizontal">
                                 <iconPacks:PackIconPhosphorIcons Kind="Wallet" Width="14" Height="14" Foreground="#3B82F6" VerticalAlignment="Center"/>
@@ -330,7 +289,8 @@
                         </Button>
 
                     </StackPanel>
-                </ScrollViewer>
+                    </ScrollViewer>
+                </DockPanel>
             </Border>
 
             <!-- ===== PANEL DERECHO - CONTENIDO DINÁMICO ===== -->

@@ -151,6 +151,9 @@ namespace Vemar.EF.Migrations
                     b.Property<string>("Direccion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DniPropietario")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DniRepresentante")
                         .HasColumnType("nvarchar(max)");
 
@@ -474,6 +477,9 @@ namespace Vemar.EF.Migrations
                     b.Property<int?>("ClienteId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Matricula")
                         .HasColumnType("nvarchar(max)");
 
@@ -607,6 +613,9 @@ namespace Vemar.EF.Migrations
 
                     b.Property<int?>("EstadoTramiteId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("Fecha")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("ProyectoId")
                         .HasColumnType("int");

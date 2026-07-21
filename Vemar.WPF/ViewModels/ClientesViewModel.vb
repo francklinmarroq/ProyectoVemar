@@ -19,6 +19,7 @@ Public Class ClientesViewModel : Inherits ViewModelBase : Implements INotifyProp
     Private _telefono As String = ""
     Private _direccion As String = ""
     Private _email As String = ""
+    Private _dniPropietario As String = ""
     Private _representante As String = ""
     Private _dniRepresentante As String = ""
     Private _rtnRepresentante As String = ""
@@ -95,6 +96,16 @@ Public Class ClientesViewModel : Inherits ViewModelBase : Implements INotifyProp
         Set(value As String)
             _email = value
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(EmailCorporativo)))
+        End Set
+    End Property
+
+    Public Property DniPropietario As String
+        Get
+            Return _dniPropietario
+        End Get
+        Set(value As String)
+            _dniPropietario = value
+            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(NameOf(DniPropietario)))
         End Set
     End Property
 
@@ -191,6 +202,7 @@ Public Class ClientesViewModel : Inherits ViewModelBase : Implements INotifyProp
                                                Telefono = cliente.Telefono
                                                Direccion = cliente.Direccion
                                                EmailCorporativo = cliente.EmailCorporativo
+                                               DniPropietario = cliente.DniPropietario
                                                Representante = cliente.Representante
                                                DniRepresentante = cliente.DniRepresentante
                                                RtnRepresentante = cliente.RtnRepresentante
@@ -240,7 +252,7 @@ Public Class ClientesViewModel : Inherits ViewModelBase : Implements INotifyProp
 
     Private Sub LimpiarFormulario()
         Nombre = "" : Rtn = "" : Telefono = "" : Direccion = ""
-        EmailCorporativo = "" : Representante = "" : DniRepresentante = ""
+        EmailCorporativo = "" : DniPropietario = "" : Representante = "" : DniRepresentante = ""
         RtnRepresentante = "" : TelefonoRepresentante = "" : EmailRepresentante = ""
     End Sub
 
@@ -264,6 +276,7 @@ Public Class ClientesViewModel : Inherits ViewModelBase : Implements INotifyProp
             Dim item As New Cliente With {
                 .Nombre = Nombre, .Rtn = Rtn, .Telefono = Telefono,
                 .Direccion = Direccion, .EmailCorporativo = EmailCorporativo,
+                .DniPropietario = DniPropietario,
                 .Representante = Representante, .DniRepresentante = DniRepresentante,
                 .RtnRepresentante = RtnRepresentante, .TelefonoRepresentante = TelefonoRepresentante,
                 .EmailRepresentante = EmailRepresentante

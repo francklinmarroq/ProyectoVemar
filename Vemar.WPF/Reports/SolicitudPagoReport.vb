@@ -77,7 +77,7 @@ Namespace Vemar.WPF.Reports
             Dim clienteNombre = If(cliente?.Nombre, "").ToUpper()
             Dim fechaDoc = DateTime.Now.ToString("dd 'DE' MMMM 'DEL' yyyy", New CultureInfo("es-ES")).ToUpper()
             Dim proyectoNombre = If(proyecto.Nombre, "").ToUpper()
-            Dim proyectoDesc = If(proyecto.Ubicacion, "")
+            Dim proyectoDesc = If(proyecto.Descripcion, "")
 
             Dim IC = CultureInfo.InvariantCulture
             Dim Fmt = Function(v As Decimal) "L " & v.ToString("N2", IC)
@@ -88,10 +88,12 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Report xmlns=""http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"" ")
             sb.Append("xmlns:rd=""http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"">")
 
-            If hasLogo Then
-                sb.Append("<EmbeddedImages><EmbeddedImage Name=""VemarLogo"">")
-                sb.Append("<MIMEType>image/png</MIMEType>")
-                sb.Append($"<ImageData>{logoB64}</ImageData>")
+            Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+            Dim hasBanner = Not String.IsNullOrEmpty(bannerB64)
+            If hasBanner Then
+                sb.Append("<EmbeddedImages><EmbeddedImage Name=""VemarBanner"">")
+                sb.Append("<MIMEType>image/jpeg</MIMEType>")
+                sb.Append($"<ImageData>{bannerB64}</ImageData>")
                 sb.Append("</EmbeddedImage></EmbeddedImages>")
             End If
 
@@ -156,35 +158,26 @@ Namespace Vemar.WPF.Reports
                            sb.Append("</Rectangle>")
                        End Sub
 
-            ' ── FONDO HEADER ──────────────────────────────────────────────────────
-            Dim hdrH2 = 1.0
-            Rect(mg, y, cW - mg, hdrH2, "#F8FAFC", "None", "#000000", "0pt")
-
-            ' ── LOGO (izquierda) ──────────────────────────────────────────────────
-            If hasLogo Then
+            ' ── BANNER CORPORATIVO ────────────────────────────────────────────────
+            ' Imagen real 1275x470px (ratio 2.7128); FitProportional escala según el
+            ' lado más restrictivo (aquí la altura) y NO centra el resultado dentro
+            ' del cuadro, así que calculamos el ancho real ya escalado para centrarlo.
+            Const bannerH As Double = 1.60
+            Const bannerBoxW As Double = 5.12
+            Const bannerAspect As Double = 1275.0 / 470.0
+            Dim bannerW As Double = Math.Min(bannerBoxW, bannerH * bannerAspect)
+            If hasBanner Then
+                Dim bannerLeft As Double = mg + Math.Max(0, (cW - bannerW) / 2.0)
                 sb.Append($"<Image Name=""{Id()}"">")
-                sb.Append($"<Left>{mg + 0.05}in</Left><Top>{y + 0.1}in</Top><Width>1.1in</Width><Height>0.8in</Height>")
-                sb.Append("<Source>Embedded</Source><Value>VemarLogo</Value>")
+                sb.Append($"<Left>{bannerLeft}in</Left><Top>0in</Top><Width>{bannerW}in</Width><Height>{bannerH}in</Height>")
+                sb.Append("<Source>Embedded</Source><Value>VemarBanner</Value>")
                 sb.Append("<Sizing>FitProportional</Sizing>")
                 sb.Append("</Image>")
             End If
 
-            ' ── MEMBRETE (centro) ─────────────────────────────────────────────────
-            Dim mLeft = mg + 1.25
-            Dim mW = cW - mg - 1.25 - 0.9
-            T(mLeft, y + 0.08, mW, 0.18, "CONSTRUCTORA VEMAR S. de R.L. de C.V.", 7, False, "Center", "#94A3B8", "Transparent", False, "None", "#000000")
-            T(mLeft, y + 0.26, mW, 0.38, "VEMAR", 22, True, "Center", "#1E3A8A", "Transparent", False, "None", "#000000")
-            T(mLeft, y + 0.62, mW, 0.16, "Consultoría  ·  Ambiente  ·  Obra Civil", 8, False, "Center", "#64748B", "Transparent", True, "None", "#000000")
-            T(mLeft, y + 0.80, mW, 0.14, "constructora.vemar@yahoo.com  |  RTN: 03019012468535", 7, False, "Center", "#94A3B8", "Transparent", False, "None", "#000000")
-
-            ' ── NÚMERO DE PÁGINA (derecha) ──────────────────────────────────────
-            T(mg + cW - mg - 0.9, y + 0.08, 0.9, 0.16, "Pág. 1 / 1", 7, False, "Right", "#94A3B8", "Transparent", False, "None", "#000000")
-
-            y += hdrH2
-
             ' ── LÍNEA AZUL DIVISORIA ─────────────────────────────────────────────
-            Rect(mg, y, cW - mg, 0.04, "#1E3A8A", "None", "#000000", "0pt")
-            y += 0.1
+            Rect(mg, bannerH, cW, 0.04, "#1E3A8A", "None", "#000000", "0pt")
+            y = bannerH + 0.12
 
             ' ── TÍTULO SOLICITUD DE PAGO ─────────────────────────────────────────
             y += 0.15
@@ -192,19 +185,26 @@ Namespace Vemar.WPF.Reports
             y += 0.38
 
             ' ── CAJA AMARILLA CON DATOS DEL CLIENTE/PROYECTO ─────────────────────
-            Dim boxH = 1.1
-            Rect(mg, y, cW, boxH, "#FFFDE7", "Solid", "#C8A000", "1pt")
-
             Dim lx = mg + 0.08
             Dim bLine = 0.18
+            Dim descLabelW = 2.1
+            Dim descW = cW - descLabelW - 0.16
+            ' Estimar cuántas líneas ocupará la descripción para no cortarla
+            Dim charsPorLinea = Math.Max(20, CInt(descW * 15.5))
+            Dim descLineas = Math.Max(1, CInt(Math.Ceiling(proyectoDesc.Length / CDbl(charsPorLinea))))
+            Dim descH = bLine * descLineas
+            Dim boxH = 0.04 + bLine * 3 + descH + 0.08
+
+            Rect(mg, y, cW, boxH, "#FFFDE7", "Solid", "#C8A000", "1pt")
+
             T(lx, y + 0.04, 1.2, bLine, "CLIENTE:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx + 1.2, y + 0.04, cW - 1.28, bLine, clienteNombre, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx, y + 0.04 + bLine, 1.2, bLine, "FECHA:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx + 1.2, y + 0.04 + bLine, cW - 1.28, bLine, fechaDoc, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx, y + 0.04 + bLine * 2, 1.8, bLine, "NOMBRE DEL PROYECTO:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
             T(lx + 1.8, y + 0.04 + bLine * 2, cW - 1.88, bLine, proyectoNombre, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
-            T(lx, y + 0.04 + bLine * 3, 2.1, bLine, "DESCRIPCIÓN DEL PROYECTO:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
-            T(lx + 2.1, y + 0.04 + bLine * 3, cW - 2.18, bLine, proyectoDesc, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
+            T(lx, y + 0.04 + bLine * 3, descLabelW, descH, "DESCRIPCIÓN DEL PROYECTO:", 9, True, "Left", "#000000", "Transparent", False, "None", "#000000")
+            T(lx + descLabelW, y + 0.04 + bLine * 3, descW, descH, proyectoDesc, 9, False, "Left", "#000000", "Transparent", False, "None", "#000000")
 
             y += boxH + 0.18
 

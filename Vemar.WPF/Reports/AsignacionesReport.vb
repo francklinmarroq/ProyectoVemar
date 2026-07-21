@@ -24,7 +24,7 @@ Namespace Vemar.WPF.Reports
                 {"Id", item.Id.ToString()},
                 {"Colaborador", item.Colaborador?.Nombre},
                 {"Proyecto", item.Proyecto?.Nombre},
-                {"Cliente", item.Cliente?.Nombre},
+                {"Cliente", If(item.Cliente?.Nombre, item.Proyecto?.Cliente?.Nombre)},
                 {"FechaAsignacion", item.FechaAsignacion.ToString("dd/MM/yyyy")},
                 {"FechaFinalizacion", item.FechaFinalizacion?.ToString("dd/MM/yyyy")},
                 {"Observaciones", item.Observaciones}

@@ -1,6 +1,7 @@
 Imports System.Diagnostics
 Imports System.Globalization
 Imports System.IO
+Imports System.Linq
 Imports System.Reflection
 Imports System.Text
 Imports System.Threading.Tasks
@@ -75,24 +76,39 @@ Namespace Vemar.WPF.Reports
             Dim clienteRep = XmlEscOpt(p.Cliente?.Representante)
             Dim clienteRepDni = XmlEscOpt(p.Cliente?.DniRepresentante)
             Dim clienteRepRtn = XmlEscOpt(p.Cliente?.RtnRepresentante)
+            Dim clienteTel = XmlEscOpt(p.Cliente?.Telefono)
+            Dim clienteDireccion = XmlEscOpt(p.Cliente?.Direccion)
+            Dim clienteDniProp = XmlEscOpt(p.Cliente?.DniPropietario)
+            Dim clienteTelRep = XmlEscOpt(p.Cliente?.TelefonoRepresentante)
+            Dim clienteEmailRep = XmlEscOpt(p.Cliente?.EmailRepresentante)
+            Dim clienteEmailCorp = XmlEscOpt(p.Cliente?.EmailCorporativo)
+            Dim descripcion = XmlEscOpt(p.Descripcion)
+            Dim valorProyecto = If(p.ValorProyecto > 0D, "L " & p.ValorProyecto.ToString("N2", CultureInfo.InvariantCulture), "")
             Dim proyNombre = XmlEsc(If(p.Nombre, "—"))
             Dim claveSure = XmlEsc(If(p.ClaveSure, "—"))
             Dim matricula = XmlEsc(If(p.Matricula, "—"))
-            Dim ubicacion = XmlEsc(If(p.Ubicacion, "—"))
-            Dim categoria = XmlEsc(If(p.CategoriaProyecto?.Nombre, "—"))
-            Dim zonif = XmlEsc(If(p.Zonificacion?.Zonificacion, "—"))
+            Dim ubicacion = XmlEscOpt(p.Ubicacion)
+            Dim categoria = XmlEscOpt(p.CategoriaProyecto?.Nombre)
+            Dim zonif = XmlEscOpt(p.Zonificacion?.Zonificacion)
 
             Dim sb As New StringBuilder()
             sb.Append("<?xml version=""1.0"" encoding=""utf-8""?>")
             sb.Append("<Report xmlns=""http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"" ")
             sb.Append("xmlns:rd=""http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"">")
 
+            Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+            sb.Append("<EmbeddedImages>")
             If hasLogo Then
-                sb.Append("<EmbeddedImages><EmbeddedImage Name=""VemarLogo"">")
+                sb.Append("<EmbeddedImage Name=""VemarLogo"">")
                 sb.Append("<MIMEType>image/png</MIMEType>")
                 sb.Append($"<ImageData>{logoB64}</ImageData>")
-                sb.Append("</EmbeddedImage></EmbeddedImages>")
+                sb.Append("</EmbeddedImage>")
             End If
+            sb.Append("<EmbeddedImage Name=""VemarBanner"">")
+            sb.Append("<MIMEType>image/jpeg</MIMEType>")
+            sb.Append($"<ImageData>{bannerB64}</ImageData>")
+            sb.Append("</EmbeddedImage>")
+            sb.Append("</EmbeddedImages>")
 
             sb.Append("<Body><ReportItems>")
 
@@ -122,33 +138,87 @@ Namespace Vemar.WPF.Reports
             T(sb, "VlMt", matricula, FmtIn(idTop + 0.27), FmtIn(rx + 0.1), "0.28in", FmtIn(halfW - 0.15), "13pt", "Bold", "#1E3A8A", "Left")
 
             ' ── Cuadrícula de campos ──
+            ' Solo se muestran los campos que realmente tienen datos, para no dejar
+            ' cuadros vacíos sin etiqueta ni valor cuando el dato opcional no existe.
             Dim gTop = idTop + 0.62 + 0.12
             Dim gRowH = 0.38
-            Dim col1W = (cW - 0.1) / 2
-            Dim col2X = col1W + 0.1
 
-            FieldPair(sb, "Cl", "Cliente / Urbanizador", clienteNombre,
-                          "Rtn", "R.T.N.", clienteRtn,
-                          FmtIn(gTop), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+            Dim allFields As New List(Of (Label As String, Value As String)) From {
+                ("Cliente / Urbanizador", clienteNombre),
+                ("R.T.N. Cliente", clienteRtn),
+                ("DNI Propietario", clienteDniProp),
+                ("Teléfono Cliente", clienteTel),
+                ("Dirección Cliente", clienteDireccion),
+                ("Correo Corporativo", clienteEmailCorp),
+                ("Representante Legal", clienteRep),
+                ("DNI Representante", clienteRepDni),
+                ("RTN Representante", clienteRepRtn),
+                ("Teléfono Representante", clienteTelRep),
+                ("Correo Representante", clienteEmailRep),
+                ("Categoría", categoria),
+                ("Zonificación", zonif),
+                ("Área", area),
+                ("Valor del Proyecto", valorProyecto),
+                ("Ubicación", ubicacion)
+            }
+            Dim fields = allFields.Where(Function(f) Not String.IsNullOrWhiteSpace(f.Value)).ToList()
 
-            FieldPair(sb, "Rep", "Representante Legal", clienteRep,
-                          "RepDni", "DNI Representante", clienteRepDni,
-                          FmtIn(gTop + (gRowH + 0.06)), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+            ' La boleta debe caber SIEMPRE en una sola página. Se calcula el espacio
+            ' libre y, si con 2 columnas las filas quedarían demasiado bajas, se pasa
+            ' a 3 columnas antes de comprimir la altura de las filas.
+            Dim maxBodyH As Double = pH - 0.50 * 2 - 0.02
+            ' La descripción va en su propia fila a ancho completo (puede ser larga).
+            Dim descH As Double = If(String.IsNullOrWhiteSpace(descripcion), 0.0, 0.62)
+            Dim afterGridH As Double = descH + 0.18 + 1.05 + 0.30 + 1.7 + 0.26
+            Dim avail As Double = maxBodyH - gTop - afterGridH
 
-            FieldPair(sb, "RepRtn", "RTN Representante", clienteRepRtn,
-                          "Tel", "Teléfono", XmlEscOpt(p.Cliente?.Telefono),
-                          FmtIn(gTop + (gRowH + 0.06) * 2), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+            Dim cols As Integer = 2
+            Dim rowCount As Integer = CInt(Math.Ceiling(fields.Count / CDbl(cols)))
+            Dim rowPitch As Double = gRowH + 0.06
+            If rowCount > 0 AndAlso avail / rowCount < 0.36 Then
+                cols = 3
+                rowCount = CInt(Math.Ceiling(fields.Count / CDbl(cols)))
+            End If
+            If rowCount > 0 Then
+                rowPitch = Math.Max(0.3, Math.Min(rowPitch, avail / rowCount))
+                gRowH = rowPitch - 0.06
+            End If
 
-            FieldPair(sb, "Cat", "Categoría", categoria,
-                          "Zon", "Zonificación", zonif,
-                          FmtIn(gTop + (gRowH + 0.06) * 3), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+            Dim gapX As Double = 0.1
+            Dim colW As Double = (cW - gapX * (cols - 1)) / cols
 
-            FieldPair(sb, "Ar", "Área", area,
-                          "Ub", "Ubicación", ubicacion,
-                          FmtIn(gTop + (gRowH + 0.06) * 4), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+            Dim rowIdx As Integer = 0
+            Dim fi As Integer = 0
+            Do While fi < fields.Count
+                Dim rowTop = FmtIn(gTop + rowPitch * rowIdx)
+                Dim remaining = fields.Count - fi
+                If remaining >= cols Then
+                    For c = 0 To cols - 1
+                        FieldCell(sb, "F" & (fi + c), fields(fi + c).Label, fields(fi + c).Value,
+                                  rowTop, FmtIn((colW + gapX) * c), FmtIn(colW), FmtIn(gRowH))
+                    Next
+                    fi += cols
+                Else
+                    ' Última fila incompleta: se reparte el ancho entre los que quedan.
+                    Dim lastW = (cW - gapX * (remaining - 1)) / remaining
+                    For c = 0 To remaining - 1
+                        FieldCell(sb, "F" & (fi + c), fields(fi + c).Label, fields(fi + c).Value,
+                                  rowTop, FmtIn((lastW + gapX) * c), FmtIn(lastW), FmtIn(gRowH))
+                    Next
+                    fi += remaining
+                End If
+                rowIdx += 1
+            Loop
+
+            Dim gridBottom = gTop + rowPitch * rowIdx
+            If descH > 0 Then
+                FieldCell(sb, "FDesc", "Descripción", descripcion,
+                          FmtIn(gridBottom), "0in", FmtIn(cW), FmtIn(descH - 0.06))
+                gridBottom += descH
+            End If
 
             ' ── Texto de compromiso ──
-            Dim cmpTop = gTop + (gRowH + 0.06) * 5 + 0.18
+            Dim cmpTop = gridBottom + 0.18
             Dim cmpText =
                 "Yo, el/la urbanizador(a) identificado(a) en este documento, declaro y acepto expresamente " &
                 "que los datos del proyecto indicados en la presente acta son correctos y corresponden al " &
@@ -193,7 +263,8 @@ Namespace Vemar.WPF.Reports
             T(sb, "TxFt", "CONSTRUCTORA VEMAR S. de R.L. de C.V.  —  Documento generado electrónicamente  —  Original para archivo",
               FmtIn(footTop + 0.06), "0in", "0.2in", FmtIn(cW), "7pt", "Normal", "#94A3B8", "Center")
 
-            sb.Append("</ReportItems><Height>10in</Height></Body>")
+            Dim bpContentH As Double = footTop + 0.26
+            sb.Append($"</ReportItems><Height>{FmtIn(Math.Min(bpContentH, maxBodyH))}</Height></Body>")
             sb.Append($"<Width>{FmtIn(cW)}</Width>")
             sb.Append("<Page>")
             sb.Append($"<PageHeight>{FmtIn(pH)}</PageHeight><PageWidth>{FmtIn(pW)}</PageWidth>")
@@ -235,17 +306,26 @@ Namespace Vemar.WPF.Reports
             sb.Append("</Rectangle>")
         End Sub
 
-        Private Sub FieldPair(sb As StringBuilder,
-                              n1 As String, lbl1 As String, val1 As String,
-                              n2 As String, lbl2 As String, val2 As String,
-                              top As String, left1 As String, width1 As String,
-                              left2 As String, width2 As String, height As String)
-            BoxRect(sb, "Bx" & n1, top, left1, height, width1, "#E2E8F0")
-            T(sb, "Lb" & n1, lbl1, top, left1, "0.18in", width1, "7pt", "Bold", "#64748B", "Left")
-            T(sb, "Vl" & n1, val1, ShiftIn(top, 0.2), left1, ShiftIn(height, -0.2), width1, "9pt", "SemiBold", "#1F2937", "Left")
-            BoxRect(sb, "Bx" & n2, top, left2, height, width2, "#E2E8F0")
-            T(sb, "Lb" & n2, lbl2, top, left2, "0.18in", width2, "7pt", "Bold", "#64748B", "Left")
-            T(sb, "Vl" & n2, val2, ShiftIn(top, 0.2), left2, ShiftIn(height, -0.2), width2, "9pt", "SemiBold", "#1F2937", "Left")
+        ' Dibuja un campo (etiqueta + valor) como UN solo cuadro de texto con dos
+        ' párrafos, de modo que la etiqueta y el valor nunca puedan desalinearse.
+        Private Sub FieldCell(sb As StringBuilder, name As String, label As String, value As String,
+                              top As String, left As String, width As String, height As String)
+            ' Altura fija (sin CanGrow): un valor largo no debe empujar el resto del
+            ' contenido a una segunda página.
+            sb.Append($"<Textbox Name=""Cl{name}""><CanGrow>false</CanGrow><CanShrink>false</CanShrink><Paragraphs>")
+            sb.Append($"<Paragraph><TextRuns><TextRun><Value>{label}</Value>")
+            sb.Append("<Style><FontSize>7pt</FontSize><FontWeight>Bold</FontWeight><Color>#64748B</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph>")
+            sb.Append($"<Paragraph><TextRuns><TextRun><Value>{value}</Value>")
+            sb.Append("<Style><FontSize>9pt</FontSize><FontWeight>SemiBold</FontWeight><Color>#1F2937</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph>")
+            sb.Append("</Paragraphs>")
+            sb.Append($"<Top>{top}</Top><Left>{left}</Left><Height>{height}</Height><Width>{width}</Width>")
+            ' El borde y el fondo van en el propio cuadro de texto (no en un rectángulo
+            ' aparte) para evitar el solapamiento que hace que RDLC descarte celdas.
+            sb.Append("<Style><Border><Color>#E2E8F0</Color><Style>Solid</Style><Width>1pt</Width></Border>")
+            sb.Append("<BackgroundColor>#F8FAFC</BackgroundColor><PaddingLeft>4pt</PaddingLeft><PaddingTop>3pt</PaddingTop></Style>")
+            sb.Append("</Textbox>")
         End Sub
 
         Private Function ShiftIn(inchStr As String, delta As Double) As String

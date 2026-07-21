@@ -43,6 +43,7 @@ namespace Vemar.EF.Services
             {
                 return await context.Set<Asignacion>()
                     .Include(a => a.Colaborador)
+                    .Include(a => a.Cliente)
                     .Include(a => a.Proyecto)
                         .ThenInclude(p => p.Cliente)
                     .ToListAsync();
@@ -53,6 +54,8 @@ namespace Vemar.EF.Services
         {
             if (entity.Colaborador != null)
                 context.Attach(entity.Colaborador);
+            if (entity.Cliente != null)
+                context.Attach(entity.Cliente);
             if (entity.Proyecto != null)
                 context.Attach(entity.Proyecto);
         }

@@ -71,6 +71,8 @@ Namespace Vemar.WPF.Reports
             Dim fecha = DateTime.Now.ToString("dd/MM/yyyy")
             Dim montoNum = pago.Valor.ToString("N2", CultureInfo.InvariantCulture)
             Dim montoStr = "L. " & montoNum
+            Dim centavos = CInt(Math.Round((pago.Valor - Math.Floor(pago.Valor)) * 100))
+            Dim montoLetras = NumerosALetras(Math.Floor(pago.Valor)) & " CON " & centavos.ToString("00") & "/100"
 
             Dim contratistaNombre As String = If(contrato.Contratista IsNot Nothing AndAlso
                                                  Not String.IsNullOrWhiteSpace(contrato.Contratista.Nombre),
@@ -96,12 +98,19 @@ Namespace Vemar.WPF.Reports
             sb.Append("<Report xmlns=""http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"" ")
             sb.Append("xmlns:rd=""http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"">")
 
+            Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+            sb.Append("<EmbeddedImages>")
             If hasLogo Then
-                sb.Append("<EmbeddedImages><EmbeddedImage Name=""VemarLogo"">")
+                sb.Append("<EmbeddedImage Name=""VemarLogo"">")
                 sb.Append("<MIMEType>image/png</MIMEType>")
                 sb.Append($"<ImageData>{logoB64}</ImageData>")
-                sb.Append("</EmbeddedImage></EmbeddedImages>")
+                sb.Append("</EmbeddedImage>")
             End If
+            sb.Append("<EmbeddedImage Name=""VemarBanner"">")
+            sb.Append("<MIMEType>image/jpeg</MIMEType>")
+            sb.Append($"<ImageData>{bannerB64}</ImageData>")
+            sb.Append("</EmbeddedImage>")
+            sb.Append("</EmbeddedImages>")
 
             sb.Append("<Body><ReportItems>")
 
@@ -129,8 +138,7 @@ Namespace Vemar.WPF.Reports
 
             ' La Cantidad de:
             T(sb,      "LbCant", "La Cantidad de:",           FmtIn(y), "0in",           "0.22in", "1.38in", "9pt", "Bold",   "#374151", "Left")
-            TUnder(sb, "VlCant", Sanitize(montoStr),          FmtIn(y), "1.38in",        "0.22in", FmtIn(cW - 1.38 - 0.72))
-            T(sb,      "TxLmp",  "Lempiras",                  FmtIn(y), FmtIn(cW - 0.7),"0.22in", "0.7in",  "9pt", "Normal", "#374151", "Right")
+            TUnder(sb, "VlCant", Sanitize(montoLetras),       FmtIn(y), "1.38in",        "0.22in", FmtIn(cW - 1.38), "8pt")
             y += 0.36
 
             ' Por Concepto de:
@@ -145,7 +153,7 @@ Namespace Vemar.WPF.Reports
 
             ' ── Fila inferior: Firma | Recibo Interno | Tabla Saldos ──────────
             '  — Firma —
-            Dim firmaY = y + 0.55
+            Dim firmaY = y + 1.13
             Sep(sb, "SgFirma", FmtIn(firmaY), "2.60in", "#374151", "1pt")
             T(sb, "LbFirma", "FIRMA", FmtIn(firmaY + 0.06), "0.70in", "0.22in", "1.20in", "9pt", "Bold", "#374151", "Center")
 
@@ -157,9 +165,10 @@ Namespace Vemar.WPF.Reports
 
             '  — Tabla Saldos —
             Dim tL = 4.65                ' left de la tabla
-            Dim cLbl = 1.55              ' ancho columna etiqueta
-            Dim cVal = 0.50              ' ancho columna valor  (x2)
+            Dim cLbl = 1.15              ' ancho columna etiqueta
+            Dim cVal = 0.70              ' ancho columna valor  (x2)
             Dim rH = 0.24
+            Dim rHAbono = 0.34           ' fila de Abono más alta
             Dim tY = y
 
             ' Encabezado de columnas
@@ -168,9 +177,20 @@ Namespace Vemar.WPF.Reports
             TBg(sb, "ThV2",  "",   FmtIn(tY), FmtIn(tL + cLbl + cVal), FmtIn(rH), FmtIn(cVal), "7pt", "Bold", "#E2E8F0", "#94A3B8", "Center", "#374151")
             tY += rH
 
-            TBg(sb, "Tr2L", "Abono             L.", FmtIn(tY), FmtIn(tL),                FmtIn(rH), FmtIn(cLbl), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Left",   "#374151")
-            TBg(sb, "Tr2V", Sanitize(montoStr),     FmtIn(tY), FmtIn(tL + cLbl),         FmtIn(rH), FmtIn(cVal), "7pt", "Normal", "#FFFBEB", "#CBD5E1", "Center", "#92400E")
-            TBg(sb, "Tr2X", "",                     FmtIn(tY), FmtIn(tL + cLbl + cVal),  FmtIn(rH), FmtIn(cVal), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Center", "#374151")
+            TBg(sb, "Tr2L", "Abono",            FmtIn(tY), FmtIn(tL),                FmtIn(rHAbono), FmtIn(cLbl), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Left",   "#374151")
+            TBg(sb, "Tr2V", Sanitize(montoStr), FmtIn(tY), FmtIn(tL + cLbl),         FmtIn(rHAbono), FmtIn(cVal), "7pt", "Normal", "#FFFBEB", "#CBD5E1", "Center", "#92400E")
+            TBg(sb, "Tr2X", "",                  FmtIn(tY), FmtIn(tL + cLbl + cVal),  FmtIn(rHAbono), FmtIn(cVal), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Center", "#374151")
+            tY += rHAbono
+
+            Dim valorTotalStr = sFmt(contrato.Valor)
+            TBg(sb, "Tr3L", "Valor Total",        FmtIn(tY), FmtIn(tL),                FmtIn(rH), FmtIn(cLbl), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Left",   "#374151")
+            TBg(sb, "Tr3V", Sanitize(valorTotalStr), FmtIn(tY), FmtIn(tL + cLbl),      FmtIn(rH), FmtIn(cVal), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Center", "#374151")
+            TBg(sb, "Tr3X", "",                   FmtIn(tY), FmtIn(tL + cLbl + cVal),  FmtIn(rH), FmtIn(cVal), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Center", "#374151")
+            tY += rH
+
+            TBg(sb, "Tr4L", "Saldo Pendiente",    FmtIn(tY), FmtIn(tL),                FmtIn(rH), FmtIn(cLbl), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Left",   "#374151")
+            TBg(sb, "Tr4V", Sanitize(sActStr),    FmtIn(tY), FmtIn(tL + cLbl),         FmtIn(rH), FmtIn(cVal), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Center", "#374151")
+            TBg(sb, "Tr4X", "",                   FmtIn(tY), FmtIn(tL + cLbl + cVal),  FmtIn(rH), FmtIn(cVal), "7pt", "Normal", "#FFFFFF", "#CBD5E1", "Center", "#374151")
             tY += rH
 
 
@@ -180,7 +200,9 @@ Namespace Vemar.WPF.Reports
             T(sb, "TxFt", "CONSTRUCTORA VEMAR S. DE R.L. DE C.V. - Documento generado electronicamente",
               FmtIn(ftY + 0.06), "0in", "0.18in", FmtIn(cW), "7pt", "Normal", "#94A3B8", "Center")
 
-            sb.Append("</ReportItems><Height>10in</Height></Body>")
+            Dim rpContentH As Double = ftY + 0.26
+            Dim rpMaxBodyH As Double = pH - 0.50 * 2 - 0.02
+            sb.Append($"</ReportItems><Height>{FmtIn(Math.Min(rpContentH, rpMaxBodyH))}</Height></Body>")
             sb.Append($"<Width>{FmtIn(cW)}</Width>")
             sb.Append("<Page>")
             sb.Append($"<PageHeight>{FmtIn(pH)}</PageHeight><PageWidth>{FmtIn(pW)}</PageWidth>")
@@ -288,6 +310,45 @@ Namespace Vemar.WPF.Reports
 
         Private Function SubIn(inchStr As String, delta As Double) As String
             Return AddIn(inchStr, -delta)
+        End Function
+
+        Private Function NumerosALetras(n As Decimal) As String
+            Dim entero = CLng(Math.Floor(n))
+            If entero = 0 Then Return "CERO LEMPIRAS"
+            Dim unidades() As String = {"", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE",
+                                        "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISÉIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE"}
+            Dim decenas() As String = {"", "", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"}
+            Dim centenas() As String = {"", "CIEN", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS",
+                                        "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"}
+
+            Dim Grupo = Function(num As Long) As String
+                            Dim r = ""
+                            Dim c = num \ 100 : Dim resto = num Mod 100
+                            If c > 0 Then
+                                r = If(c = 1 AndAlso resto > 0, "CIENTO", centenas(c))
+                            End If
+                            If resto > 0 Then
+                                If r.Length > 0 Then r &= " "
+                                If resto < 20 Then
+                                    r &= unidades(resto)
+                                Else
+                                    r &= decenas(resto \ 10)
+                                    If resto Mod 10 > 0 Then r &= " Y " & unidades(resto Mod 10)
+                                End If
+                            End If
+                            Return r
+                        End Function
+
+            Dim resultado = ""
+            Dim millones = entero \ 1000000
+            Dim miles = (entero Mod 1000000) \ 1000
+            Dim restoFinal = entero Mod 1000
+
+            If millones > 0 Then resultado &= If(millones = 1, "UN MILLÓN", Grupo(millones) & " MILLONES") & " "
+            If miles > 0 Then resultado &= If(miles = 1, "MIL", Grupo(miles) & " MIL") & " "
+            If restoFinal > 0 Then resultado &= Grupo(restoFinal) & " "
+
+            Return resultado.Trim() & " LEMPIRAS"
         End Function
 
         ''' <summary>Escapa XML y elimina caracteres de control no válidos.</summary>

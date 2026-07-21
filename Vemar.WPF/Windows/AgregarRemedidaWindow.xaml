@@ -103,7 +103,7 @@
             <UniformGrid Columns="4" Margin="0,0,0,12">
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Matrícula" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" MaxLength="6"/>
+                    <TextBox Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FieldBox}" MaxLength="10"/>
                 </StackPanel>
                 <StackPanel Margin="0,0,8,0">
                     <TextBlock Text="Precio" Style="{StaticResource FieldLabel}"/>

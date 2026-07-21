@@ -23,6 +23,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" Grid.Column="0" Content="Nombre:" VerticalAlignment="Center" />
@@ -31,14 +32,17 @@
                 <Label Grid.Row="1" Grid.Column="0" Content="Ubicación:" VerticalAlignment="Center" />
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Ubicacion, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" />
 
-                <Label Grid.Row="2" Grid.Column="0" Content="Matrícula:" VerticalAlignment="Center" />
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" MaxLength="6"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Descripción:" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Descripcion, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" TextWrapping="Wrap" AcceptsReturn="True" Height="50" />
 
-                <Label Grid.Row="3" Grid.Column="0" Content="Clave Sure:" VerticalAlignment="Center" />
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ClaveSure, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" b:DniTextBoxBehavior.IsEnabled="True"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="Matrícula:" VerticalAlignment="Center" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Matricula, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" MaxLength="10"/>
 
-                <Label Grid.Row="4" Grid.Column="0" Content="Área (m²):" VerticalAlignment="Center" />
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Area, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" />
+                <Label Grid.Row="4" Grid.Column="0" Content="Clave Sure:" VerticalAlignment="Center" />
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding ClaveSure, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" b:DniTextBoxBehavior.IsEnabled="True"/>
+
+                <Label Grid.Row="5" Grid.Column="0" Content="Área (m²):" VerticalAlignment="Center" />
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Area, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" />
             </Grid>
         </GroupBox>
 

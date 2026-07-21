@@ -10,9 +10,10 @@ Namespace Vemar.WPF.Reports
                 Return New List(Of ReportColumn) From {
                     New ReportColumn("ID", "Id", "0.5in"),
                     New ReportColumn("Tipo", "Tipo", "1.8in"),
-                    New ReportColumn("Proyecto", "Proyecto", "2.2in"),
-                    New ReportColumn("Estado", "Estado", "1.5in"),
-                    New ReportColumn("Descripción", "Descripcion", "4in")
+                    New ReportColumn("Proyecto", "Proyecto", "2in"),
+                    New ReportColumn("Estado", "Estado", "1.3in"),
+                    New ReportColumn("Fecha", "Fecha", "1in"),
+                    New ReportColumn("Descripción", "Descripcion", "3.4in")
                 }
             End Get
         End Property
@@ -23,6 +24,7 @@ Namespace Vemar.WPF.Reports
                 {"Tipo", item.TipoTramite?.Nombre},
                 {"Proyecto", item.Proyecto?.Nombre},
                 {"Estado", item.EstadoTramite?.Estado},
+                {"Fecha", If(item.Fecha.HasValue, item.Fecha.Value.ToString("dd/MM/yyyy"), "")},
                 {"Descripcion", item.Descripcion}
             }
         End Function

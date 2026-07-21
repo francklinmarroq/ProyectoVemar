@@ -1,6 +1,7 @@
 Imports System.Diagnostics
 Imports System.Globalization
 Imports System.IO
+Imports System.Linq
 Imports System.Reflection
 Imports System.Text
 Imports System.Threading.Tasks
@@ -68,20 +69,27 @@ Namespace Vemar.WPF.Reports
             Dim hasLogo = Not String.IsNullOrEmpty(logoB64)
             Dim fechaGen = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
             Dim fechaRem = r.Fecha.ToString("dd/MM/yyyy")
-            Dim expediente = If(r.ExpedienteEntregado, "✔  ENTREGADO", "✘  PENDIENTE")
-            Dim precio = "L " & r.Precio.ToString("N2", CultureInfo.InvariantCulture)
+            Dim expediente = If(r.ExpedienteEntregado, "ENTREGADO", "PENDIENTE")
+            Dim precio = If(r.Precio > 0D, "L " & r.Precio.ToString("N2", CultureInfo.InvariantCulture), "")
 
             Dim sb As New StringBuilder()
             sb.Append("<?xml version=""1.0"" encoding=""utf-8""?>")
             sb.Append("<Report xmlns=""http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"" ")
             sb.Append("xmlns:rd=""http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"">")
 
+            Dim bannerB64 = ReportHeaderHelper.GetBannerBase64()
+            sb.Append("<EmbeddedImages>")
             If hasLogo Then
-                sb.Append("<EmbeddedImages><EmbeddedImage Name=""VemarLogo"">")
+                sb.Append("<EmbeddedImage Name=""VemarLogo"">")
                 sb.Append("<MIMEType>image/png</MIMEType>")
                 sb.Append($"<ImageData>{logoB64}</ImageData>")
-                sb.Append("</EmbeddedImage></EmbeddedImages>")
+                sb.Append("</EmbeddedImage>")
             End If
+            sb.Append("<EmbeddedImage Name=""VemarBanner"">")
+            sb.Append("<MIMEType>image/jpeg</MIMEType>")
+            sb.Append($"<ImageData>{bannerB64}</ImageData>")
+            sb.Append("</EmbeddedImage>")
+            sb.Append("</EmbeddedImages>")
 
             sb.Append("<Body><ReportItems>")
 
@@ -93,50 +101,46 @@ Namespace Vemar.WPF.Reports
             T(sb, "TxTit", "BOLETA DE RECEPCIÓN — REMEDIDA", FmtIn(hdr.heightUsed + 0.05), "0in", "0.25in", FmtIn(cW), "11pt", "Bold", "#1E40AF", "Left")
             T(sb, "TxGen", $"Generado: {fechaGen}    |    ID: {r.Id}", FmtIn(hdr.heightUsed + 0.30), "0in", "0.18in", FmtIn(cW), "8pt", "Normal", "#64748B", "Left")
 
-            ' ── Caja identificadora grande (CLAVE SURE | MATRÍCULA) ──
-            Dim bTop = hdr.heightUsed + 0.56
-            Dim bH = 0.72
-            Dim halfW = (cW - 0.1) / 2
-
-            BoxRect(sb, "BxL", FmtIn(bTop), "0in", FmtIn(bH), FmtIn(halfW), "#1E40AF")
-            T(sb, "LbCS", "CLAVE SURE", FmtIn(bTop + 0.06), "0.12in", "0.2in", FmtIn(halfW - 0.2), "8pt", "Bold", "#94A3B8", "Left")
-            T(sb, "VlCS", XmlEsc(r.ClaveSure), FmtIn(bTop + 0.28), "0.1in", "0.3in", FmtIn(halfW - 0.15), "15pt", "Bold", "#1E3A8A", "Left")
-
-            Dim rx = halfW + 0.1
-            BoxRect(sb, "BxR", FmtIn(bTop), FmtIn(rx), FmtIn(bH), FmtIn(halfW), "#1E40AF")
-            T(sb, "LbMt", "MATRÍCULA", FmtIn(bTop + 0.06), FmtIn(rx + 0.12), "0.2in", FmtIn(halfW - 0.2), "8pt", "Bold", "#94A3B8", "Left")
-            T(sb, "VlMt", XmlEsc(r.Matricula), FmtIn(bTop + 0.28), FmtIn(rx + 0.1), "0.3in", FmtIn(halfW - 0.15), "15pt", "Bold", "#1E3A8A", "Left")
-
-            ' ── Campos en cuadrícula 2×3 ──
-            Dim gTop = bTop + bH + 0.12
+            ' ── Cuadrícula de campos ──
+            ' Cada campo indica claramente su etiqueta. Solo se muestran los campos
+            ' con datos, para no dejar cuadros vacíos sin valor. El estado del
+            ' expediente siempre se muestra por ser información relevante.
+            Dim gTop = hdr.heightUsed + 0.56
             Dim gRowH = 0.38
             Dim col1W = (cW - 0.1) / 2
             Dim col2X = col1W + 0.1
 
-            ' Fila 1: Representante | Fecha
-            FieldPair(sb, "Rep", "Representante", XmlEsc(r.Representante),
-                          "Fch", "Fecha de Contrato", fechaRem,
-                          FmtIn(gTop), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+            Dim allFields As New List(Of (Label As String, Value As String)) From {
+                ("Clave SURE", XmlEscOpt(r.ClaveSure)),
+                ("Matrícula", XmlEscOpt(r.Matricula)),
+                ("Cliente / Propietario", XmlEscOpt(r.Propietario)),
+                ("Representante", XmlEscOpt(r.Representante)),
+                ("Ubicación", XmlEscOpt(r.Ubicacion)),
+                ("CAM", XmlEscOpt(r.Cam)),
+                ("Fecha de Contrato", fechaRem),
+                ("Precio Contrato", precio),
+                ("Expediente", expediente)
+            }
+            Dim fields = allFields.Where(Function(f) Not String.IsNullOrWhiteSpace(f.Value)).ToList()
 
-            ' Fila 2: Ubicación | Precio
-            FieldPair(sb, "Ub", "Ubicación", XmlEsc(r.Ubicacion),
-                          "Pr", "Precio Contrato", precio,
-                          FmtIn(gTop + gRowH + 0.06), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
-
-            ' Fila 3: CAM | Expediente
-            FieldPair(sb, "Cm", "CAM", XmlEsc(r.Cam),
-                          "Ex", "Expediente", expediente,
-                          FmtIn(gTop + (gRowH + 0.06) * 2), "0in", FmtIn(col1W), FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
-
-            ' ── Objeto ──
-            Dim objTop = gTop + (gRowH + 0.06) * 3 + 0.06
-            Sep(sb, "S1", FmtIn(objTop - 0.04), FmtIn(cW), "#CBD5E1", "1pt")
-            T(sb, "LbObj", "OBJETO", FmtIn(objTop), "0in", "0.2in", FmtIn(cW), "8pt", "Bold", "#64748B", "Left")
-            BoxRect(sb, "BxObj", FmtIn(objTop + 0.22), "0in", "1.4in", FmtIn(cW), "#CBD5E1")
-            T(sb, "VlObj", XmlEsc(r.Objeto), FmtIn(objTop + 0.28), "0.1in", "1.3in", FmtIn(cW - 0.15), "9pt", "Normal", "#1F2937", "Left")
+            Dim rowIdx As Integer = 0
+            Dim fi As Integer = 0
+            Do While fi < fields.Count
+                Dim rowTop = FmtIn(gTop + (gRowH + 0.06) * rowIdx)
+                If fi + 1 < fields.Count Then
+                    FieldCell(sb, "F" & fi, fields(fi).Label, fields(fi).Value, rowTop, "0in", FmtIn(col1W), FmtIn(gRowH))
+                    FieldCell(sb, "F" & (fi + 1), fields(fi + 1).Label, fields(fi + 1).Value, rowTop, FmtIn(col2X), FmtIn(col1W), FmtIn(gRowH))
+                    fi += 2
+                Else
+                    FieldCell(sb, "F" & fi, fields(fi).Label, fields(fi).Value, rowTop, "0in", FmtIn(cW), FmtIn(gRowH))
+                    fi += 1
+                End If
+                rowIdx += 1
+            Loop
+            Dim gridRows = rowIdx
 
             ' ── Líneas de firma ──
-            Dim sigTop = objTop + 0.22 + 1.4 + 0.45
+            Dim sigTop As Double = gTop + (gRowH + 0.06) * gridRows + 0.6
             Dim sigW = cW / 2 - 0.3
             Sep(sb, "SgL", FmtIn(sigTop), FmtIn(sigW), "#374151", "1pt")
             T(sb, "LbSgL", "Firma / Nombre de quien recibe", FmtIn(sigTop + 0.06), "0in", "0.22in", FmtIn(sigW), "8pt", "Normal", "#6B7280", "Center")
@@ -150,7 +154,9 @@ Namespace Vemar.WPF.Reports
             Sep(sb, "SFt", FmtIn(footTop), FmtIn(cW), "#E2E8F0", "1pt")
             T(sb, "TxFt", "CONSTRUCTORA VEMAR S. de R.L. de C.V.  —  Documento generado electrónicamente", FmtIn(footTop + 0.06), "0in", "0.2in", FmtIn(cW), "7pt", "Normal", "#94A3B8", "Center")
 
-            sb.Append("</ReportItems><Height>10in</Height></Body>")
+            Dim brContentH As Double = footTop + 0.26
+            Dim brMaxBodyH As Double = pH - 0.50 * 2 - 0.02
+            sb.Append($"</ReportItems><Height>{FmtIn(Math.Min(brContentH, brMaxBodyH))}</Height></Body>")
             sb.Append($"<Width>{FmtIn(cW)}</Width>")
             sb.Append("<Page>")
             sb.Append($"<PageHeight>{FmtIn(pH)}</PageHeight><PageWidth>{FmtIn(pW)}</PageWidth>")
@@ -194,19 +200,24 @@ Namespace Vemar.WPF.Reports
             sb.Append("</Rectangle>")
         End Sub
 
-        Private Sub FieldPair(sb As StringBuilder,
-                              n1 As String, lbl1 As String, val1 As String,
-                              n2 As String, lbl2 As String, val2 As String,
-                              top As String, left1 As String, width1 As String,
-                              left2 As String, width2 As String, height As String)
-            ' Caja izquierda
-            BoxRect(sb, "Bx" & n1, top, left1, height, width1, "#E2E8F0")
-            T(sb, "Lb" & n1, lbl1, top, left1, "0.18in", width1, "7pt", "Bold", "#64748B", "Left")
-            T(sb, "Vl" & n1, val1, ShiftIn(top, 0.2), left1, ShiftIn(height, -0.2), width1, "9pt", "SemiBold", "#1F2937", "Left")
-            ' Caja derecha
-            BoxRect(sb, "Bx" & n2, top, left2, height, width2, "#E2E8F0")
-            T(sb, "Lb" & n2, lbl2, top, left2, "0.18in", width2, "7pt", "Bold", "#64748B", "Left")
-            T(sb, "Vl" & n2, val2, ShiftIn(top, 0.2), left2, ShiftIn(height, -0.2), width2, "9pt", "SemiBold", "#1F2937", "Left")
+        ' Dibuja un campo (etiqueta + valor) como UN solo cuadro de texto con dos
+        ' párrafos, de modo que la etiqueta y el valor nunca puedan desalinearse.
+        Private Sub FieldCell(sb As StringBuilder, name As String, label As String, value As String,
+                              top As String, left As String, width As String, height As String)
+            sb.Append($"<Textbox Name=""Cl{name}""><CanGrow>true</CanGrow><Paragraphs>")
+            sb.Append($"<Paragraph><TextRuns><TextRun><Value>{label}</Value>")
+            sb.Append("<Style><FontSize>7pt</FontSize><FontWeight>Bold</FontWeight><Color>#64748B</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph>")
+            sb.Append($"<Paragraph><TextRuns><TextRun><Value>{value}</Value>")
+            sb.Append("<Style><FontSize>9pt</FontSize><FontWeight>SemiBold</FontWeight><Color>#1F2937</Color></Style>")
+            sb.Append("</TextRun></TextRuns></Paragraph>")
+            sb.Append("</Paragraphs>")
+            sb.Append($"<Top>{top}</Top><Left>{left}</Left><Height>{height}</Height><Width>{width}</Width>")
+            ' El borde y el fondo van en el propio cuadro de texto (no en un rectángulo
+            ' aparte) para evitar el solapamiento que hace que RDLC descarte celdas.
+            sb.Append("<Style><Border><Color>#E2E8F0</Color><Style>Solid</Style><Width>1pt</Width></Border>")
+            sb.Append("<BackgroundColor>#F8FAFC</BackgroundColor><PaddingLeft>4pt</PaddingLeft><PaddingTop>3pt</PaddingTop></Style>")
+            sb.Append("</Textbox>")
         End Sub
 
         Private Function ShiftIn(inchStr As String, delta As Double) As String
@@ -224,6 +235,11 @@ Namespace Vemar.WPF.Reports
 
         Private Function XmlEsc(s As String) As String
             If String.IsNullOrEmpty(s) Then Return "—"
+            Return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("""", "&quot;")
+        End Function
+
+        Private Function XmlEscOpt(s As String) As String
+            If String.IsNullOrWhiteSpace(s) Then Return ""
             Return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("""", "&quot;")
         End Function
 

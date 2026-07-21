@@ -4,6 +4,7 @@ Public Class Proyecto : Inherits DomainObject
     Private _nombre As String
     Private _cliente As Cliente
     Private _ubicacion As String
+    Private _descripcion As String
     Private _zonificacion As Zonificacion
     Private _area As Decimal
     Private _categoriaProyecto As CategoriaProyecto
@@ -36,6 +37,15 @@ Public Class Proyecto : Inherits DomainObject
         End Get
         Set(value As String)
             _ubicacion = value
+        End Set
+    End Property
+
+    Public Property Descripcion As String
+        Get
+            Return _descripcion
+        End Get
+        Set(value As String)
+            _descripcion = value
         End Set
     End Property
 
